@@ -10,7 +10,7 @@ export default withAuth(
     // if (
     //   token &&
     //   token.role === "user" &&
-    //   token.isactivated === false &&
+    //   token.isActivated === false &&
     //   pathname !== "/user/account-verify"
     // ) {
     //   return NextResponse.redirect(new URL("/user/account-verify", req.url));

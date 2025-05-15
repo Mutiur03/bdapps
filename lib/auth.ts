@@ -1,27 +1,18 @@
 import { NextAuthOptions } from "next-auth";
 
 declare module "next-auth" {
-  interface Session {
-    User: {
-      id: string;
-      role: string;
-      name?: string;
-      email?: string;
-    };
-  }
-
   interface User {
     id: string;
     role: string;
     email?: string;
     phone?: string;
-    isactivated?: boolean;
+    isActivated?: boolean;
   }
 }
 
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-import pool from "./db";
+import prisma from "@/lib/prisma";
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -41,76 +32,82 @@ export const authOptions: NextAuthOptions = {
         },
       },
       async authorize(credentials) {
-        if (credentials?.role === "user") {
-          if (!credentials?.phone || !credentials?.password) {
+        // Validate credentials exist
+        if (!credentials) {
+          throw new Error("No credentials provided");
+        }
+
+        // Handle user role
+        if (credentials.role === "user") {
+          if (!credentials.phone || !credentials.password) {
             throw new Error("Please enter your phone and password");
           }
-          const res = await pool.query("SELECT * FROM users WHERE phone = $1", [
-            credentials.phone,
-          ]);
-          const user = res.rows[0] as {
+          const res = await prisma.user.findUnique({
+            where: { phone: "0" + credentials.phone.trim().slice(-10) },
+          });
+          if (!res) {
+            throw new Error("Invalid phone or password");
+          }
+          const user = res as {
             id: number;
             phone?: string;
             password?: string;
             role?: string;
-            isactivated?: boolean;
+            isActivated?: boolean;
           };
 
-          if (!user) {
-            throw new Error("Invalid phone or password");
-          }
           if (!user.password) {
             throw new Error("User password is not set");
           }
-          const hashedPassword = user.password;
           const isPasswordValid = await bcrypt.compare(
             credentials.password.trim(),
-            hashedPassword
+            user.password
           );
           if (!isPasswordValid) {
             throw new Error("Invalid password");
           }
-          if (user && user.password) {
-            delete user.password;
-          }
+
           return {
-            id: user.id.toString(),
+            id: String(user.id),
             phone: user.phone,
-            role: "user",
-            isactivated: user.isactivated,
+            role: user.role ?? "user",
+            isActivated: user.isActivated,
           };
-        } else {
-          if (!credentials?.email || !credentials?.password) {
+        } else if (credentials.role === "investor") {
+          if (!credentials.email || !credentials.password) {
             throw new Error("Please enter your email and password");
           }
-          const res = await pool.query(
-            "SELECT * FROM admins WHERE email = $1",
-            [credentials.email]
-          );
-          const user = res.rows[0];
-
-          if (!user) {
+          const res = await prisma.investor.findUnique({
+            where: { email: credentials.email.trim() },
+          });
+          if (!res) {
             throw new Error("Invalid email or password");
           }
+          const user = res as {
+            id: number;
+            email?: string | null;
+            password?: string;
+            role?: string;
+          };
+
           if (!user.password) {
             throw new Error("User password is not set");
           }
-          const hashedPassword = user.password;
           const isPasswordValid = await bcrypt.compare(
             credentials.password.trim(),
-            hashedPassword
+            user.password
           );
           if (!isPasswordValid) {
             throw new Error("Invalid password");
           }
-          if (user && user.password) {
-            delete user.password;
-          }
+
           return {
-            id: user.id,
-            email: user.email,
-            role: "admin",
+            id: String(user.id),
+            email: user.email ?? undefined,
+            role: user.role ?? "investor",
           };
+        } else {
+          throw new Error("Invalid role specified");
         }
       },
     }),
@@ -120,15 +117,16 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.role = user.role;
-        token.isactivated = user.isactivated;
+        token.isActivated = user.isActivated;
       }
       return token;
     },
-    async session({ session, token }: { session: any; token: any }) {
+    async session({ session, token }: { session; token }) {
+
       if (token) {
         session.user.id = token.id as string;
         session.user.role = token.role as string;
-        session.user.isactivated = token.isactivated as boolean;
+        session.user.isActivated = token.isActivated as boolean;
       }
       return session;
     },

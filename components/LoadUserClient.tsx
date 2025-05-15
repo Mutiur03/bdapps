@@ -17,7 +17,7 @@ export default function LoadUserClient() {
                     const token = await getSession();
                     console.log(token);
                     if (token) {
-                        const user = await axios.get(`/api/user/getuser/${token.user.id}`);
+                        const user = await axios.get(`/api/getuser`);
                         console.log(user);
                         setUser(user.data);
                     }
