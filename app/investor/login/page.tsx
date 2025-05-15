@@ -1,6 +1,6 @@
 "use client"
 import React, { useEffect, useState } from 'react'
-import {  signIn } from "next-auth/react"
+import { signIn } from "next-auth/react"
 import { useSearchParams } from 'next/navigation';
 import useUserStore from '@/store/useUserStore';
 import axios from 'axios';
@@ -11,7 +11,7 @@ function Page() {
     const [error, setError] = useState("")
     const { setUser } = useUserStore();
     const searchParams = useSearchParams();
-    const callbackUrl = searchParams.get('callbackUrl') || '/'; // fallback if not present
+    const callbackUrl = searchParams.get('callbackUrl') || '/';
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
