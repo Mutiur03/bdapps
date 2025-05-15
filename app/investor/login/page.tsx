@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import useUserStore from '@/store/useUserStore';
 import axios from 'axios';
 
+
 function Page() {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
@@ -32,11 +33,7 @@ function Page() {
             const user = await axios.get(`/api/getuser`);
             console.log(user);
             setUser(user.data);
-            if (user.data.isactivated) {
-                window.location.href = callbackUrl;
-            } else {
-                window.location.href = `/user/account-verify`;
-            }
+            window.location.href = callbackUrl;
 
         }
 

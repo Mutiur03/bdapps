@@ -31,7 +31,11 @@ function Page() {
             const user = await axios.get(`/api/getuser`);
             console.log(user);
             setUser(user.data);
-
+            if (user.data.isActivated === false) {
+                window.location.href = "/user/account-verify";
+            } else {
+                window.location.href = callbackUrl;
+            }
         }
     };
     const errorParam = searchParams.get('error');

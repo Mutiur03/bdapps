@@ -1,6 +1,6 @@
-import pool from "@/lib/db";
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import prisma from "@/lib/prisma";
 
 export async function POST(request: Request) {
   const body = await request.json();
@@ -8,32 +8,30 @@ export async function POST(request: Request) {
   let { phone } = body;
   phone = "0" + phone.trim().slice(-10);
   console.log(phone);
-  // Check if the user already exists
-  const existingUser = await pool.query(
-    "SELECT * FROM users WHERE phone = $1",
-    [phone]
-  );
+  const existingUser = await prisma.user.findUnique({
+    where: { phone },
+  });
+  console.log(existingUser);
 
-  if (existingUser.rows.length > 0) {
+  if (existingUser) {
     return NextResponse.json({ error: "User already exists" }, { status: 409 });
   }
 
-  // Hash the password
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  // Insert the new user into the database
-  const res = await pool.query(
-    "INSERT INTO users (phone, password) VALUES ($1, $2) RETURNING *",
-    [phone, hashedPassword]
-  );
+  const res = await prisma.user.create({
+    data: {
+      phone,
+      password: hashedPassword,
+    },
+  });
 
-  // Remove password from the returned user object
-  const user = res.rows[0];
-  if (user) {
-    delete user.password;
-  }
+  const userWithoutPassword = {
+    ...res,
+    password: undefined,
+  };
 
-  return NextResponse.json(user, {
+  return NextResponse.json(userWithoutPassword, {
     status: 201,
   });
 }
