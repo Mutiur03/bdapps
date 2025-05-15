@@ -1,14 +1,14 @@
 import { NextAuthOptions } from "next-auth";
 
 declare module "next-auth" {
-  interface Session {
-    User: {
-      id: string;
-      role: string;
-      name?: string;
-      email?: string;
-    };
-  }
+//   interface Session {
+//     User: {
+//       id: string;
+//       role: string;
+//       name?: string;
+//       email?: string;
+//     };
+//   }
 
   interface User {
     id: string;
@@ -84,7 +84,7 @@ export const authOptions: NextAuthOptions = {
             throw new Error("Please enter your email and password");
           }
           const res = await pool.query(
-            "SELECT * FROM admins WHERE email = $1",
+            "SELECT * FROM investors WHERE email = $1",
             [credentials.email]
           );
           const user = res.rows[0];
@@ -109,7 +109,7 @@ export const authOptions: NextAuthOptions = {
           return {
             id: user.id,
             email: user.email,
-            role: "admin",
+            role: "investor",
           };
         }
       },

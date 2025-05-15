@@ -1,6 +1,6 @@
 "use client"
 import React, { useEffect, useState } from 'react'
-import { getSession, signIn } from "next-auth/react"
+import {  signIn } from "next-auth/react"
 import { useSearchParams } from 'next/navigation';
 import useUserStore from '@/store/useUserStore';
 import axios from 'axios';
@@ -28,22 +28,11 @@ function Page() {
         if (res?.error) {
             setError(res.error);
         } else {
-            const token = await getSession();
-            console.log(token);
-
-            const user = await axios.get(`/api/user/getuser/${token?.user.id}`);
+            const user = await axios.get(`/api/getuser`);
             console.log(user);
             setUser(user.data);
-            if (user.data.isactivated) {
-                window.location.href = callbackUrl;
-            } else {
-                window.location.href = `/user/account-verify`;
-            }
 
         }
-
-
-
     };
     const errorParam = searchParams.get('error');
 
