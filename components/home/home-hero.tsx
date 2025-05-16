@@ -22,9 +22,6 @@ export function HomeHero() {
         {/* Text Content - Left Side */}
         <div className="max-w-xl space-y-6 text-center lg:text-left z-10 py-12 lg:py-0">
           <div className="space-y-2">
-            <span className="inline-block px-3 py-1 text-sm font-medium rounded-full bg-primary/10 text-primary animate-fade-in">
-              Empowering Student Entrepreneurs
-            </span>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-foreground animate-fade-in">
               Connecting <span className="text-primary">Student Founders</span>{" "}
               with <span className="text-primary">Investors</span>
@@ -32,8 +29,8 @@ export function HomeHero() {
           </div>
 
           <p className="text-lg text-muted-foreground animate-fade-in animation-delay-200">
-            UdayeeConnect empowers student entrepreneurs to showcase their ideas
-            and connect with investors who believe in their vision.
+            Uday empowers student entrepreneurs to showcase their ideas and
+            connect with investors who believe in their vision.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start animate-fade-in animation-delay-400">

@@ -250,29 +250,11 @@ function ProjectCard({
         )}
       </CardContent>
       <CardFooter className="flex justify-between pt-2">
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-8 flex items-center gap-1"
-          >
-            <Edit className="h-3 w-3" />
-            Edit
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-8 text-destructive hover:text-destructive hover:bg-destructive/10 flex items-center gap-1"
-            onClick={onDelete}
-          >
-            <Trash2 className="h-3 w-3" />
-            Delete
-          </Button>
-        </div>
+        <div className="flex gap-2"></div>
         <div className="flex gap-2">
           {project.status === "active" ? (
             <>
-              <Link href={`/udayee/profile/${project.id}`}>
+              <Link href={`/udayee/projects/${project.id}/preview`}>
                 <Button
                   size="sm"
                   variant="outline"
@@ -282,7 +264,7 @@ function ProjectCard({
                   Preview
                 </Button>
               </Link>
-              <Link href={`/udayee/profile/${project.id}/edit`}>
+              <Link href={`/udayee/projects/${project.id}/manage`}>
                 <Button
                   size="sm"
                   className="h-8 bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-1"
