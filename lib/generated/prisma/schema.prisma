@@ -12,8 +12,8 @@ datasource db {
 }
 
 model User {
-  id               Int      @id @default(autoincrement())
-  phone            String   @unique
+  id               Int     @id @default(autoincrement())
+  phone            String  @unique
   password         String
   name             String?
   profile_picture  String?
@@ -27,30 +27,49 @@ model User {
   student_id_back  String?
   nid_front        String?
   nid_back         String?
-  university_email String?  @unique
+  university_email String? @unique
   date_of_birth    String?
   address          String?
   bio              String?
   skills           String?
   interests        String?
-  socail_links     String[]
+  social_links     Json?
   career_goals     String?
-  role             String   @default("user")
-  isActivated      Boolean  @default(false)
-  isVerified       Boolean  @default(false)
+  role             String  @default("user")
+  isActivated      Boolean @default(false)
+  isVerified       Boolean @default(false)
+
+  projects Project[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Investor {
-  id          Int      @id @default(autoincrement())
-  email       String?  @unique
-  phone       String?  @unique
-  password    String
-  name        String?
-  role        String   @default("investor")
-  isActivated Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id          Int       @id @default(autoincrement())
+  email       String?   @unique
+  phone       String?   @unique
+  role        String    @default("investor")
+  isActivated Boolean   @default(true)
+  projects    Project[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Project {
+  id            Int      @id @default(autoincrement())
+  title         String
+  description   String
+  category      String
+  budget        Float
+  raised_amount Float
+  completed_at  String?
+  status        String   @default("active")
+  userId        Int
+  investorId    Int?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user     User      @relation(fields: [userId], references: [id])
+  investor Investor? @relation(fields: [investorId], references: [id])
 }

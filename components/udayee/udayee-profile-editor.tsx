@@ -240,6 +240,8 @@ export function UdayeeProfileEditor() {
                         value={studentData.email}
                         onChange={handleChange}
                         required
+                        readOnly
+
                       />
                     </div>
                   </div>
@@ -257,6 +259,7 @@ export function UdayeeProfileEditor() {
                         className="rounded-l-none"
                         value={studentData.phone}
                         onChange={handleChange}
+                        readOnly
                       />
                     </div>
                   </div>
@@ -313,6 +316,7 @@ export function UdayeeProfileEditor() {
                       onChange={handleChange}
                       className="rounded-l-none"
                       required
+                      readOnly
                     />
                   </div>
                 </div>
