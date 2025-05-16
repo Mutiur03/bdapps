@@ -5,6 +5,7 @@ declare module "next-auth" {
     id: string;
     role: string;
     email?: string;
+
     phone?: string;
     isActivated?: boolean;
   }
@@ -19,11 +20,6 @@ export const authOptions: NextAuthOptions = {
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "email", placeholder: "Email" },
-        phone: {
-          label: "Phone",
-          type: "number",
-          placeholder: "Number dal MC ",
-        },
         password: { label: "Password", type: "password" },
         role: {
           label: "Role",
@@ -39,18 +35,18 @@ export const authOptions: NextAuthOptions = {
 
         // Handle user role
         if (credentials.role === "user") {
-          if (!credentials.phone || !credentials.password) {
-            throw new Error("Please enter your phone and password");
+          if (!credentials.email || !credentials.password) {
+            throw new Error("Please enter your email and password");
           }
           const res = await prisma.user.findUnique({
-            where: { phone: "0" + credentials.phone.trim().slice(-10) },
+            where: { university_email: credentials.email.trim() },
           });
           if (!res) {
-            throw new Error("Invalid phone or password");
+            throw new Error("Invalid email or password");
           }
           const user = res as {
             id: number;
-            phone?: string;
+            university_email?: string | null;
             password?: string;
             role?: string;
             isActivated?: boolean;
@@ -66,10 +62,11 @@ export const authOptions: NextAuthOptions = {
           if (!isPasswordValid) {
             throw new Error("Invalid password");
           }
+          console.log("User found:", user);
 
           return {
             id: String(user.id),
-            phone: user.phone,
+            email: user.university_email ?? undefined,
             role: user.role ?? "user",
             isActivated: user.isActivated,
           };
@@ -122,7 +119,6 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }: { session; token }) {
-
       if (token) {
         session.user.id = token.id as string;
         session.user.role = token.role as string;

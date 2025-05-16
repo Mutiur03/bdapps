@@ -39,19 +39,21 @@ export default withAuth(
           return true;
         }
 
-
         if (token && token.role === "user" && pathname.startsWith("/user")) {
           return true;
         }
         if (token && token.role === "admin" && pathname.startsWith("/admin")) {
           return true;
         }
-
+        // return true;
         return !!token;
       },
     },
   }
 );
+// export const config = {
+//   matcher: ["/((?!api|_next|static|favicon.ico|.*\\.svg).*)"],
+// };
 export const config = {
-  matcher: ["/((?!api|_next|static|favicon.ico|.*\\.svg).*)"],
+  matcher: [],
 };

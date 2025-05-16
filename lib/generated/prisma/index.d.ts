@@ -226,8 +226,8 @@ export namespace Prisma {
   export import Exact = $Public.Exact
 
   /**
-   * Prisma Client JS version: 6.7.0
-   * Query Engine version: 3cff47a7f5d65c3ea74883f1d736e41d68ce91ed
+   * Prisma Client JS version: 6.8.1
+   * Query Engine version: 2060c79ba17c6bb9f5823312b6f6b7f4a845738e
    */
   export type PrismaVersion = {
     client: string
@@ -974,44 +974,101 @@ export namespace Prisma {
 
   export type UserAvgAggregateOutputType = {
     id: number | null
+    cgpa: number | null
   }
 
   export type UserSumAggregateOutputType = {
     id: number | null
+    cgpa: number | null
   }
 
   export type UserMinAggregateOutputType = {
     id: number | null
-    email: string | null
     phone: string | null
     password: string | null
     name: string | null
+    profile_picture: string | null
+    university: string | null
+    department: string | null
+    year_of_study: string | null
+    graduation_year: string | null
+    cgpa: number | null
+    student_id: string | null
+    student_id_front: string | null
+    student_id_back: string | null
+    nid_front: string | null
+    nid_back: string | null
+    university_email: string | null
+    date_of_birth: string | null
+    address: string | null
+    bio: string | null
+    skills: string | null
+    interests: string | null
+    career_goals: string | null
     role: string | null
     isActivated: boolean | null
+    isVerified: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
   }
 
   export type UserMaxAggregateOutputType = {
     id: number | null
-    email: string | null
     phone: string | null
     password: string | null
     name: string | null
+    profile_picture: string | null
+    university: string | null
+    department: string | null
+    year_of_study: string | null
+    graduation_year: string | null
+    cgpa: number | null
+    student_id: string | null
+    student_id_front: string | null
+    student_id_back: string | null
+    nid_front: string | null
+    nid_back: string | null
+    university_email: string | null
+    date_of_birth: string | null
+    address: string | null
+    bio: string | null
+    skills: string | null
+    interests: string | null
+    career_goals: string | null
     role: string | null
     isActivated: boolean | null
+    isVerified: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
   }
 
   export type UserCountAggregateOutputType = {
     id: number
-    email: number
     phone: number
     password: number
     name: number
+    profile_picture: number
+    university: number
+    department: number
+    year_of_study: number
+    graduation_year: number
+    cgpa: number
+    student_id: number
+    student_id_front: number
+    student_id_back: number
+    nid_front: number
+    nid_back: number
+    university_email: number
+    date_of_birth: number
+    address: number
+    bio: number
+    skills: number
+    interests: number
+    socail_links: number
+    career_goals: number
     role: number
     isActivated: number
+    isVerified: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -1020,44 +1077,101 @@ export namespace Prisma {
 
   export type UserAvgAggregateInputType = {
     id?: true
+    cgpa?: true
   }
 
   export type UserSumAggregateInputType = {
     id?: true
+    cgpa?: true
   }
 
   export type UserMinAggregateInputType = {
     id?: true
-    email?: true
     phone?: true
     password?: true
     name?: true
+    profile_picture?: true
+    university?: true
+    department?: true
+    year_of_study?: true
+    graduation_year?: true
+    cgpa?: true
+    student_id?: true
+    student_id_front?: true
+    student_id_back?: true
+    nid_front?: true
+    nid_back?: true
+    university_email?: true
+    date_of_birth?: true
+    address?: true
+    bio?: true
+    skills?: true
+    interests?: true
+    career_goals?: true
     role?: true
     isActivated?: true
+    isVerified?: true
     createdAt?: true
     updatedAt?: true
   }
 
   export type UserMaxAggregateInputType = {
     id?: true
-    email?: true
     phone?: true
     password?: true
     name?: true
+    profile_picture?: true
+    university?: true
+    department?: true
+    year_of_study?: true
+    graduation_year?: true
+    cgpa?: true
+    student_id?: true
+    student_id_front?: true
+    student_id_back?: true
+    nid_front?: true
+    nid_back?: true
+    university_email?: true
+    date_of_birth?: true
+    address?: true
+    bio?: true
+    skills?: true
+    interests?: true
+    career_goals?: true
     role?: true
     isActivated?: true
+    isVerified?: true
     createdAt?: true
     updatedAt?: true
   }
 
   export type UserCountAggregateInputType = {
     id?: true
-    email?: true
     phone?: true
     password?: true
     name?: true
+    profile_picture?: true
+    university?: true
+    department?: true
+    year_of_study?: true
+    graduation_year?: true
+    cgpa?: true
+    student_id?: true
+    student_id_front?: true
+    student_id_back?: true
+    nid_front?: true
+    nid_back?: true
+    university_email?: true
+    date_of_birth?: true
+    address?: true
+    bio?: true
+    skills?: true
+    interests?: true
+    socail_links?: true
+    career_goals?: true
     role?: true
     isActivated?: true
+    isVerified?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -1151,12 +1265,31 @@ export namespace Prisma {
 
   export type UserGroupByOutputType = {
     id: number
-    email: string | null
     phone: string
     password: string
     name: string | null
+    profile_picture: string | null
+    university: string | null
+    department: string | null
+    year_of_study: string | null
+    graduation_year: string | null
+    cgpa: number | null
+    student_id: string | null
+    student_id_front: string | null
+    student_id_back: string | null
+    nid_front: string | null
+    nid_back: string | null
+    university_email: string | null
+    date_of_birth: string | null
+    address: string | null
+    bio: string | null
+    skills: string | null
+    interests: string | null
+    socail_links: string[]
+    career_goals: string | null
     role: string
     isActivated: boolean
+    isVerified: boolean
     createdAt: Date
     updatedAt: Date
     _count: UserCountAggregateOutputType | null
@@ -1182,65 +1315,160 @@ export namespace Prisma {
 
   export type UserSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    email?: boolean
     phone?: boolean
     password?: boolean
     name?: boolean
+    profile_picture?: boolean
+    university?: boolean
+    department?: boolean
+    year_of_study?: boolean
+    graduation_year?: boolean
+    cgpa?: boolean
+    student_id?: boolean
+    student_id_front?: boolean
+    student_id_back?: boolean
+    nid_front?: boolean
+    nid_back?: boolean
+    university_email?: boolean
+    date_of_birth?: boolean
+    address?: boolean
+    bio?: boolean
+    skills?: boolean
+    interests?: boolean
+    socail_links?: boolean
+    career_goals?: boolean
     role?: boolean
     isActivated?: boolean
+    isVerified?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    email?: boolean
     phone?: boolean
     password?: boolean
     name?: boolean
+    profile_picture?: boolean
+    university?: boolean
+    department?: boolean
+    year_of_study?: boolean
+    graduation_year?: boolean
+    cgpa?: boolean
+    student_id?: boolean
+    student_id_front?: boolean
+    student_id_back?: boolean
+    nid_front?: boolean
+    nid_back?: boolean
+    university_email?: boolean
+    date_of_birth?: boolean
+    address?: boolean
+    bio?: boolean
+    skills?: boolean
+    interests?: boolean
+    socail_links?: boolean
+    career_goals?: boolean
     role?: boolean
     isActivated?: boolean
+    isVerified?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    email?: boolean
     phone?: boolean
     password?: boolean
     name?: boolean
+    profile_picture?: boolean
+    university?: boolean
+    department?: boolean
+    year_of_study?: boolean
+    graduation_year?: boolean
+    cgpa?: boolean
+    student_id?: boolean
+    student_id_front?: boolean
+    student_id_back?: boolean
+    nid_front?: boolean
+    nid_back?: boolean
+    university_email?: boolean
+    date_of_birth?: boolean
+    address?: boolean
+    bio?: boolean
+    skills?: boolean
+    interests?: boolean
+    socail_links?: boolean
+    career_goals?: boolean
     role?: boolean
     isActivated?: boolean
+    isVerified?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectScalar = {
     id?: boolean
-    email?: boolean
     phone?: boolean
     password?: boolean
     name?: boolean
+    profile_picture?: boolean
+    university?: boolean
+    department?: boolean
+    year_of_study?: boolean
+    graduation_year?: boolean
+    cgpa?: boolean
+    student_id?: boolean
+    student_id_front?: boolean
+    student_id_back?: boolean
+    nid_front?: boolean
+    nid_back?: boolean
+    university_email?: boolean
+    date_of_birth?: boolean
+    address?: boolean
+    bio?: boolean
+    skills?: boolean
+    interests?: boolean
+    socail_links?: boolean
+    career_goals?: boolean
     role?: boolean
     isActivated?: boolean
+    isVerified?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "phone" | "password" | "name" | "role" | "isActivated" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "phone" | "password" | "name" | "profile_picture" | "university" | "department" | "year_of_study" | "graduation_year" | "cgpa" | "student_id" | "student_id_front" | "student_id_back" | "nid_front" | "nid_back" | "university_email" | "date_of_birth" | "address" | "bio" | "skills" | "interests" | "socail_links" | "career_goals" | "role" | "isActivated" | "isVerified" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 
   export type $UserPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "User"
     objects: {}
     scalars: $Extensions.GetPayloadResult<{
       id: number
-      email: string | null
       phone: string
       password: string
       name: string | null
+      profile_picture: string | null
+      university: string | null
+      department: string | null
+      year_of_study: string | null
+      graduation_year: string | null
+      cgpa: number | null
+      student_id: string | null
+      student_id_front: string | null
+      student_id_back: string | null
+      nid_front: string | null
+      nid_back: string | null
+      university_email: string | null
+      date_of_birth: string | null
+      address: string | null
+      bio: string | null
+      skills: string | null
+      interests: string | null
+      socail_links: string[]
+      career_goals: string | null
       role: string
       isActivated: boolean
+      isVerified: boolean
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["user"]>
@@ -1667,12 +1895,31 @@ export namespace Prisma {
    */
   interface UserFieldRefs {
     readonly id: FieldRef<"User", 'Int'>
-    readonly email: FieldRef<"User", 'String'>
     readonly phone: FieldRef<"User", 'String'>
     readonly password: FieldRef<"User", 'String'>
     readonly name: FieldRef<"User", 'String'>
+    readonly profile_picture: FieldRef<"User", 'String'>
+    readonly university: FieldRef<"User", 'String'>
+    readonly department: FieldRef<"User", 'String'>
+    readonly year_of_study: FieldRef<"User", 'String'>
+    readonly graduation_year: FieldRef<"User", 'String'>
+    readonly cgpa: FieldRef<"User", 'Float'>
+    readonly student_id: FieldRef<"User", 'String'>
+    readonly student_id_front: FieldRef<"User", 'String'>
+    readonly student_id_back: FieldRef<"User", 'String'>
+    readonly nid_front: FieldRef<"User", 'String'>
+    readonly nid_back: FieldRef<"User", 'String'>
+    readonly university_email: FieldRef<"User", 'String'>
+    readonly date_of_birth: FieldRef<"User", 'String'>
+    readonly address: FieldRef<"User", 'String'>
+    readonly bio: FieldRef<"User", 'String'>
+    readonly skills: FieldRef<"User", 'String'>
+    readonly interests: FieldRef<"User", 'String'>
+    readonly socail_links: FieldRef<"User", 'String[]'>
+    readonly career_goals: FieldRef<"User", 'String'>
     readonly role: FieldRef<"User", 'String'>
     readonly isActivated: FieldRef<"User", 'Boolean'>
+    readonly isVerified: FieldRef<"User", 'Boolean'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
   }
@@ -3138,12 +3385,31 @@ export namespace Prisma {
 
   export const UserScalarFieldEnum: {
     id: 'id',
-    email: 'email',
     phone: 'phone',
     password: 'password',
     name: 'name',
+    profile_picture: 'profile_picture',
+    university: 'university',
+    department: 'department',
+    year_of_study: 'year_of_study',
+    graduation_year: 'graduation_year',
+    cgpa: 'cgpa',
+    student_id: 'student_id',
+    student_id_front: 'student_id_front',
+    student_id_back: 'student_id_back',
+    nid_front: 'nid_front',
+    nid_back: 'nid_back',
+    university_email: 'university_email',
+    date_of_birth: 'date_of_birth',
+    address: 'address',
+    bio: 'bio',
+    skills: 'skills',
+    interests: 'interests',
+    socail_links: 'socail_links',
+    career_goals: 'career_goals',
     role: 'role',
     isActivated: 'isActivated',
+    isVerified: 'isVerified',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -3224,6 +3490,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Float'
+   */
+  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+  /**
+   * Reference to a field of type 'Float[]'
+   */
+  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
+
+
+  /**
    * Reference to a field of type 'Boolean'
    */
   export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
@@ -3242,20 +3522,6 @@ export namespace Prisma {
    */
   export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
     
-
-
-  /**
-   * Reference to a field of type 'Float'
-   */
-  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
-    
-
-
-  /**
-   * Reference to a field of type 'Float[]'
-   */
-  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
-    
   /**
    * Deep Input Types
    */
@@ -3266,51 +3532,127 @@ export namespace Prisma {
     OR?: UserWhereInput[]
     NOT?: UserWhereInput | UserWhereInput[]
     id?: IntFilter<"User"> | number
-    email?: StringNullableFilter<"User"> | string | null
     phone?: StringFilter<"User"> | string
     password?: StringFilter<"User"> | string
     name?: StringNullableFilter<"User"> | string | null
+    profile_picture?: StringNullableFilter<"User"> | string | null
+    university?: StringNullableFilter<"User"> | string | null
+    department?: StringNullableFilter<"User"> | string | null
+    year_of_study?: StringNullableFilter<"User"> | string | null
+    graduation_year?: StringNullableFilter<"User"> | string | null
+    cgpa?: FloatNullableFilter<"User"> | number | null
+    student_id?: StringNullableFilter<"User"> | string | null
+    student_id_front?: StringNullableFilter<"User"> | string | null
+    student_id_back?: StringNullableFilter<"User"> | string | null
+    nid_front?: StringNullableFilter<"User"> | string | null
+    nid_back?: StringNullableFilter<"User"> | string | null
+    university_email?: StringNullableFilter<"User"> | string | null
+    date_of_birth?: StringNullableFilter<"User"> | string | null
+    address?: StringNullableFilter<"User"> | string | null
+    bio?: StringNullableFilter<"User"> | string | null
+    skills?: StringNullableFilter<"User"> | string | null
+    interests?: StringNullableFilter<"User"> | string | null
+    socail_links?: StringNullableListFilter<"User">
+    career_goals?: StringNullableFilter<"User"> | string | null
     role?: StringFilter<"User"> | string
     isActivated?: BoolFilter<"User"> | boolean
+    isVerified?: BoolFilter<"User"> | boolean
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
   }
 
   export type UserOrderByWithRelationInput = {
     id?: SortOrder
-    email?: SortOrderInput | SortOrder
     phone?: SortOrder
     password?: SortOrder
     name?: SortOrderInput | SortOrder
+    profile_picture?: SortOrderInput | SortOrder
+    university?: SortOrderInput | SortOrder
+    department?: SortOrderInput | SortOrder
+    year_of_study?: SortOrderInput | SortOrder
+    graduation_year?: SortOrderInput | SortOrder
+    cgpa?: SortOrderInput | SortOrder
+    student_id?: SortOrderInput | SortOrder
+    student_id_front?: SortOrderInput | SortOrder
+    student_id_back?: SortOrderInput | SortOrder
+    nid_front?: SortOrderInput | SortOrder
+    nid_back?: SortOrderInput | SortOrder
+    university_email?: SortOrderInput | SortOrder
+    date_of_birth?: SortOrderInput | SortOrder
+    address?: SortOrderInput | SortOrder
+    bio?: SortOrderInput | SortOrder
+    skills?: SortOrderInput | SortOrder
+    interests?: SortOrderInput | SortOrder
+    socail_links?: SortOrder
+    career_goals?: SortOrderInput | SortOrder
     role?: SortOrder
     isActivated?: SortOrder
+    isVerified?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
     id?: number
-    email?: string
     phone?: string
+    university_email?: string
     AND?: UserWhereInput | UserWhereInput[]
     OR?: UserWhereInput[]
     NOT?: UserWhereInput | UserWhereInput[]
     password?: StringFilter<"User"> | string
     name?: StringNullableFilter<"User"> | string | null
+    profile_picture?: StringNullableFilter<"User"> | string | null
+    university?: StringNullableFilter<"User"> | string | null
+    department?: StringNullableFilter<"User"> | string | null
+    year_of_study?: StringNullableFilter<"User"> | string | null
+    graduation_year?: StringNullableFilter<"User"> | string | null
+    cgpa?: FloatNullableFilter<"User"> | number | null
+    student_id?: StringNullableFilter<"User"> | string | null
+    student_id_front?: StringNullableFilter<"User"> | string | null
+    student_id_back?: StringNullableFilter<"User"> | string | null
+    nid_front?: StringNullableFilter<"User"> | string | null
+    nid_back?: StringNullableFilter<"User"> | string | null
+    date_of_birth?: StringNullableFilter<"User"> | string | null
+    address?: StringNullableFilter<"User"> | string | null
+    bio?: StringNullableFilter<"User"> | string | null
+    skills?: StringNullableFilter<"User"> | string | null
+    interests?: StringNullableFilter<"User"> | string | null
+    socail_links?: StringNullableListFilter<"User">
+    career_goals?: StringNullableFilter<"User"> | string | null
     role?: StringFilter<"User"> | string
     isActivated?: BoolFilter<"User"> | boolean
+    isVerified?: BoolFilter<"User"> | boolean
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
-  }, "id" | "email" | "phone">
+  }, "id" | "phone" | "university_email">
 
   export type UserOrderByWithAggregationInput = {
     id?: SortOrder
-    email?: SortOrderInput | SortOrder
     phone?: SortOrder
     password?: SortOrder
     name?: SortOrderInput | SortOrder
+    profile_picture?: SortOrderInput | SortOrder
+    university?: SortOrderInput | SortOrder
+    department?: SortOrderInput | SortOrder
+    year_of_study?: SortOrderInput | SortOrder
+    graduation_year?: SortOrderInput | SortOrder
+    cgpa?: SortOrderInput | SortOrder
+    student_id?: SortOrderInput | SortOrder
+    student_id_front?: SortOrderInput | SortOrder
+    student_id_back?: SortOrderInput | SortOrder
+    nid_front?: SortOrderInput | SortOrder
+    nid_back?: SortOrderInput | SortOrder
+    university_email?: SortOrderInput | SortOrder
+    date_of_birth?: SortOrderInput | SortOrder
+    address?: SortOrderInput | SortOrder
+    bio?: SortOrderInput | SortOrder
+    skills?: SortOrderInput | SortOrder
+    interests?: SortOrderInput | SortOrder
+    socail_links?: SortOrder
+    career_goals?: SortOrderInput | SortOrder
     role?: SortOrder
     isActivated?: SortOrder
+    isVerified?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: UserCountOrderByAggregateInput
@@ -3325,12 +3667,31 @@ export namespace Prisma {
     OR?: UserScalarWhereWithAggregatesInput[]
     NOT?: UserScalarWhereWithAggregatesInput | UserScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"User"> | number
-    email?: StringNullableWithAggregatesFilter<"User"> | string | null
     phone?: StringWithAggregatesFilter<"User"> | string
     password?: StringWithAggregatesFilter<"User"> | string
     name?: StringNullableWithAggregatesFilter<"User"> | string | null
+    profile_picture?: StringNullableWithAggregatesFilter<"User"> | string | null
+    university?: StringNullableWithAggregatesFilter<"User"> | string | null
+    department?: StringNullableWithAggregatesFilter<"User"> | string | null
+    year_of_study?: StringNullableWithAggregatesFilter<"User"> | string | null
+    graduation_year?: StringNullableWithAggregatesFilter<"User"> | string | null
+    cgpa?: FloatNullableWithAggregatesFilter<"User"> | number | null
+    student_id?: StringNullableWithAggregatesFilter<"User"> | string | null
+    student_id_front?: StringNullableWithAggregatesFilter<"User"> | string | null
+    student_id_back?: StringNullableWithAggregatesFilter<"User"> | string | null
+    nid_front?: StringNullableWithAggregatesFilter<"User"> | string | null
+    nid_back?: StringNullableWithAggregatesFilter<"User"> | string | null
+    university_email?: StringNullableWithAggregatesFilter<"User"> | string | null
+    date_of_birth?: StringNullableWithAggregatesFilter<"User"> | string | null
+    address?: StringNullableWithAggregatesFilter<"User"> | string | null
+    bio?: StringNullableWithAggregatesFilter<"User"> | string | null
+    skills?: StringNullableWithAggregatesFilter<"User"> | string | null
+    interests?: StringNullableWithAggregatesFilter<"User"> | string | null
+    socail_links?: StringNullableListFilter<"User">
+    career_goals?: StringNullableWithAggregatesFilter<"User"> | string | null
     role?: StringWithAggregatesFilter<"User"> | string
     isActivated?: BoolWithAggregatesFilter<"User"> | boolean
+    isVerified?: BoolWithAggregatesFilter<"User"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
   }
@@ -3410,82 +3771,215 @@ export namespace Prisma {
   }
 
   export type UserCreateInput = {
-    email?: string | null
     phone: string
     password: string
     name?: string | null
+    profile_picture?: string | null
+    university?: string | null
+    department?: string | null
+    year_of_study?: string | null
+    graduation_year?: string | null
+    cgpa?: number | null
+    student_id?: string | null
+    student_id_front?: string | null
+    student_id_back?: string | null
+    nid_front?: string | null
+    nid_back?: string | null
+    university_email?: string | null
+    date_of_birth?: string | null
+    address?: string | null
+    bio?: string | null
+    skills?: string | null
+    interests?: string | null
+    socail_links?: UserCreatesocail_linksInput | string[]
+    career_goals?: string | null
     role?: string
     isActivated?: boolean
+    isVerified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
   export type UserUncheckedCreateInput = {
     id?: number
-    email?: string | null
     phone: string
     password: string
     name?: string | null
+    profile_picture?: string | null
+    university?: string | null
+    department?: string | null
+    year_of_study?: string | null
+    graduation_year?: string | null
+    cgpa?: number | null
+    student_id?: string | null
+    student_id_front?: string | null
+    student_id_back?: string | null
+    nid_front?: string | null
+    nid_back?: string | null
+    university_email?: string | null
+    date_of_birth?: string | null
+    address?: string | null
+    bio?: string | null
+    skills?: string | null
+    interests?: string | null
+    socail_links?: UserCreatesocail_linksInput | string[]
+    career_goals?: string | null
     role?: string
     isActivated?: boolean
+    isVerified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
   export type UserUpdateInput = {
-    email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
+    profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
+    university?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    year_of_study?: NullableStringFieldUpdateOperationsInput | string | null
+    graduation_year?: NullableStringFieldUpdateOperationsInput | string | null
+    cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
+    student_id?: NullableStringFieldUpdateOperationsInput | string | null
+    student_id_front?: NullableStringFieldUpdateOperationsInput | string | null
+    student_id_back?: NullableStringFieldUpdateOperationsInput | string | null
+    nid_front?: NullableStringFieldUpdateOperationsInput | string | null
+    nid_back?: NullableStringFieldUpdateOperationsInput | string | null
+    university_email?: NullableStringFieldUpdateOperationsInput | string | null
+    date_of_birth?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    skills?: NullableStringFieldUpdateOperationsInput | string | null
+    interests?: NullableStringFieldUpdateOperationsInput | string | null
+    socail_links?: UserUpdatesocail_linksInput | string[]
+    career_goals?: NullableStringFieldUpdateOperationsInput | string | null
     role?: StringFieldUpdateOperationsInput | string
     isActivated?: BoolFieldUpdateOperationsInput | boolean
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UserUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
-    email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
+    profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
+    university?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    year_of_study?: NullableStringFieldUpdateOperationsInput | string | null
+    graduation_year?: NullableStringFieldUpdateOperationsInput | string | null
+    cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
+    student_id?: NullableStringFieldUpdateOperationsInput | string | null
+    student_id_front?: NullableStringFieldUpdateOperationsInput | string | null
+    student_id_back?: NullableStringFieldUpdateOperationsInput | string | null
+    nid_front?: NullableStringFieldUpdateOperationsInput | string | null
+    nid_back?: NullableStringFieldUpdateOperationsInput | string | null
+    university_email?: NullableStringFieldUpdateOperationsInput | string | null
+    date_of_birth?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    skills?: NullableStringFieldUpdateOperationsInput | string | null
+    interests?: NullableStringFieldUpdateOperationsInput | string | null
+    socail_links?: UserUpdatesocail_linksInput | string[]
+    career_goals?: NullableStringFieldUpdateOperationsInput | string | null
     role?: StringFieldUpdateOperationsInput | string
     isActivated?: BoolFieldUpdateOperationsInput | boolean
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UserCreateManyInput = {
     id?: number
-    email?: string | null
     phone: string
     password: string
     name?: string | null
+    profile_picture?: string | null
+    university?: string | null
+    department?: string | null
+    year_of_study?: string | null
+    graduation_year?: string | null
+    cgpa?: number | null
+    student_id?: string | null
+    student_id_front?: string | null
+    student_id_back?: string | null
+    nid_front?: string | null
+    nid_back?: string | null
+    university_email?: string | null
+    date_of_birth?: string | null
+    address?: string | null
+    bio?: string | null
+    skills?: string | null
+    interests?: string | null
+    socail_links?: UserCreatesocail_linksInput | string[]
+    career_goals?: string | null
     role?: string
     isActivated?: boolean
+    isVerified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
   export type UserUpdateManyMutationInput = {
-    email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
+    profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
+    university?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    year_of_study?: NullableStringFieldUpdateOperationsInput | string | null
+    graduation_year?: NullableStringFieldUpdateOperationsInput | string | null
+    cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
+    student_id?: NullableStringFieldUpdateOperationsInput | string | null
+    student_id_front?: NullableStringFieldUpdateOperationsInput | string | null
+    student_id_back?: NullableStringFieldUpdateOperationsInput | string | null
+    nid_front?: NullableStringFieldUpdateOperationsInput | string | null
+    nid_back?: NullableStringFieldUpdateOperationsInput | string | null
+    university_email?: NullableStringFieldUpdateOperationsInput | string | null
+    date_of_birth?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    skills?: NullableStringFieldUpdateOperationsInput | string | null
+    interests?: NullableStringFieldUpdateOperationsInput | string | null
+    socail_links?: UserUpdatesocail_linksInput | string[]
+    career_goals?: NullableStringFieldUpdateOperationsInput | string | null
     role?: StringFieldUpdateOperationsInput | string
     isActivated?: BoolFieldUpdateOperationsInput | boolean
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UserUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
-    email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
+    profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
+    university?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    year_of_study?: NullableStringFieldUpdateOperationsInput | string | null
+    graduation_year?: NullableStringFieldUpdateOperationsInput | string | null
+    cgpa?: NullableFloatFieldUpdateOperationsInput | number | null
+    student_id?: NullableStringFieldUpdateOperationsInput | string | null
+    student_id_front?: NullableStringFieldUpdateOperationsInput | string | null
+    student_id_back?: NullableStringFieldUpdateOperationsInput | string | null
+    nid_front?: NullableStringFieldUpdateOperationsInput | string | null
+    nid_back?: NullableStringFieldUpdateOperationsInput | string | null
+    university_email?: NullableStringFieldUpdateOperationsInput | string | null
+    date_of_birth?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    skills?: NullableStringFieldUpdateOperationsInput | string | null
+    interests?: NullableStringFieldUpdateOperationsInput | string | null
+    socail_links?: UserUpdatesocail_linksInput | string[]
+    career_goals?: NullableStringFieldUpdateOperationsInput | string | null
     role?: StringFieldUpdateOperationsInput | string
     isActivated?: BoolFieldUpdateOperationsInput | boolean
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -3582,6 +4076,21 @@ export namespace Prisma {
     not?: NestedIntFilter<$PrismaModel> | number
   }
 
+  export type StringFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringFilter<$PrismaModel> | string
+  }
+
   export type StringNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -3597,19 +4106,23 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
-  export type StringFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringFilter<$PrismaModel> | string
+  export type FloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type StringNullableListFilter<$PrismaModel = never> = {
+    equals?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    has?: string | StringFieldRefInput<$PrismaModel> | null
+    hasEvery?: string[] | ListStringFieldRefInput<$PrismaModel>
+    hasSome?: string[] | ListStringFieldRefInput<$PrismaModel>
+    isEmpty?: boolean
   }
 
   export type BoolFilter<$PrismaModel = never> = {
@@ -3635,46 +4148,103 @@ export namespace Prisma {
 
   export type UserCountOrderByAggregateInput = {
     id?: SortOrder
-    email?: SortOrder
     phone?: SortOrder
     password?: SortOrder
     name?: SortOrder
+    profile_picture?: SortOrder
+    university?: SortOrder
+    department?: SortOrder
+    year_of_study?: SortOrder
+    graduation_year?: SortOrder
+    cgpa?: SortOrder
+    student_id?: SortOrder
+    student_id_front?: SortOrder
+    student_id_back?: SortOrder
+    nid_front?: SortOrder
+    nid_back?: SortOrder
+    university_email?: SortOrder
+    date_of_birth?: SortOrder
+    address?: SortOrder
+    bio?: SortOrder
+    skills?: SortOrder
+    interests?: SortOrder
+    socail_links?: SortOrder
+    career_goals?: SortOrder
     role?: SortOrder
     isActivated?: SortOrder
+    isVerified?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type UserAvgOrderByAggregateInput = {
     id?: SortOrder
+    cgpa?: SortOrder
   }
 
   export type UserMaxOrderByAggregateInput = {
     id?: SortOrder
-    email?: SortOrder
     phone?: SortOrder
     password?: SortOrder
     name?: SortOrder
+    profile_picture?: SortOrder
+    university?: SortOrder
+    department?: SortOrder
+    year_of_study?: SortOrder
+    graduation_year?: SortOrder
+    cgpa?: SortOrder
+    student_id?: SortOrder
+    student_id_front?: SortOrder
+    student_id_back?: SortOrder
+    nid_front?: SortOrder
+    nid_back?: SortOrder
+    university_email?: SortOrder
+    date_of_birth?: SortOrder
+    address?: SortOrder
+    bio?: SortOrder
+    skills?: SortOrder
+    interests?: SortOrder
+    career_goals?: SortOrder
     role?: SortOrder
     isActivated?: SortOrder
+    isVerified?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type UserMinOrderByAggregateInput = {
     id?: SortOrder
-    email?: SortOrder
     phone?: SortOrder
     password?: SortOrder
     name?: SortOrder
+    profile_picture?: SortOrder
+    university?: SortOrder
+    department?: SortOrder
+    year_of_study?: SortOrder
+    graduation_year?: SortOrder
+    cgpa?: SortOrder
+    student_id?: SortOrder
+    student_id_front?: SortOrder
+    student_id_back?: SortOrder
+    nid_front?: SortOrder
+    nid_back?: SortOrder
+    university_email?: SortOrder
+    date_of_birth?: SortOrder
+    address?: SortOrder
+    bio?: SortOrder
+    skills?: SortOrder
+    interests?: SortOrder
+    career_goals?: SortOrder
     role?: SortOrder
     isActivated?: SortOrder
+    isVerified?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type UserSumOrderByAggregateInput = {
     id?: SortOrder
+    cgpa?: SortOrder
   }
 
   export type IntWithAggregatesFilter<$PrismaModel = never> = {
@@ -3691,6 +4261,24 @@ export namespace Prisma {
     _sum?: NestedIntFilter<$PrismaModel>
     _min?: NestedIntFilter<$PrismaModel>
     _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type StringWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedStringFilter<$PrismaModel>
+    _max?: NestedStringFilter<$PrismaModel>
   }
 
   export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -3711,22 +4299,20 @@ export namespace Prisma {
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
-  export type StringWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedStringFilter<$PrismaModel>
-    _max?: NestedStringFilter<$PrismaModel>
+  export type FloatNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedFloatNullableFilter<$PrismaModel>
+    _min?: NestedFloatNullableFilter<$PrismaModel>
+    _max?: NestedFloatNullableFilter<$PrismaModel>
   }
 
   export type BoolWithAggregatesFilter<$PrismaModel = never> = {
@@ -3795,12 +4381,29 @@ export namespace Prisma {
     id?: SortOrder
   }
 
-  export type NullableStringFieldUpdateOperationsInput = {
-    set?: string | null
+  export type UserCreatesocail_linksInput = {
+    set: string[]
   }
 
   export type StringFieldUpdateOperationsInput = {
     set?: string
+  }
+
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
+  }
+
+  export type NullableFloatFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type UserUpdatesocail_linksInput = {
+    set?: string[]
+    push?: string | string[]
   }
 
   export type BoolFieldUpdateOperationsInput = {
@@ -3830,6 +4433,20 @@ export namespace Prisma {
     not?: NestedIntFilter<$PrismaModel> | number
   }
 
+  export type NestedStringFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringFilter<$PrismaModel> | string
+  }
+
   export type NestedStringNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -3844,18 +4461,15 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
-  export type NestedStringFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringFilter<$PrismaModel> | string
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
   export type NestedBoolFilter<$PrismaModel = never> = {
@@ -3901,6 +4515,23 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
+  export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedStringFilter<$PrismaModel>
+    _max?: NestedStringFilter<$PrismaModel>
+  }
+
   export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -3929,21 +4560,20 @@ export namespace Prisma {
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
-  export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedStringFilter<$PrismaModel>
-    _max?: NestedStringFilter<$PrismaModel>
+  export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedFloatNullableFilter<$PrismaModel>
+    _min?: NestedFloatNullableFilter<$PrismaModel>
+    _max?: NestedFloatNullableFilter<$PrismaModel>
   }
 
   export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {

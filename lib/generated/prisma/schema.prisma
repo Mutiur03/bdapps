@@ -12,13 +12,32 @@ datasource db {
 }
 
 model User {
-  id          Int     @id @default(autoincrement())
-  email       String? @unique
-  phone       String  @unique
-  password    String
-  name        String?
-  role        String  @default("user")
-  isActivated Boolean @default(true)
+  id               Int      @id @default(autoincrement())
+  phone            String   @unique
+  password         String
+  name             String?
+  profile_picture  String?
+  university       String?
+  department       String?
+  year_of_study    String?
+  graduation_year  String?
+  cgpa             Float?
+  student_id       String?
+  student_id_front String?
+  student_id_back  String?
+  nid_front        String?
+  nid_back         String?
+  university_email String?  @unique
+  date_of_birth    String?
+  address          String?
+  bio              String?
+  skills           String?
+  interests        String?
+  socail_links     String[]
+  career_goals     String?
+  role             String   @default("user")
+  isActivated      Boolean  @default(false)
+  isVerified       Boolean  @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
