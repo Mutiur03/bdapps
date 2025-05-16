@@ -13,7 +13,7 @@ export function HomeNavbar() {
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group">
-          <span className="text-2xl font-extrabold tracking-tight text-[var(--foreground)] font-poppins transition-colors group-hover:text-[var(--primary-foreground)]">
+          <span className="text-2xl font-extrabold tracking-tight text-[var(--foreground)] font-poppins transition-colors group-hover:text-[var(--primary)]">
             Uday
           </span>
         </Link>
