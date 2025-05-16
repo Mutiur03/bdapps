@@ -1,6 +1,6 @@
+"use client";
 import { HomeNavbar } from "@/components/home/home-navbar";
 import { HomeFooter } from "@/components/home/home-footer";
-import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,18 +8,12 @@ import {
   Users,
   Lightbulb,
   Target,
-  Calendar,
-  Heart,
-  Star,
   ArrowRight,
   CheckCircle,
-  Award,
   TrendingUp,
-  BookOpen,
   Building,
-  Globe,
 } from "lucide-react";
-
+import Image from "next/image";
 export default function AboutPage() {
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
@@ -89,7 +83,7 @@ export default function AboutPage() {
                     them with the resources, mentorship, and funding they need
                     to turn their innovative ideas into successful ventures. We
                     believe that students have the potential to create solutions
-                    that can address real-world problems, and we're here to help
+                    that can address real-world problems, and we&#39;re here to help
                     them realize that potential.
                   </p>
                 </div>
@@ -296,14 +290,12 @@ export default function AboutPage() {
               ].map((step, i) => (
                 <div key={i} className="relative z-10 mb-12 last:mb-0 md:flex">
                   <div
-                    className={`hidden md:block w-1/2 ${
-                      i % 2 === 0 ? "pr-12" : "pl-12 order-1"
-                    }`}
+                    className={`hidden md:block w-1/2 ${i % 2 === 0 ? "pr-12" : "pl-12 order-1"
+                      }`}
                   >
                     <div
-                      className={`bg-card rounded-xl p-8 border border-border shadow-sm hover:shadow-md transition-shadow ${
-                        i % 2 === 0 ? "text-right" : "text-left"
-                      }`}
+                      className={`bg-card rounded-xl p-8 border border-border shadow-sm hover:shadow-md transition-shadow ${i % 2 === 0 ? "text-right" : "text-left"
+                        }`}
                     >
                       <h3 className="text-xl font-bold mb-2 text-foreground">
                         {step.title}
@@ -326,9 +318,8 @@ export default function AboutPage() {
                   </div>
 
                   <div
-                    className={`hidden md:block w-1/2 ${
-                      i % 2 === 0 ? "pl-12 order-1" : "pr-12"
-                    }`}
+                    className={`hidden md:block w-1/2 ${i % 2 === 0 ? "pl-12 order-1" : "pr-12"
+                      }`}
                   ></div>
                 </div>
               ))}
@@ -396,7 +387,8 @@ export default function AboutPage() {
                   className="bg-card rounded-xl overflow-hidden border border-border shadow-sm hover:shadow-md transition-all group"
                 >
                   <div className="aspect-square relative overflow-hidden">
-                    <img
+                    <Image
+                      fill
                       src={member.image}
                       alt={member.name}
                       className="w-full h-full object-cover transition-transform group-hover:scale-105"
@@ -428,7 +420,7 @@ export default function AboutPage() {
                 <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-primary rounded-full"></span>
               </h2>
               <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                Hear from students and investors who've found success through
+                Hear from students and investors who&#39;ve found success through
                 UdayeeConnect.
               </p>
             </div>
@@ -472,7 +464,8 @@ export default function AboutPage() {
                 >
                   <div className="flex items-center mb-6">
                     <div className="h-16 w-16 rounded-full overflow-hidden mr-4">
-                      <img
+                      <Image
+                        fill
                         src={testimonial.image}
                         alt={testimonial.name}
                         className="object-cover h-full w-full"
@@ -494,7 +487,7 @@ export default function AboutPage() {
                   </div>
                   <div className="relative">
                     <div className="absolute -top-2 -left-2 text-primary/20 text-5xl font-serif">
-                      "
+                      &quot;
                     </div>
                     <p className="text-foreground relative z-10 pl-4">
                       {testimonial.quote}
@@ -519,7 +512,7 @@ export default function AboutPage() {
                   Ready to Join the Journey?
                 </h2>
                 <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-                  Whether you're a student entrepreneur with an innovative idea
+                  Whether you&#39;re a student entrepreneur with an innovative idea
                   or an investor looking to support the next generation of
                   startups, UdayeeConnect is the platform for you.
                 </p>

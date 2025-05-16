@@ -35,7 +35,7 @@ export default function SignupPage() {
               Choose Your <span className="text-primary">Path</span>
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto animation-delay-200 animate-fade-in">
-              Select how you'd like to participate in the UdayeeConnect
+              Select how you&apos;d like to participate in the UdayeeConnect
               ecosystem
             </p>
           </div>
@@ -160,6 +160,7 @@ function RoleCard({
             src={image}
             alt={title}
             aspectRatio="auto"
+
             className="h-full w-full"
             fallback={
               <div className="flex h-full items-center justify-center text-muted-foreground">

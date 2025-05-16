@@ -23,7 +23,6 @@ import {
   AlertCircle,
 } from "lucide-react";
 import Image from "next/image";
-import Home from "../page";
 
 interface FormData {
   name: string;
