@@ -28,6 +28,16 @@ export type Investor = $Result.DefaultSelection<Prisma.$InvestorPayload>
  * 
  */
 export type Project = $Result.DefaultSelection<Prisma.$ProjectPayload>
+/**
+ * Model Investment
+ * 
+ */
+export type Investment = $Result.DefaultSelection<Prisma.$InvestmentPayload>
+/**
+ * Model Milestone
+ * 
+ */
+export type Milestone = $Result.DefaultSelection<Prisma.$MilestonePayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -183,6 +193,26 @@ export class PrismaClient<
     * ```
     */
   get project(): Prisma.ProjectDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.investment`: Exposes CRUD operations for the **Investment** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Investments
+    * const investments = await prisma.investment.findMany()
+    * ```
+    */
+  get investment(): Prisma.InvestmentDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.milestone`: Exposes CRUD operations for the **Milestone** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Milestones
+    * const milestones = await prisma.milestone.findMany()
+    * ```
+    */
+  get milestone(): Prisma.MilestoneDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -625,7 +655,9 @@ export namespace Prisma {
   export const ModelName: {
     User: 'User',
     Investor: 'Investor',
-    Project: 'Project'
+    Project: 'Project',
+    Investment: 'Investment',
+    Milestone: 'Milestone'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -644,7 +676,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "investor" | "project"
+      modelProps: "user" | "investor" | "project" | "investment" | "milestone"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -870,6 +902,154 @@ export namespace Prisma {
           }
         }
       }
+      Investment: {
+        payload: Prisma.$InvestmentPayload<ExtArgs>
+        fields: Prisma.InvestmentFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.InvestmentFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.InvestmentFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentPayload>
+          }
+          findFirst: {
+            args: Prisma.InvestmentFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.InvestmentFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentPayload>
+          }
+          findMany: {
+            args: Prisma.InvestmentFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentPayload>[]
+          }
+          create: {
+            args: Prisma.InvestmentCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentPayload>
+          }
+          createMany: {
+            args: Prisma.InvestmentCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.InvestmentCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentPayload>[]
+          }
+          delete: {
+            args: Prisma.InvestmentDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentPayload>
+          }
+          update: {
+            args: Prisma.InvestmentUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentPayload>
+          }
+          deleteMany: {
+            args: Prisma.InvestmentDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.InvestmentUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.InvestmentUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentPayload>[]
+          }
+          upsert: {
+            args: Prisma.InvestmentUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentPayload>
+          }
+          aggregate: {
+            args: Prisma.InvestmentAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateInvestment>
+          }
+          groupBy: {
+            args: Prisma.InvestmentGroupByArgs<ExtArgs>
+            result: $Utils.Optional<InvestmentGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.InvestmentCountArgs<ExtArgs>
+            result: $Utils.Optional<InvestmentCountAggregateOutputType> | number
+          }
+        }
+      }
+      Milestone: {
+        payload: Prisma.$MilestonePayload<ExtArgs>
+        fields: Prisma.MilestoneFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.MilestoneFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MilestonePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.MilestoneFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MilestonePayload>
+          }
+          findFirst: {
+            args: Prisma.MilestoneFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MilestonePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.MilestoneFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MilestonePayload>
+          }
+          findMany: {
+            args: Prisma.MilestoneFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MilestonePayload>[]
+          }
+          create: {
+            args: Prisma.MilestoneCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MilestonePayload>
+          }
+          createMany: {
+            args: Prisma.MilestoneCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.MilestoneCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MilestonePayload>[]
+          }
+          delete: {
+            args: Prisma.MilestoneDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MilestonePayload>
+          }
+          update: {
+            args: Prisma.MilestoneUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MilestonePayload>
+          }
+          deleteMany: {
+            args: Prisma.MilestoneDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.MilestoneUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.MilestoneUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MilestonePayload>[]
+          }
+          upsert: {
+            args: Prisma.MilestoneUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MilestonePayload>
+          }
+          aggregate: {
+            args: Prisma.MilestoneAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateMilestone>
+          }
+          groupBy: {
+            args: Prisma.MilestoneGroupByArgs<ExtArgs>
+            result: $Utils.Optional<MilestoneGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.MilestoneCountArgs<ExtArgs>
+            result: $Utils.Optional<MilestoneCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -957,6 +1137,8 @@ export namespace Prisma {
     user?: UserOmit
     investor?: InvestorOmit
     project?: ProjectOmit
+    investment?: InvestmentOmit
+    milestone?: MilestoneOmit
   }
 
   /* Types for Logging */
@@ -1083,10 +1265,12 @@ export namespace Prisma {
 
   export type InvestorCountOutputType = {
     projects: number
+    investments: number
   }
 
   export type InvestorCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     projects?: boolean | InvestorCountOutputTypeCountProjectsArgs
+    investments?: boolean | InvestorCountOutputTypeCountInvestmentsArgs
   }
 
   // Custom InputTypes
@@ -1105,6 +1289,53 @@ export namespace Prisma {
    */
   export type InvestorCountOutputTypeCountProjectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ProjectWhereInput
+  }
+
+  /**
+   * InvestorCountOutputType without action
+   */
+  export type InvestorCountOutputTypeCountInvestmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: InvestmentWhereInput
+  }
+
+
+  /**
+   * Count Type ProjectCountOutputType
+   */
+
+  export type ProjectCountOutputType = {
+    investments: number
+    milestones: number
+  }
+
+  export type ProjectCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    investments?: boolean | ProjectCountOutputTypeCountInvestmentsArgs
+    milestones?: boolean | ProjectCountOutputTypeCountMilestonesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * ProjectCountOutputType without action
+   */
+  export type ProjectCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectCountOutputType
+     */
+    select?: ProjectCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * ProjectCountOutputType without action
+   */
+  export type ProjectCountOutputTypeCountInvestmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: InvestmentWhereInput
+  }
+
+  /**
+   * ProjectCountOutputType without action
+   */
+  export type ProjectCountOutputTypeCountMilestonesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MilestoneWhereInput
   }
 
 
@@ -2539,6 +2770,12 @@ export namespace Prisma {
     id: number | null
     email: string | null
     phone: string | null
+    password: string | null
+    name: string | null
+    profile_picture: string | null
+    company_name: string | null
+    company_website: string | null
+    company_description: string | null
     role: string | null
     isActivated: boolean | null
     createdAt: Date | null
@@ -2549,6 +2786,12 @@ export namespace Prisma {
     id: number | null
     email: string | null
     phone: string | null
+    password: string | null
+    name: string | null
+    profile_picture: string | null
+    company_name: string | null
+    company_website: string | null
+    company_description: string | null
     role: string | null
     isActivated: boolean | null
     createdAt: Date | null
@@ -2559,6 +2802,12 @@ export namespace Prisma {
     id: number
     email: number
     phone: number
+    password: number
+    name: number
+    profile_picture: number
+    company_name: number
+    company_website: number
+    company_description: number
     role: number
     isActivated: number
     createdAt: number
@@ -2579,6 +2828,12 @@ export namespace Prisma {
     id?: true
     email?: true
     phone?: true
+    password?: true
+    name?: true
+    profile_picture?: true
+    company_name?: true
+    company_website?: true
+    company_description?: true
     role?: true
     isActivated?: true
     createdAt?: true
@@ -2589,6 +2844,12 @@ export namespace Prisma {
     id?: true
     email?: true
     phone?: true
+    password?: true
+    name?: true
+    profile_picture?: true
+    company_name?: true
+    company_website?: true
+    company_description?: true
     role?: true
     isActivated?: true
     createdAt?: true
@@ -2599,6 +2860,12 @@ export namespace Prisma {
     id?: true
     email?: true
     phone?: true
+    password?: true
+    name?: true
+    profile_picture?: true
+    company_name?: true
+    company_website?: true
+    company_description?: true
     role?: true
     isActivated?: true
     createdAt?: true
@@ -2696,6 +2963,12 @@ export namespace Prisma {
     id: number
     email: string | null
     phone: string | null
+    password: string
+    name: string | null
+    profile_picture: string | null
+    company_name: string | null
+    company_website: string | null
+    company_description: string | null
     role: string
     isActivated: boolean
     createdAt: Date
@@ -2725,11 +2998,18 @@ export namespace Prisma {
     id?: boolean
     email?: boolean
     phone?: boolean
+    password?: boolean
+    name?: boolean
+    profile_picture?: boolean
+    company_name?: boolean
+    company_website?: boolean
+    company_description?: boolean
     role?: boolean
     isActivated?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     projects?: boolean | Investor$projectsArgs<ExtArgs>
+    investments?: boolean | Investor$investmentsArgs<ExtArgs>
     _count?: boolean | InvestorCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["investor"]>
 
@@ -2737,6 +3017,12 @@ export namespace Prisma {
     id?: boolean
     email?: boolean
     phone?: boolean
+    password?: boolean
+    name?: boolean
+    profile_picture?: boolean
+    company_name?: boolean
+    company_website?: boolean
+    company_description?: boolean
     role?: boolean
     isActivated?: boolean
     createdAt?: boolean
@@ -2747,6 +3033,12 @@ export namespace Prisma {
     id?: boolean
     email?: boolean
     phone?: boolean
+    password?: boolean
+    name?: boolean
+    profile_picture?: boolean
+    company_name?: boolean
+    company_website?: boolean
+    company_description?: boolean
     role?: boolean
     isActivated?: boolean
     createdAt?: boolean
@@ -2757,15 +3049,22 @@ export namespace Prisma {
     id?: boolean
     email?: boolean
     phone?: boolean
+    password?: boolean
+    name?: boolean
+    profile_picture?: boolean
+    company_name?: boolean
+    company_website?: boolean
+    company_description?: boolean
     role?: boolean
     isActivated?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type InvestorOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "phone" | "role" | "isActivated" | "createdAt" | "updatedAt", ExtArgs["result"]["investor"]>
+  export type InvestorOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "phone" | "password" | "name" | "profile_picture" | "company_name" | "company_website" | "company_description" | "role" | "isActivated" | "createdAt" | "updatedAt", ExtArgs["result"]["investor"]>
   export type InvestorInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     projects?: boolean | Investor$projectsArgs<ExtArgs>
+    investments?: boolean | Investor$investmentsArgs<ExtArgs>
     _count?: boolean | InvestorCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type InvestorIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2775,11 +3074,18 @@ export namespace Prisma {
     name: "Investor"
     objects: {
       projects: Prisma.$ProjectPayload<ExtArgs>[]
+      investments: Prisma.$InvestmentPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
       email: string | null
       phone: string | null
+      password: string
+      name: string | null
+      profile_picture: string | null
+      company_name: string | null
+      company_website: string | null
+      company_description: string | null
       role: string
       isActivated: boolean
       createdAt: Date
@@ -3179,6 +3485,7 @@ export namespace Prisma {
   export interface Prisma__InvestorClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     projects<T extends Investor$projectsArgs<ExtArgs> = {}>(args?: Subset<T, Investor$projectsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    investments<T extends Investor$investmentsArgs<ExtArgs> = {}>(args?: Subset<T, Investor$investmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InvestmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3211,6 +3518,12 @@ export namespace Prisma {
     readonly id: FieldRef<"Investor", 'Int'>
     readonly email: FieldRef<"Investor", 'String'>
     readonly phone: FieldRef<"Investor", 'String'>
+    readonly password: FieldRef<"Investor", 'String'>
+    readonly name: FieldRef<"Investor", 'String'>
+    readonly profile_picture: FieldRef<"Investor", 'String'>
+    readonly company_name: FieldRef<"Investor", 'String'>
+    readonly company_website: FieldRef<"Investor", 'String'>
+    readonly company_description: FieldRef<"Investor", 'String'>
     readonly role: FieldRef<"Investor", 'String'>
     readonly isActivated: FieldRef<"Investor", 'Boolean'>
     readonly createdAt: FieldRef<"Investor", 'DateTime'>
@@ -3627,6 +3940,30 @@ export namespace Prisma {
   }
 
   /**
+   * Investor.investments
+   */
+  export type Investor$investmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Investment
+     */
+    select?: InvestmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Investment
+     */
+    omit?: InvestmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentInclude<ExtArgs> | null
+    where?: InvestmentWhereInput
+    orderBy?: InvestmentOrderByWithRelationInput | InvestmentOrderByWithRelationInput[]
+    cursor?: InvestmentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: InvestmentScalarFieldEnum | InvestmentScalarFieldEnum[]
+  }
+
+  /**
    * Investor without action
    */
   export type InvestorDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3680,10 +4017,13 @@ export namespace Prisma {
     category: string | null
     budget: number | null
     raised_amount: number | null
-    completed_at: string | null
-    status: string | null
     userId: number | null
     investorId: number | null
+    profile_picture: string | null
+    cover_image: string | null
+    pitch_video: string | null
+    location: string | null
+    start_date: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -3695,10 +4035,13 @@ export namespace Prisma {
     category: string | null
     budget: number | null
     raised_amount: number | null
-    completed_at: string | null
-    status: string | null
     userId: number | null
     investorId: number | null
+    profile_picture: string | null
+    cover_image: string | null
+    pitch_video: string | null
+    location: string | null
+    start_date: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -3710,10 +4053,14 @@ export namespace Prisma {
     category: number
     budget: number
     raised_amount: number
-    completed_at: number
-    status: number
     userId: number
     investorId: number
+    profile_picture: number
+    cover_image: number
+    pitch_video: number
+    documents: number
+    location: number
+    start_date: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -3743,10 +4090,13 @@ export namespace Prisma {
     category?: true
     budget?: true
     raised_amount?: true
-    completed_at?: true
-    status?: true
     userId?: true
     investorId?: true
+    profile_picture?: true
+    cover_image?: true
+    pitch_video?: true
+    location?: true
+    start_date?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -3758,10 +4108,13 @@ export namespace Prisma {
     category?: true
     budget?: true
     raised_amount?: true
-    completed_at?: true
-    status?: true
     userId?: true
     investorId?: true
+    profile_picture?: true
+    cover_image?: true
+    pitch_video?: true
+    location?: true
+    start_date?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -3773,10 +4126,14 @@ export namespace Prisma {
     category?: true
     budget?: true
     raised_amount?: true
-    completed_at?: true
-    status?: true
     userId?: true
     investorId?: true
+    profile_picture?: true
+    cover_image?: true
+    pitch_video?: true
+    documents?: true
+    location?: true
+    start_date?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -3874,11 +4231,15 @@ export namespace Prisma {
     description: string
     category: string
     budget: number
-    raised_amount: number
-    completed_at: string | null
-    status: string
+    raised_amount: number | null
     userId: number
     investorId: number | null
+    profile_picture: string | null
+    cover_image: string | null
+    pitch_video: string | null
+    documents: string[]
+    location: string | null
+    start_date: string | null
     createdAt: Date
     updatedAt: Date
     _count: ProjectCountAggregateOutputType | null
@@ -3909,14 +4270,21 @@ export namespace Prisma {
     category?: boolean
     budget?: boolean
     raised_amount?: boolean
-    completed_at?: boolean
-    status?: boolean
     userId?: boolean
     investorId?: boolean
+    profile_picture?: boolean
+    cover_image?: boolean
+    pitch_video?: boolean
+    documents?: boolean
+    location?: boolean
+    start_date?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     investor?: boolean | Project$investorArgs<ExtArgs>
+    investments?: boolean | Project$investmentsArgs<ExtArgs>
+    milestones?: boolean | Project$milestonesArgs<ExtArgs>
+    _count?: boolean | ProjectCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["project"]>
 
   export type ProjectSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -3926,10 +4294,14 @@ export namespace Prisma {
     category?: boolean
     budget?: boolean
     raised_amount?: boolean
-    completed_at?: boolean
-    status?: boolean
     userId?: boolean
     investorId?: boolean
+    profile_picture?: boolean
+    cover_image?: boolean
+    pitch_video?: boolean
+    documents?: boolean
+    location?: boolean
+    start_date?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -3943,10 +4315,14 @@ export namespace Prisma {
     category?: boolean
     budget?: boolean
     raised_amount?: boolean
-    completed_at?: boolean
-    status?: boolean
     userId?: boolean
     investorId?: boolean
+    profile_picture?: boolean
+    cover_image?: boolean
+    pitch_video?: boolean
+    documents?: boolean
+    location?: boolean
+    start_date?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -3960,18 +4336,25 @@ export namespace Prisma {
     category?: boolean
     budget?: boolean
     raised_amount?: boolean
-    completed_at?: boolean
-    status?: boolean
     userId?: boolean
     investorId?: boolean
+    profile_picture?: boolean
+    cover_image?: boolean
+    pitch_video?: boolean
+    documents?: boolean
+    location?: boolean
+    start_date?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type ProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "category" | "budget" | "raised_amount" | "completed_at" | "status" | "userId" | "investorId" | "createdAt" | "updatedAt", ExtArgs["result"]["project"]>
+  export type ProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "category" | "budget" | "raised_amount" | "userId" | "investorId" | "profile_picture" | "cover_image" | "pitch_video" | "documents" | "location" | "start_date" | "createdAt" | "updatedAt", ExtArgs["result"]["project"]>
   export type ProjectInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     investor?: boolean | Project$investorArgs<ExtArgs>
+    investments?: boolean | Project$investmentsArgs<ExtArgs>
+    milestones?: boolean | Project$milestonesArgs<ExtArgs>
+    _count?: boolean | ProjectCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ProjectIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -3987,6 +4370,8 @@ export namespace Prisma {
     objects: {
       user: Prisma.$UserPayload<ExtArgs>
       investor: Prisma.$InvestorPayload<ExtArgs> | null
+      investments: Prisma.$InvestmentPayload<ExtArgs>[]
+      milestones: Prisma.$MilestonePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -3994,11 +4379,15 @@ export namespace Prisma {
       description: string
       category: string
       budget: number
-      raised_amount: number
-      completed_at: string | null
-      status: string
+      raised_amount: number | null
       userId: number
       investorId: number | null
+      profile_picture: string | null
+      cover_image: string | null
+      pitch_video: string | null
+      documents: string[]
+      location: string | null
+      start_date: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["project"]>
@@ -4397,6 +4786,8 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     investor<T extends Project$investorArgs<ExtArgs> = {}>(args?: Subset<T, Project$investorArgs<ExtArgs>>): Prisma__InvestorClient<$Result.GetResult<Prisma.$InvestorPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    investments<T extends Project$investmentsArgs<ExtArgs> = {}>(args?: Subset<T, Project$investmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InvestmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    milestones<T extends Project$milestonesArgs<ExtArgs> = {}>(args?: Subset<T, Project$milestonesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MilestonePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4432,10 +4823,14 @@ export namespace Prisma {
     readonly category: FieldRef<"Project", 'String'>
     readonly budget: FieldRef<"Project", 'Float'>
     readonly raised_amount: FieldRef<"Project", 'Float'>
-    readonly completed_at: FieldRef<"Project", 'String'>
-    readonly status: FieldRef<"Project", 'String'>
     readonly userId: FieldRef<"Project", 'Int'>
     readonly investorId: FieldRef<"Project", 'Int'>
+    readonly profile_picture: FieldRef<"Project", 'String'>
+    readonly cover_image: FieldRef<"Project", 'String'>
+    readonly pitch_video: FieldRef<"Project", 'String'>
+    readonly documents: FieldRef<"Project", 'String[]'>
+    readonly location: FieldRef<"Project", 'String'>
+    readonly start_date: FieldRef<"Project", 'String'>
     readonly createdAt: FieldRef<"Project", 'DateTime'>
     readonly updatedAt: FieldRef<"Project", 'DateTime'>
   }
@@ -4853,6 +5248,54 @@ export namespace Prisma {
   }
 
   /**
+   * Project.investments
+   */
+  export type Project$investmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Investment
+     */
+    select?: InvestmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Investment
+     */
+    omit?: InvestmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentInclude<ExtArgs> | null
+    where?: InvestmentWhereInput
+    orderBy?: InvestmentOrderByWithRelationInput | InvestmentOrderByWithRelationInput[]
+    cursor?: InvestmentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: InvestmentScalarFieldEnum | InvestmentScalarFieldEnum[]
+  }
+
+  /**
+   * Project.milestones
+   */
+  export type Project$milestonesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Milestone
+     */
+    select?: MilestoneSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Milestone
+     */
+    omit?: MilestoneOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MilestoneInclude<ExtArgs> | null
+    where?: MilestoneWhereInput
+    orderBy?: MilestoneOrderByWithRelationInput | MilestoneOrderByWithRelationInput[]
+    cursor?: MilestoneWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: MilestoneScalarFieldEnum | MilestoneScalarFieldEnum[]
+  }
+
+  /**
    * Project without action
    */
   export type ProjectDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4868,6 +5311,2270 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: ProjectInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Investment
+   */
+
+  export type AggregateInvestment = {
+    _count: InvestmentCountAggregateOutputType | null
+    _avg: InvestmentAvgAggregateOutputType | null
+    _sum: InvestmentSumAggregateOutputType | null
+    _min: InvestmentMinAggregateOutputType | null
+    _max: InvestmentMaxAggregateOutputType | null
+  }
+
+  export type InvestmentAvgAggregateOutputType = {
+    id: number | null
+    amount: number | null
+    projectId: number | null
+    investorId: number | null
+  }
+
+  export type InvestmentSumAggregateOutputType = {
+    id: number | null
+    amount: number | null
+    projectId: number | null
+    investorId: number | null
+  }
+
+  export type InvestmentMinAggregateOutputType = {
+    id: number | null
+    amount: number | null
+    projectId: number | null
+    investorId: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type InvestmentMaxAggregateOutputType = {
+    id: number | null
+    amount: number | null
+    projectId: number | null
+    investorId: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type InvestmentCountAggregateOutputType = {
+    id: number
+    amount: number
+    projectId: number
+    investorId: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type InvestmentAvgAggregateInputType = {
+    id?: true
+    amount?: true
+    projectId?: true
+    investorId?: true
+  }
+
+  export type InvestmentSumAggregateInputType = {
+    id?: true
+    amount?: true
+    projectId?: true
+    investorId?: true
+  }
+
+  export type InvestmentMinAggregateInputType = {
+    id?: true
+    amount?: true
+    projectId?: true
+    investorId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type InvestmentMaxAggregateInputType = {
+    id?: true
+    amount?: true
+    projectId?: true
+    investorId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type InvestmentCountAggregateInputType = {
+    id?: true
+    amount?: true
+    projectId?: true
+    investorId?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type InvestmentAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Investment to aggregate.
+     */
+    where?: InvestmentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Investments to fetch.
+     */
+    orderBy?: InvestmentOrderByWithRelationInput | InvestmentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: InvestmentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Investments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Investments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Investments
+    **/
+    _count?: true | InvestmentCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: InvestmentAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: InvestmentSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: InvestmentMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: InvestmentMaxAggregateInputType
+  }
+
+  export type GetInvestmentAggregateType<T extends InvestmentAggregateArgs> = {
+        [P in keyof T & keyof AggregateInvestment]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateInvestment[P]>
+      : GetScalarType<T[P], AggregateInvestment[P]>
+  }
+
+
+
+
+  export type InvestmentGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: InvestmentWhereInput
+    orderBy?: InvestmentOrderByWithAggregationInput | InvestmentOrderByWithAggregationInput[]
+    by: InvestmentScalarFieldEnum[] | InvestmentScalarFieldEnum
+    having?: InvestmentScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: InvestmentCountAggregateInputType | true
+    _avg?: InvestmentAvgAggregateInputType
+    _sum?: InvestmentSumAggregateInputType
+    _min?: InvestmentMinAggregateInputType
+    _max?: InvestmentMaxAggregateInputType
+  }
+
+  export type InvestmentGroupByOutputType = {
+    id: number
+    amount: number
+    projectId: number
+    investorId: number
+    createdAt: Date
+    updatedAt: Date
+    _count: InvestmentCountAggregateOutputType | null
+    _avg: InvestmentAvgAggregateOutputType | null
+    _sum: InvestmentSumAggregateOutputType | null
+    _min: InvestmentMinAggregateOutputType | null
+    _max: InvestmentMaxAggregateOutputType | null
+  }
+
+  type GetInvestmentGroupByPayload<T extends InvestmentGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<InvestmentGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof InvestmentGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], InvestmentGroupByOutputType[P]>
+            : GetScalarType<T[P], InvestmentGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type InvestmentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    amount?: boolean
+    projectId?: boolean
+    investorId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+    investor?: boolean | InvestorDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["investment"]>
+
+  export type InvestmentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    amount?: boolean
+    projectId?: boolean
+    investorId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+    investor?: boolean | InvestorDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["investment"]>
+
+  export type InvestmentSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    amount?: boolean
+    projectId?: boolean
+    investorId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+    investor?: boolean | InvestorDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["investment"]>
+
+  export type InvestmentSelectScalar = {
+    id?: boolean
+    amount?: boolean
+    projectId?: boolean
+    investorId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type InvestmentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "amount" | "projectId" | "investorId" | "createdAt" | "updatedAt", ExtArgs["result"]["investment"]>
+  export type InvestmentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+    investor?: boolean | InvestorDefaultArgs<ExtArgs>
+  }
+  export type InvestmentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+    investor?: boolean | InvestorDefaultArgs<ExtArgs>
+  }
+  export type InvestmentIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+    investor?: boolean | InvestorDefaultArgs<ExtArgs>
+  }
+
+  export type $InvestmentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Investment"
+    objects: {
+      project: Prisma.$ProjectPayload<ExtArgs>
+      investor: Prisma.$InvestorPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      amount: number
+      projectId: number
+      investorId: number
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["investment"]>
+    composites: {}
+  }
+
+  type InvestmentGetPayload<S extends boolean | null | undefined | InvestmentDefaultArgs> = $Result.GetResult<Prisma.$InvestmentPayload, S>
+
+  type InvestmentCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<InvestmentFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: InvestmentCountAggregateInputType | true
+    }
+
+  export interface InvestmentDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Investment'], meta: { name: 'Investment' } }
+    /**
+     * Find zero or one Investment that matches the filter.
+     * @param {InvestmentFindUniqueArgs} args - Arguments to find a Investment
+     * @example
+     * // Get one Investment
+     * const investment = await prisma.investment.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends InvestmentFindUniqueArgs>(args: SelectSubset<T, InvestmentFindUniqueArgs<ExtArgs>>): Prisma__InvestmentClient<$Result.GetResult<Prisma.$InvestmentPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Investment that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {InvestmentFindUniqueOrThrowArgs} args - Arguments to find a Investment
+     * @example
+     * // Get one Investment
+     * const investment = await prisma.investment.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends InvestmentFindUniqueOrThrowArgs>(args: SelectSubset<T, InvestmentFindUniqueOrThrowArgs<ExtArgs>>): Prisma__InvestmentClient<$Result.GetResult<Prisma.$InvestmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Investment that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvestmentFindFirstArgs} args - Arguments to find a Investment
+     * @example
+     * // Get one Investment
+     * const investment = await prisma.investment.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends InvestmentFindFirstArgs>(args?: SelectSubset<T, InvestmentFindFirstArgs<ExtArgs>>): Prisma__InvestmentClient<$Result.GetResult<Prisma.$InvestmentPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Investment that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvestmentFindFirstOrThrowArgs} args - Arguments to find a Investment
+     * @example
+     * // Get one Investment
+     * const investment = await prisma.investment.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends InvestmentFindFirstOrThrowArgs>(args?: SelectSubset<T, InvestmentFindFirstOrThrowArgs<ExtArgs>>): Prisma__InvestmentClient<$Result.GetResult<Prisma.$InvestmentPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Investments that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvestmentFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Investments
+     * const investments = await prisma.investment.findMany()
+     * 
+     * // Get first 10 Investments
+     * const investments = await prisma.investment.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const investmentWithIdOnly = await prisma.investment.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends InvestmentFindManyArgs>(args?: SelectSubset<T, InvestmentFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InvestmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Investment.
+     * @param {InvestmentCreateArgs} args - Arguments to create a Investment.
+     * @example
+     * // Create one Investment
+     * const Investment = await prisma.investment.create({
+     *   data: {
+     *     // ... data to create a Investment
+     *   }
+     * })
+     * 
+     */
+    create<T extends InvestmentCreateArgs>(args: SelectSubset<T, InvestmentCreateArgs<ExtArgs>>): Prisma__InvestmentClient<$Result.GetResult<Prisma.$InvestmentPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Investments.
+     * @param {InvestmentCreateManyArgs} args - Arguments to create many Investments.
+     * @example
+     * // Create many Investments
+     * const investment = await prisma.investment.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends InvestmentCreateManyArgs>(args?: SelectSubset<T, InvestmentCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Investments and returns the data saved in the database.
+     * @param {InvestmentCreateManyAndReturnArgs} args - Arguments to create many Investments.
+     * @example
+     * // Create many Investments
+     * const investment = await prisma.investment.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Investments and only return the `id`
+     * const investmentWithIdOnly = await prisma.investment.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends InvestmentCreateManyAndReturnArgs>(args?: SelectSubset<T, InvestmentCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InvestmentPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Investment.
+     * @param {InvestmentDeleteArgs} args - Arguments to delete one Investment.
+     * @example
+     * // Delete one Investment
+     * const Investment = await prisma.investment.delete({
+     *   where: {
+     *     // ... filter to delete one Investment
+     *   }
+     * })
+     * 
+     */
+    delete<T extends InvestmentDeleteArgs>(args: SelectSubset<T, InvestmentDeleteArgs<ExtArgs>>): Prisma__InvestmentClient<$Result.GetResult<Prisma.$InvestmentPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Investment.
+     * @param {InvestmentUpdateArgs} args - Arguments to update one Investment.
+     * @example
+     * // Update one Investment
+     * const investment = await prisma.investment.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends InvestmentUpdateArgs>(args: SelectSubset<T, InvestmentUpdateArgs<ExtArgs>>): Prisma__InvestmentClient<$Result.GetResult<Prisma.$InvestmentPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Investments.
+     * @param {InvestmentDeleteManyArgs} args - Arguments to filter Investments to delete.
+     * @example
+     * // Delete a few Investments
+     * const { count } = await prisma.investment.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends InvestmentDeleteManyArgs>(args?: SelectSubset<T, InvestmentDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Investments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvestmentUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Investments
+     * const investment = await prisma.investment.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends InvestmentUpdateManyArgs>(args: SelectSubset<T, InvestmentUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Investments and returns the data updated in the database.
+     * @param {InvestmentUpdateManyAndReturnArgs} args - Arguments to update many Investments.
+     * @example
+     * // Update many Investments
+     * const investment = await prisma.investment.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Investments and only return the `id`
+     * const investmentWithIdOnly = await prisma.investment.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends InvestmentUpdateManyAndReturnArgs>(args: SelectSubset<T, InvestmentUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InvestmentPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Investment.
+     * @param {InvestmentUpsertArgs} args - Arguments to update or create a Investment.
+     * @example
+     * // Update or create a Investment
+     * const investment = await prisma.investment.upsert({
+     *   create: {
+     *     // ... data to create a Investment
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Investment we want to update
+     *   }
+     * })
+     */
+    upsert<T extends InvestmentUpsertArgs>(args: SelectSubset<T, InvestmentUpsertArgs<ExtArgs>>): Prisma__InvestmentClient<$Result.GetResult<Prisma.$InvestmentPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Investments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvestmentCountArgs} args - Arguments to filter Investments to count.
+     * @example
+     * // Count the number of Investments
+     * const count = await prisma.investment.count({
+     *   where: {
+     *     // ... the filter for the Investments we want to count
+     *   }
+     * })
+    **/
+    count<T extends InvestmentCountArgs>(
+      args?: Subset<T, InvestmentCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], InvestmentCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Investment.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvestmentAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends InvestmentAggregateArgs>(args: Subset<T, InvestmentAggregateArgs>): Prisma.PrismaPromise<GetInvestmentAggregateType<T>>
+
+    /**
+     * Group by Investment.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvestmentGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends InvestmentGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: InvestmentGroupByArgs['orderBy'] }
+        : { orderBy?: InvestmentGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, InvestmentGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetInvestmentGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Investment model
+   */
+  readonly fields: InvestmentFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Investment.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__InvestmentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    project<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    investor<T extends InvestorDefaultArgs<ExtArgs> = {}>(args?: Subset<T, InvestorDefaultArgs<ExtArgs>>): Prisma__InvestorClient<$Result.GetResult<Prisma.$InvestorPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Investment model
+   */
+  interface InvestmentFieldRefs {
+    readonly id: FieldRef<"Investment", 'Int'>
+    readonly amount: FieldRef<"Investment", 'Float'>
+    readonly projectId: FieldRef<"Investment", 'Int'>
+    readonly investorId: FieldRef<"Investment", 'Int'>
+    readonly createdAt: FieldRef<"Investment", 'DateTime'>
+    readonly updatedAt: FieldRef<"Investment", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Investment findUnique
+   */
+  export type InvestmentFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Investment
+     */
+    select?: InvestmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Investment
+     */
+    omit?: InvestmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentInclude<ExtArgs> | null
+    /**
+     * Filter, which Investment to fetch.
+     */
+    where: InvestmentWhereUniqueInput
+  }
+
+  /**
+   * Investment findUniqueOrThrow
+   */
+  export type InvestmentFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Investment
+     */
+    select?: InvestmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Investment
+     */
+    omit?: InvestmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentInclude<ExtArgs> | null
+    /**
+     * Filter, which Investment to fetch.
+     */
+    where: InvestmentWhereUniqueInput
+  }
+
+  /**
+   * Investment findFirst
+   */
+  export type InvestmentFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Investment
+     */
+    select?: InvestmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Investment
+     */
+    omit?: InvestmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentInclude<ExtArgs> | null
+    /**
+     * Filter, which Investment to fetch.
+     */
+    where?: InvestmentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Investments to fetch.
+     */
+    orderBy?: InvestmentOrderByWithRelationInput | InvestmentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Investments.
+     */
+    cursor?: InvestmentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Investments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Investments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Investments.
+     */
+    distinct?: InvestmentScalarFieldEnum | InvestmentScalarFieldEnum[]
+  }
+
+  /**
+   * Investment findFirstOrThrow
+   */
+  export type InvestmentFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Investment
+     */
+    select?: InvestmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Investment
+     */
+    omit?: InvestmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentInclude<ExtArgs> | null
+    /**
+     * Filter, which Investment to fetch.
+     */
+    where?: InvestmentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Investments to fetch.
+     */
+    orderBy?: InvestmentOrderByWithRelationInput | InvestmentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Investments.
+     */
+    cursor?: InvestmentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Investments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Investments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Investments.
+     */
+    distinct?: InvestmentScalarFieldEnum | InvestmentScalarFieldEnum[]
+  }
+
+  /**
+   * Investment findMany
+   */
+  export type InvestmentFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Investment
+     */
+    select?: InvestmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Investment
+     */
+    omit?: InvestmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentInclude<ExtArgs> | null
+    /**
+     * Filter, which Investments to fetch.
+     */
+    where?: InvestmentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Investments to fetch.
+     */
+    orderBy?: InvestmentOrderByWithRelationInput | InvestmentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Investments.
+     */
+    cursor?: InvestmentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Investments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Investments.
+     */
+    skip?: number
+    distinct?: InvestmentScalarFieldEnum | InvestmentScalarFieldEnum[]
+  }
+
+  /**
+   * Investment create
+   */
+  export type InvestmentCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Investment
+     */
+    select?: InvestmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Investment
+     */
+    omit?: InvestmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Investment.
+     */
+    data: XOR<InvestmentCreateInput, InvestmentUncheckedCreateInput>
+  }
+
+  /**
+   * Investment createMany
+   */
+  export type InvestmentCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Investments.
+     */
+    data: InvestmentCreateManyInput | InvestmentCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Investment createManyAndReturn
+   */
+  export type InvestmentCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Investment
+     */
+    select?: InvestmentSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Investment
+     */
+    omit?: InvestmentOmit<ExtArgs> | null
+    /**
+     * The data used to create many Investments.
+     */
+    data: InvestmentCreateManyInput | InvestmentCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Investment update
+   */
+  export type InvestmentUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Investment
+     */
+    select?: InvestmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Investment
+     */
+    omit?: InvestmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Investment.
+     */
+    data: XOR<InvestmentUpdateInput, InvestmentUncheckedUpdateInput>
+    /**
+     * Choose, which Investment to update.
+     */
+    where: InvestmentWhereUniqueInput
+  }
+
+  /**
+   * Investment updateMany
+   */
+  export type InvestmentUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Investments.
+     */
+    data: XOR<InvestmentUpdateManyMutationInput, InvestmentUncheckedUpdateManyInput>
+    /**
+     * Filter which Investments to update
+     */
+    where?: InvestmentWhereInput
+    /**
+     * Limit how many Investments to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Investment updateManyAndReturn
+   */
+  export type InvestmentUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Investment
+     */
+    select?: InvestmentSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Investment
+     */
+    omit?: InvestmentOmit<ExtArgs> | null
+    /**
+     * The data used to update Investments.
+     */
+    data: XOR<InvestmentUpdateManyMutationInput, InvestmentUncheckedUpdateManyInput>
+    /**
+     * Filter which Investments to update
+     */
+    where?: InvestmentWhereInput
+    /**
+     * Limit how many Investments to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Investment upsert
+   */
+  export type InvestmentUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Investment
+     */
+    select?: InvestmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Investment
+     */
+    omit?: InvestmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Investment to update in case it exists.
+     */
+    where: InvestmentWhereUniqueInput
+    /**
+     * In case the Investment found by the `where` argument doesn't exist, create a new Investment with this data.
+     */
+    create: XOR<InvestmentCreateInput, InvestmentUncheckedCreateInput>
+    /**
+     * In case the Investment was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<InvestmentUpdateInput, InvestmentUncheckedUpdateInput>
+  }
+
+  /**
+   * Investment delete
+   */
+  export type InvestmentDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Investment
+     */
+    select?: InvestmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Investment
+     */
+    omit?: InvestmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentInclude<ExtArgs> | null
+    /**
+     * Filter which Investment to delete.
+     */
+    where: InvestmentWhereUniqueInput
+  }
+
+  /**
+   * Investment deleteMany
+   */
+  export type InvestmentDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Investments to delete
+     */
+    where?: InvestmentWhereInput
+    /**
+     * Limit how many Investments to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Investment without action
+   */
+  export type InvestmentDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Investment
+     */
+    select?: InvestmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Investment
+     */
+    omit?: InvestmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Milestone
+   */
+
+  export type AggregateMilestone = {
+    _count: MilestoneCountAggregateOutputType | null
+    _avg: MilestoneAvgAggregateOutputType | null
+    _sum: MilestoneSumAggregateOutputType | null
+    _min: MilestoneMinAggregateOutputType | null
+    _max: MilestoneMaxAggregateOutputType | null
+  }
+
+  export type MilestoneAvgAggregateOutputType = {
+    id: number | null
+    amount: number | null
+    projectId: number | null
+  }
+
+  export type MilestoneSumAggregateOutputType = {
+    id: number | null
+    amount: number | null
+    projectId: number | null
+  }
+
+  export type MilestoneMinAggregateOutputType = {
+    id: number | null
+    title: string | null
+    description: string | null
+    amount: number | null
+    status: string | null
+    projectId: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type MilestoneMaxAggregateOutputType = {
+    id: number | null
+    title: string | null
+    description: string | null
+    amount: number | null
+    status: string | null
+    projectId: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type MilestoneCountAggregateOutputType = {
+    id: number
+    title: number
+    description: number
+    amount: number
+    status: number
+    projectId: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type MilestoneAvgAggregateInputType = {
+    id?: true
+    amount?: true
+    projectId?: true
+  }
+
+  export type MilestoneSumAggregateInputType = {
+    id?: true
+    amount?: true
+    projectId?: true
+  }
+
+  export type MilestoneMinAggregateInputType = {
+    id?: true
+    title?: true
+    description?: true
+    amount?: true
+    status?: true
+    projectId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type MilestoneMaxAggregateInputType = {
+    id?: true
+    title?: true
+    description?: true
+    amount?: true
+    status?: true
+    projectId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type MilestoneCountAggregateInputType = {
+    id?: true
+    title?: true
+    description?: true
+    amount?: true
+    status?: true
+    projectId?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type MilestoneAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Milestone to aggregate.
+     */
+    where?: MilestoneWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Milestones to fetch.
+     */
+    orderBy?: MilestoneOrderByWithRelationInput | MilestoneOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: MilestoneWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Milestones from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Milestones.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Milestones
+    **/
+    _count?: true | MilestoneCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: MilestoneAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: MilestoneSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: MilestoneMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: MilestoneMaxAggregateInputType
+  }
+
+  export type GetMilestoneAggregateType<T extends MilestoneAggregateArgs> = {
+        [P in keyof T & keyof AggregateMilestone]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateMilestone[P]>
+      : GetScalarType<T[P], AggregateMilestone[P]>
+  }
+
+
+
+
+  export type MilestoneGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MilestoneWhereInput
+    orderBy?: MilestoneOrderByWithAggregationInput | MilestoneOrderByWithAggregationInput[]
+    by: MilestoneScalarFieldEnum[] | MilestoneScalarFieldEnum
+    having?: MilestoneScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: MilestoneCountAggregateInputType | true
+    _avg?: MilestoneAvgAggregateInputType
+    _sum?: MilestoneSumAggregateInputType
+    _min?: MilestoneMinAggregateInputType
+    _max?: MilestoneMaxAggregateInputType
+  }
+
+  export type MilestoneGroupByOutputType = {
+    id: number
+    title: string
+    description: string
+    amount: number
+    status: string
+    projectId: number
+    createdAt: Date
+    updatedAt: Date
+    _count: MilestoneCountAggregateOutputType | null
+    _avg: MilestoneAvgAggregateOutputType | null
+    _sum: MilestoneSumAggregateOutputType | null
+    _min: MilestoneMinAggregateOutputType | null
+    _max: MilestoneMaxAggregateOutputType | null
+  }
+
+  type GetMilestoneGroupByPayload<T extends MilestoneGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<MilestoneGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof MilestoneGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], MilestoneGroupByOutputType[P]>
+            : GetScalarType<T[P], MilestoneGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type MilestoneSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    description?: boolean
+    amount?: boolean
+    status?: boolean
+    projectId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["milestone"]>
+
+  export type MilestoneSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    description?: boolean
+    amount?: boolean
+    status?: boolean
+    projectId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["milestone"]>
+
+  export type MilestoneSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    description?: boolean
+    amount?: boolean
+    status?: boolean
+    projectId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["milestone"]>
+
+  export type MilestoneSelectScalar = {
+    id?: boolean
+    title?: boolean
+    description?: boolean
+    amount?: boolean
+    status?: boolean
+    projectId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type MilestoneOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "amount" | "status" | "projectId" | "createdAt" | "updatedAt", ExtArgs["result"]["milestone"]>
+  export type MilestoneInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+  }
+  export type MilestoneIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+  }
+  export type MilestoneIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+  }
+
+  export type $MilestonePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Milestone"
+    objects: {
+      project: Prisma.$ProjectPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      title: string
+      description: string
+      amount: number
+      status: string
+      projectId: number
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["milestone"]>
+    composites: {}
+  }
+
+  type MilestoneGetPayload<S extends boolean | null | undefined | MilestoneDefaultArgs> = $Result.GetResult<Prisma.$MilestonePayload, S>
+
+  type MilestoneCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<MilestoneFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: MilestoneCountAggregateInputType | true
+    }
+
+  export interface MilestoneDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Milestone'], meta: { name: 'Milestone' } }
+    /**
+     * Find zero or one Milestone that matches the filter.
+     * @param {MilestoneFindUniqueArgs} args - Arguments to find a Milestone
+     * @example
+     * // Get one Milestone
+     * const milestone = await prisma.milestone.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends MilestoneFindUniqueArgs>(args: SelectSubset<T, MilestoneFindUniqueArgs<ExtArgs>>): Prisma__MilestoneClient<$Result.GetResult<Prisma.$MilestonePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Milestone that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {MilestoneFindUniqueOrThrowArgs} args - Arguments to find a Milestone
+     * @example
+     * // Get one Milestone
+     * const milestone = await prisma.milestone.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends MilestoneFindUniqueOrThrowArgs>(args: SelectSubset<T, MilestoneFindUniqueOrThrowArgs<ExtArgs>>): Prisma__MilestoneClient<$Result.GetResult<Prisma.$MilestonePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Milestone that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MilestoneFindFirstArgs} args - Arguments to find a Milestone
+     * @example
+     * // Get one Milestone
+     * const milestone = await prisma.milestone.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends MilestoneFindFirstArgs>(args?: SelectSubset<T, MilestoneFindFirstArgs<ExtArgs>>): Prisma__MilestoneClient<$Result.GetResult<Prisma.$MilestonePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Milestone that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MilestoneFindFirstOrThrowArgs} args - Arguments to find a Milestone
+     * @example
+     * // Get one Milestone
+     * const milestone = await prisma.milestone.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends MilestoneFindFirstOrThrowArgs>(args?: SelectSubset<T, MilestoneFindFirstOrThrowArgs<ExtArgs>>): Prisma__MilestoneClient<$Result.GetResult<Prisma.$MilestonePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Milestones that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MilestoneFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Milestones
+     * const milestones = await prisma.milestone.findMany()
+     * 
+     * // Get first 10 Milestones
+     * const milestones = await prisma.milestone.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const milestoneWithIdOnly = await prisma.milestone.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends MilestoneFindManyArgs>(args?: SelectSubset<T, MilestoneFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MilestonePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Milestone.
+     * @param {MilestoneCreateArgs} args - Arguments to create a Milestone.
+     * @example
+     * // Create one Milestone
+     * const Milestone = await prisma.milestone.create({
+     *   data: {
+     *     // ... data to create a Milestone
+     *   }
+     * })
+     * 
+     */
+    create<T extends MilestoneCreateArgs>(args: SelectSubset<T, MilestoneCreateArgs<ExtArgs>>): Prisma__MilestoneClient<$Result.GetResult<Prisma.$MilestonePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Milestones.
+     * @param {MilestoneCreateManyArgs} args - Arguments to create many Milestones.
+     * @example
+     * // Create many Milestones
+     * const milestone = await prisma.milestone.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends MilestoneCreateManyArgs>(args?: SelectSubset<T, MilestoneCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Milestones and returns the data saved in the database.
+     * @param {MilestoneCreateManyAndReturnArgs} args - Arguments to create many Milestones.
+     * @example
+     * // Create many Milestones
+     * const milestone = await prisma.milestone.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Milestones and only return the `id`
+     * const milestoneWithIdOnly = await prisma.milestone.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends MilestoneCreateManyAndReturnArgs>(args?: SelectSubset<T, MilestoneCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MilestonePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Milestone.
+     * @param {MilestoneDeleteArgs} args - Arguments to delete one Milestone.
+     * @example
+     * // Delete one Milestone
+     * const Milestone = await prisma.milestone.delete({
+     *   where: {
+     *     // ... filter to delete one Milestone
+     *   }
+     * })
+     * 
+     */
+    delete<T extends MilestoneDeleteArgs>(args: SelectSubset<T, MilestoneDeleteArgs<ExtArgs>>): Prisma__MilestoneClient<$Result.GetResult<Prisma.$MilestonePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Milestone.
+     * @param {MilestoneUpdateArgs} args - Arguments to update one Milestone.
+     * @example
+     * // Update one Milestone
+     * const milestone = await prisma.milestone.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends MilestoneUpdateArgs>(args: SelectSubset<T, MilestoneUpdateArgs<ExtArgs>>): Prisma__MilestoneClient<$Result.GetResult<Prisma.$MilestonePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Milestones.
+     * @param {MilestoneDeleteManyArgs} args - Arguments to filter Milestones to delete.
+     * @example
+     * // Delete a few Milestones
+     * const { count } = await prisma.milestone.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends MilestoneDeleteManyArgs>(args?: SelectSubset<T, MilestoneDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Milestones.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MilestoneUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Milestones
+     * const milestone = await prisma.milestone.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends MilestoneUpdateManyArgs>(args: SelectSubset<T, MilestoneUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Milestones and returns the data updated in the database.
+     * @param {MilestoneUpdateManyAndReturnArgs} args - Arguments to update many Milestones.
+     * @example
+     * // Update many Milestones
+     * const milestone = await prisma.milestone.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Milestones and only return the `id`
+     * const milestoneWithIdOnly = await prisma.milestone.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends MilestoneUpdateManyAndReturnArgs>(args: SelectSubset<T, MilestoneUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MilestonePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Milestone.
+     * @param {MilestoneUpsertArgs} args - Arguments to update or create a Milestone.
+     * @example
+     * // Update or create a Milestone
+     * const milestone = await prisma.milestone.upsert({
+     *   create: {
+     *     // ... data to create a Milestone
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Milestone we want to update
+     *   }
+     * })
+     */
+    upsert<T extends MilestoneUpsertArgs>(args: SelectSubset<T, MilestoneUpsertArgs<ExtArgs>>): Prisma__MilestoneClient<$Result.GetResult<Prisma.$MilestonePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Milestones.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MilestoneCountArgs} args - Arguments to filter Milestones to count.
+     * @example
+     * // Count the number of Milestones
+     * const count = await prisma.milestone.count({
+     *   where: {
+     *     // ... the filter for the Milestones we want to count
+     *   }
+     * })
+    **/
+    count<T extends MilestoneCountArgs>(
+      args?: Subset<T, MilestoneCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], MilestoneCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Milestone.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MilestoneAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends MilestoneAggregateArgs>(args: Subset<T, MilestoneAggregateArgs>): Prisma.PrismaPromise<GetMilestoneAggregateType<T>>
+
+    /**
+     * Group by Milestone.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MilestoneGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends MilestoneGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: MilestoneGroupByArgs['orderBy'] }
+        : { orderBy?: MilestoneGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, MilestoneGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetMilestoneGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Milestone model
+   */
+  readonly fields: MilestoneFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Milestone.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__MilestoneClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    project<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Milestone model
+   */
+  interface MilestoneFieldRefs {
+    readonly id: FieldRef<"Milestone", 'Int'>
+    readonly title: FieldRef<"Milestone", 'String'>
+    readonly description: FieldRef<"Milestone", 'String'>
+    readonly amount: FieldRef<"Milestone", 'Float'>
+    readonly status: FieldRef<"Milestone", 'String'>
+    readonly projectId: FieldRef<"Milestone", 'Int'>
+    readonly createdAt: FieldRef<"Milestone", 'DateTime'>
+    readonly updatedAt: FieldRef<"Milestone", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Milestone findUnique
+   */
+  export type MilestoneFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Milestone
+     */
+    select?: MilestoneSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Milestone
+     */
+    omit?: MilestoneOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MilestoneInclude<ExtArgs> | null
+    /**
+     * Filter, which Milestone to fetch.
+     */
+    where: MilestoneWhereUniqueInput
+  }
+
+  /**
+   * Milestone findUniqueOrThrow
+   */
+  export type MilestoneFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Milestone
+     */
+    select?: MilestoneSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Milestone
+     */
+    omit?: MilestoneOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MilestoneInclude<ExtArgs> | null
+    /**
+     * Filter, which Milestone to fetch.
+     */
+    where: MilestoneWhereUniqueInput
+  }
+
+  /**
+   * Milestone findFirst
+   */
+  export type MilestoneFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Milestone
+     */
+    select?: MilestoneSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Milestone
+     */
+    omit?: MilestoneOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MilestoneInclude<ExtArgs> | null
+    /**
+     * Filter, which Milestone to fetch.
+     */
+    where?: MilestoneWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Milestones to fetch.
+     */
+    orderBy?: MilestoneOrderByWithRelationInput | MilestoneOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Milestones.
+     */
+    cursor?: MilestoneWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Milestones from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Milestones.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Milestones.
+     */
+    distinct?: MilestoneScalarFieldEnum | MilestoneScalarFieldEnum[]
+  }
+
+  /**
+   * Milestone findFirstOrThrow
+   */
+  export type MilestoneFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Milestone
+     */
+    select?: MilestoneSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Milestone
+     */
+    omit?: MilestoneOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MilestoneInclude<ExtArgs> | null
+    /**
+     * Filter, which Milestone to fetch.
+     */
+    where?: MilestoneWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Milestones to fetch.
+     */
+    orderBy?: MilestoneOrderByWithRelationInput | MilestoneOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Milestones.
+     */
+    cursor?: MilestoneWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Milestones from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Milestones.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Milestones.
+     */
+    distinct?: MilestoneScalarFieldEnum | MilestoneScalarFieldEnum[]
+  }
+
+  /**
+   * Milestone findMany
+   */
+  export type MilestoneFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Milestone
+     */
+    select?: MilestoneSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Milestone
+     */
+    omit?: MilestoneOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MilestoneInclude<ExtArgs> | null
+    /**
+     * Filter, which Milestones to fetch.
+     */
+    where?: MilestoneWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Milestones to fetch.
+     */
+    orderBy?: MilestoneOrderByWithRelationInput | MilestoneOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Milestones.
+     */
+    cursor?: MilestoneWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Milestones from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Milestones.
+     */
+    skip?: number
+    distinct?: MilestoneScalarFieldEnum | MilestoneScalarFieldEnum[]
+  }
+
+  /**
+   * Milestone create
+   */
+  export type MilestoneCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Milestone
+     */
+    select?: MilestoneSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Milestone
+     */
+    omit?: MilestoneOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MilestoneInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Milestone.
+     */
+    data: XOR<MilestoneCreateInput, MilestoneUncheckedCreateInput>
+  }
+
+  /**
+   * Milestone createMany
+   */
+  export type MilestoneCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Milestones.
+     */
+    data: MilestoneCreateManyInput | MilestoneCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Milestone createManyAndReturn
+   */
+  export type MilestoneCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Milestone
+     */
+    select?: MilestoneSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Milestone
+     */
+    omit?: MilestoneOmit<ExtArgs> | null
+    /**
+     * The data used to create many Milestones.
+     */
+    data: MilestoneCreateManyInput | MilestoneCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MilestoneIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Milestone update
+   */
+  export type MilestoneUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Milestone
+     */
+    select?: MilestoneSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Milestone
+     */
+    omit?: MilestoneOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MilestoneInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Milestone.
+     */
+    data: XOR<MilestoneUpdateInput, MilestoneUncheckedUpdateInput>
+    /**
+     * Choose, which Milestone to update.
+     */
+    where: MilestoneWhereUniqueInput
+  }
+
+  /**
+   * Milestone updateMany
+   */
+  export type MilestoneUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Milestones.
+     */
+    data: XOR<MilestoneUpdateManyMutationInput, MilestoneUncheckedUpdateManyInput>
+    /**
+     * Filter which Milestones to update
+     */
+    where?: MilestoneWhereInput
+    /**
+     * Limit how many Milestones to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Milestone updateManyAndReturn
+   */
+  export type MilestoneUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Milestone
+     */
+    select?: MilestoneSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Milestone
+     */
+    omit?: MilestoneOmit<ExtArgs> | null
+    /**
+     * The data used to update Milestones.
+     */
+    data: XOR<MilestoneUpdateManyMutationInput, MilestoneUncheckedUpdateManyInput>
+    /**
+     * Filter which Milestones to update
+     */
+    where?: MilestoneWhereInput
+    /**
+     * Limit how many Milestones to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MilestoneIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Milestone upsert
+   */
+  export type MilestoneUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Milestone
+     */
+    select?: MilestoneSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Milestone
+     */
+    omit?: MilestoneOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MilestoneInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Milestone to update in case it exists.
+     */
+    where: MilestoneWhereUniqueInput
+    /**
+     * In case the Milestone found by the `where` argument doesn't exist, create a new Milestone with this data.
+     */
+    create: XOR<MilestoneCreateInput, MilestoneUncheckedCreateInput>
+    /**
+     * In case the Milestone was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<MilestoneUpdateInput, MilestoneUncheckedUpdateInput>
+  }
+
+  /**
+   * Milestone delete
+   */
+  export type MilestoneDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Milestone
+     */
+    select?: MilestoneSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Milestone
+     */
+    omit?: MilestoneOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MilestoneInclude<ExtArgs> | null
+    /**
+     * Filter which Milestone to delete.
+     */
+    where: MilestoneWhereUniqueInput
+  }
+
+  /**
+   * Milestone deleteMany
+   */
+  export type MilestoneDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Milestones to delete
+     */
+    where?: MilestoneWhereInput
+    /**
+     * Limit how many Milestones to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Milestone without action
+   */
+  export type MilestoneDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Milestone
+     */
+    select?: MilestoneSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Milestone
+     */
+    omit?: MilestoneOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MilestoneInclude<ExtArgs> | null
   }
 
 
@@ -4923,6 +7630,12 @@ export namespace Prisma {
     id: 'id',
     email: 'email',
     phone: 'phone',
+    password: 'password',
+    name: 'name',
+    profile_picture: 'profile_picture',
+    company_name: 'company_name',
+    company_website: 'company_website',
+    company_description: 'company_description',
     role: 'role',
     isActivated: 'isActivated',
     createdAt: 'createdAt',
@@ -4939,15 +7652,45 @@ export namespace Prisma {
     category: 'category',
     budget: 'budget',
     raised_amount: 'raised_amount',
-    completed_at: 'completed_at',
-    status: 'status',
     userId: 'userId',
     investorId: 'investorId',
+    profile_picture: 'profile_picture',
+    cover_image: 'cover_image',
+    pitch_video: 'pitch_video',
+    documents: 'documents',
+    location: 'location',
+    start_date: 'start_date',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
 
   export type ProjectScalarFieldEnum = (typeof ProjectScalarFieldEnum)[keyof typeof ProjectScalarFieldEnum]
+
+
+  export const InvestmentScalarFieldEnum: {
+    id: 'id',
+    amount: 'amount',
+    projectId: 'projectId',
+    investorId: 'investorId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type InvestmentScalarFieldEnum = (typeof InvestmentScalarFieldEnum)[keyof typeof InvestmentScalarFieldEnum]
+
+
+  export const MilestoneScalarFieldEnum: {
+    id: 'id',
+    title: 'title',
+    description: 'description',
+    amount: 'amount',
+    status: 'status',
+    projectId: 'projectId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type MilestoneScalarFieldEnum = (typeof MilestoneScalarFieldEnum)[keyof typeof MilestoneScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -5255,22 +7998,36 @@ export namespace Prisma {
     id?: IntFilter<"Investor"> | number
     email?: StringNullableFilter<"Investor"> | string | null
     phone?: StringNullableFilter<"Investor"> | string | null
+    password?: StringFilter<"Investor"> | string
+    name?: StringNullableFilter<"Investor"> | string | null
+    profile_picture?: StringNullableFilter<"Investor"> | string | null
+    company_name?: StringNullableFilter<"Investor"> | string | null
+    company_website?: StringNullableFilter<"Investor"> | string | null
+    company_description?: StringNullableFilter<"Investor"> | string | null
     role?: StringFilter<"Investor"> | string
     isActivated?: BoolFilter<"Investor"> | boolean
     createdAt?: DateTimeFilter<"Investor"> | Date | string
     updatedAt?: DateTimeFilter<"Investor"> | Date | string
     projects?: ProjectListRelationFilter
+    investments?: InvestmentListRelationFilter
   }
 
   export type InvestorOrderByWithRelationInput = {
     id?: SortOrder
     email?: SortOrderInput | SortOrder
     phone?: SortOrderInput | SortOrder
+    password?: SortOrder
+    name?: SortOrderInput | SortOrder
+    profile_picture?: SortOrderInput | SortOrder
+    company_name?: SortOrderInput | SortOrder
+    company_website?: SortOrderInput | SortOrder
+    company_description?: SortOrderInput | SortOrder
     role?: SortOrder
     isActivated?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     projects?: ProjectOrderByRelationAggregateInput
+    investments?: InvestmentOrderByRelationAggregateInput
   }
 
   export type InvestorWhereUniqueInput = Prisma.AtLeast<{
@@ -5280,17 +8037,30 @@ export namespace Prisma {
     AND?: InvestorWhereInput | InvestorWhereInput[]
     OR?: InvestorWhereInput[]
     NOT?: InvestorWhereInput | InvestorWhereInput[]
+    password?: StringFilter<"Investor"> | string
+    name?: StringNullableFilter<"Investor"> | string | null
+    profile_picture?: StringNullableFilter<"Investor"> | string | null
+    company_name?: StringNullableFilter<"Investor"> | string | null
+    company_website?: StringNullableFilter<"Investor"> | string | null
+    company_description?: StringNullableFilter<"Investor"> | string | null
     role?: StringFilter<"Investor"> | string
     isActivated?: BoolFilter<"Investor"> | boolean
     createdAt?: DateTimeFilter<"Investor"> | Date | string
     updatedAt?: DateTimeFilter<"Investor"> | Date | string
     projects?: ProjectListRelationFilter
+    investments?: InvestmentListRelationFilter
   }, "id" | "email" | "phone">
 
   export type InvestorOrderByWithAggregationInput = {
     id?: SortOrder
     email?: SortOrderInput | SortOrder
     phone?: SortOrderInput | SortOrder
+    password?: SortOrder
+    name?: SortOrderInput | SortOrder
+    profile_picture?: SortOrderInput | SortOrder
+    company_name?: SortOrderInput | SortOrder
+    company_website?: SortOrderInput | SortOrder
+    company_description?: SortOrderInput | SortOrder
     role?: SortOrder
     isActivated?: SortOrder
     createdAt?: SortOrder
@@ -5309,6 +8079,12 @@ export namespace Prisma {
     id?: IntWithAggregatesFilter<"Investor"> | number
     email?: StringNullableWithAggregatesFilter<"Investor"> | string | null
     phone?: StringNullableWithAggregatesFilter<"Investor"> | string | null
+    password?: StringWithAggregatesFilter<"Investor"> | string
+    name?: StringNullableWithAggregatesFilter<"Investor"> | string | null
+    profile_picture?: StringNullableWithAggregatesFilter<"Investor"> | string | null
+    company_name?: StringNullableWithAggregatesFilter<"Investor"> | string | null
+    company_website?: StringNullableWithAggregatesFilter<"Investor"> | string | null
+    company_description?: StringNullableWithAggregatesFilter<"Investor"> | string | null
     role?: StringWithAggregatesFilter<"Investor"> | string
     isActivated?: BoolWithAggregatesFilter<"Investor"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"Investor"> | Date | string
@@ -5324,15 +8100,21 @@ export namespace Prisma {
     description?: StringFilter<"Project"> | string
     category?: StringFilter<"Project"> | string
     budget?: FloatFilter<"Project"> | number
-    raised_amount?: FloatFilter<"Project"> | number
-    completed_at?: StringNullableFilter<"Project"> | string | null
-    status?: StringFilter<"Project"> | string
+    raised_amount?: FloatNullableFilter<"Project"> | number | null
     userId?: IntFilter<"Project"> | number
     investorId?: IntNullableFilter<"Project"> | number | null
+    profile_picture?: StringNullableFilter<"Project"> | string | null
+    cover_image?: StringNullableFilter<"Project"> | string | null
+    pitch_video?: StringNullableFilter<"Project"> | string | null
+    documents?: StringNullableListFilter<"Project">
+    location?: StringNullableFilter<"Project"> | string | null
+    start_date?: StringNullableFilter<"Project"> | string | null
     createdAt?: DateTimeFilter<"Project"> | Date | string
     updatedAt?: DateTimeFilter<"Project"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     investor?: XOR<InvestorNullableScalarRelationFilter, InvestorWhereInput> | null
+    investments?: InvestmentListRelationFilter
+    milestones?: MilestoneListRelationFilter
   }
 
   export type ProjectOrderByWithRelationInput = {
@@ -5341,15 +8123,21 @@ export namespace Prisma {
     description?: SortOrder
     category?: SortOrder
     budget?: SortOrder
-    raised_amount?: SortOrder
-    completed_at?: SortOrderInput | SortOrder
-    status?: SortOrder
+    raised_amount?: SortOrderInput | SortOrder
     userId?: SortOrder
     investorId?: SortOrderInput | SortOrder
+    profile_picture?: SortOrderInput | SortOrder
+    cover_image?: SortOrderInput | SortOrder
+    pitch_video?: SortOrderInput | SortOrder
+    documents?: SortOrder
+    location?: SortOrderInput | SortOrder
+    start_date?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     user?: UserOrderByWithRelationInput
     investor?: InvestorOrderByWithRelationInput
+    investments?: InvestmentOrderByRelationAggregateInput
+    milestones?: MilestoneOrderByRelationAggregateInput
   }
 
   export type ProjectWhereUniqueInput = Prisma.AtLeast<{
@@ -5361,15 +8149,21 @@ export namespace Prisma {
     description?: StringFilter<"Project"> | string
     category?: StringFilter<"Project"> | string
     budget?: FloatFilter<"Project"> | number
-    raised_amount?: FloatFilter<"Project"> | number
-    completed_at?: StringNullableFilter<"Project"> | string | null
-    status?: StringFilter<"Project"> | string
+    raised_amount?: FloatNullableFilter<"Project"> | number | null
     userId?: IntFilter<"Project"> | number
     investorId?: IntNullableFilter<"Project"> | number | null
+    profile_picture?: StringNullableFilter<"Project"> | string | null
+    cover_image?: StringNullableFilter<"Project"> | string | null
+    pitch_video?: StringNullableFilter<"Project"> | string | null
+    documents?: StringNullableListFilter<"Project">
+    location?: StringNullableFilter<"Project"> | string | null
+    start_date?: StringNullableFilter<"Project"> | string | null
     createdAt?: DateTimeFilter<"Project"> | Date | string
     updatedAt?: DateTimeFilter<"Project"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     investor?: XOR<InvestorNullableScalarRelationFilter, InvestorWhereInput> | null
+    investments?: InvestmentListRelationFilter
+    milestones?: MilestoneListRelationFilter
   }, "id">
 
   export type ProjectOrderByWithAggregationInput = {
@@ -5378,11 +8172,15 @@ export namespace Prisma {
     description?: SortOrder
     category?: SortOrder
     budget?: SortOrder
-    raised_amount?: SortOrder
-    completed_at?: SortOrderInput | SortOrder
-    status?: SortOrder
+    raised_amount?: SortOrderInput | SortOrder
     userId?: SortOrder
     investorId?: SortOrderInput | SortOrder
+    profile_picture?: SortOrderInput | SortOrder
+    cover_image?: SortOrderInput | SortOrder
+    pitch_video?: SortOrderInput | SortOrder
+    documents?: SortOrder
+    location?: SortOrderInput | SortOrder
+    start_date?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: ProjectCountOrderByAggregateInput
@@ -5401,13 +8199,154 @@ export namespace Prisma {
     description?: StringWithAggregatesFilter<"Project"> | string
     category?: StringWithAggregatesFilter<"Project"> | string
     budget?: FloatWithAggregatesFilter<"Project"> | number
-    raised_amount?: FloatWithAggregatesFilter<"Project"> | number
-    completed_at?: StringNullableWithAggregatesFilter<"Project"> | string | null
-    status?: StringWithAggregatesFilter<"Project"> | string
+    raised_amount?: FloatNullableWithAggregatesFilter<"Project"> | number | null
     userId?: IntWithAggregatesFilter<"Project"> | number
     investorId?: IntNullableWithAggregatesFilter<"Project"> | number | null
+    profile_picture?: StringNullableWithAggregatesFilter<"Project"> | string | null
+    cover_image?: StringNullableWithAggregatesFilter<"Project"> | string | null
+    pitch_video?: StringNullableWithAggregatesFilter<"Project"> | string | null
+    documents?: StringNullableListFilter<"Project">
+    location?: StringNullableWithAggregatesFilter<"Project"> | string | null
+    start_date?: StringNullableWithAggregatesFilter<"Project"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Project"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Project"> | Date | string
+  }
+
+  export type InvestmentWhereInput = {
+    AND?: InvestmentWhereInput | InvestmentWhereInput[]
+    OR?: InvestmentWhereInput[]
+    NOT?: InvestmentWhereInput | InvestmentWhereInput[]
+    id?: IntFilter<"Investment"> | number
+    amount?: FloatFilter<"Investment"> | number
+    projectId?: IntFilter<"Investment"> | number
+    investorId?: IntFilter<"Investment"> | number
+    createdAt?: DateTimeFilter<"Investment"> | Date | string
+    updatedAt?: DateTimeFilter<"Investment"> | Date | string
+    project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
+    investor?: XOR<InvestorScalarRelationFilter, InvestorWhereInput>
+  }
+
+  export type InvestmentOrderByWithRelationInput = {
+    id?: SortOrder
+    amount?: SortOrder
+    projectId?: SortOrder
+    investorId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    project?: ProjectOrderByWithRelationInput
+    investor?: InvestorOrderByWithRelationInput
+  }
+
+  export type InvestmentWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: InvestmentWhereInput | InvestmentWhereInput[]
+    OR?: InvestmentWhereInput[]
+    NOT?: InvestmentWhereInput | InvestmentWhereInput[]
+    amount?: FloatFilter<"Investment"> | number
+    projectId?: IntFilter<"Investment"> | number
+    investorId?: IntFilter<"Investment"> | number
+    createdAt?: DateTimeFilter<"Investment"> | Date | string
+    updatedAt?: DateTimeFilter<"Investment"> | Date | string
+    project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
+    investor?: XOR<InvestorScalarRelationFilter, InvestorWhereInput>
+  }, "id">
+
+  export type InvestmentOrderByWithAggregationInput = {
+    id?: SortOrder
+    amount?: SortOrder
+    projectId?: SortOrder
+    investorId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: InvestmentCountOrderByAggregateInput
+    _avg?: InvestmentAvgOrderByAggregateInput
+    _max?: InvestmentMaxOrderByAggregateInput
+    _min?: InvestmentMinOrderByAggregateInput
+    _sum?: InvestmentSumOrderByAggregateInput
+  }
+
+  export type InvestmentScalarWhereWithAggregatesInput = {
+    AND?: InvestmentScalarWhereWithAggregatesInput | InvestmentScalarWhereWithAggregatesInput[]
+    OR?: InvestmentScalarWhereWithAggregatesInput[]
+    NOT?: InvestmentScalarWhereWithAggregatesInput | InvestmentScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"Investment"> | number
+    amount?: FloatWithAggregatesFilter<"Investment"> | number
+    projectId?: IntWithAggregatesFilter<"Investment"> | number
+    investorId?: IntWithAggregatesFilter<"Investment"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"Investment"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Investment"> | Date | string
+  }
+
+  export type MilestoneWhereInput = {
+    AND?: MilestoneWhereInput | MilestoneWhereInput[]
+    OR?: MilestoneWhereInput[]
+    NOT?: MilestoneWhereInput | MilestoneWhereInput[]
+    id?: IntFilter<"Milestone"> | number
+    title?: StringFilter<"Milestone"> | string
+    description?: StringFilter<"Milestone"> | string
+    amount?: FloatFilter<"Milestone"> | number
+    status?: StringFilter<"Milestone"> | string
+    projectId?: IntFilter<"Milestone"> | number
+    createdAt?: DateTimeFilter<"Milestone"> | Date | string
+    updatedAt?: DateTimeFilter<"Milestone"> | Date | string
+    project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
+  }
+
+  export type MilestoneOrderByWithRelationInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    amount?: SortOrder
+    status?: SortOrder
+    projectId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    project?: ProjectOrderByWithRelationInput
+  }
+
+  export type MilestoneWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: MilestoneWhereInput | MilestoneWhereInput[]
+    OR?: MilestoneWhereInput[]
+    NOT?: MilestoneWhereInput | MilestoneWhereInput[]
+    title?: StringFilter<"Milestone"> | string
+    description?: StringFilter<"Milestone"> | string
+    amount?: FloatFilter<"Milestone"> | number
+    status?: StringFilter<"Milestone"> | string
+    projectId?: IntFilter<"Milestone"> | number
+    createdAt?: DateTimeFilter<"Milestone"> | Date | string
+    updatedAt?: DateTimeFilter<"Milestone"> | Date | string
+    project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
+  }, "id">
+
+  export type MilestoneOrderByWithAggregationInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    amount?: SortOrder
+    status?: SortOrder
+    projectId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: MilestoneCountOrderByAggregateInput
+    _avg?: MilestoneAvgOrderByAggregateInput
+    _max?: MilestoneMaxOrderByAggregateInput
+    _min?: MilestoneMinOrderByAggregateInput
+    _sum?: MilestoneSumOrderByAggregateInput
+  }
+
+  export type MilestoneScalarWhereWithAggregatesInput = {
+    AND?: MilestoneScalarWhereWithAggregatesInput | MilestoneScalarWhereWithAggregatesInput[]
+    OR?: MilestoneScalarWhereWithAggregatesInput[]
+    NOT?: MilestoneScalarWhereWithAggregatesInput | MilestoneScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"Milestone"> | number
+    title?: StringWithAggregatesFilter<"Milestone"> | string
+    description?: StringWithAggregatesFilter<"Milestone"> | string
+    amount?: FloatWithAggregatesFilter<"Milestone"> | number
+    status?: StringWithAggregatesFilter<"Milestone"> | string
+    projectId?: IntWithAggregatesFilter<"Milestone"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"Milestone"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Milestone"> | Date | string
   }
 
   export type UserCreateInput = {
@@ -5631,49 +8570,83 @@ export namespace Prisma {
   export type InvestorCreateInput = {
     email?: string | null
     phone?: string | null
+    password: string
+    name?: string | null
+    profile_picture?: string | null
+    company_name?: string | null
+    company_website?: string | null
+    company_description?: string | null
     role?: string
     isActivated?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     projects?: ProjectCreateNestedManyWithoutInvestorInput
+    investments?: InvestmentCreateNestedManyWithoutInvestorInput
   }
 
   export type InvestorUncheckedCreateInput = {
     id?: number
     email?: string | null
     phone?: string | null
+    password: string
+    name?: string | null
+    profile_picture?: string | null
+    company_name?: string | null
+    company_website?: string | null
+    company_description?: string | null
     role?: string
     isActivated?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     projects?: ProjectUncheckedCreateNestedManyWithoutInvestorInput
+    investments?: InvestmentUncheckedCreateNestedManyWithoutInvestorInput
   }
 
   export type InvestorUpdateInput = {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
+    company_name?: NullableStringFieldUpdateOperationsInput | string | null
+    company_website?: NullableStringFieldUpdateOperationsInput | string | null
+    company_description?: NullableStringFieldUpdateOperationsInput | string | null
     role?: StringFieldUpdateOperationsInput | string
     isActivated?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     projects?: ProjectUpdateManyWithoutInvestorNestedInput
+    investments?: InvestmentUpdateManyWithoutInvestorNestedInput
   }
 
   export type InvestorUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
+    company_name?: NullableStringFieldUpdateOperationsInput | string | null
+    company_website?: NullableStringFieldUpdateOperationsInput | string | null
+    company_description?: NullableStringFieldUpdateOperationsInput | string | null
     role?: StringFieldUpdateOperationsInput | string
     isActivated?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     projects?: ProjectUncheckedUpdateManyWithoutInvestorNestedInput
+    investments?: InvestmentUncheckedUpdateManyWithoutInvestorNestedInput
   }
 
   export type InvestorCreateManyInput = {
     id?: number
     email?: string | null
     phone?: string | null
+    password: string
+    name?: string | null
+    profile_picture?: string | null
+    company_name?: string | null
+    company_website?: string | null
+    company_description?: string | null
     role?: string
     isActivated?: boolean
     createdAt?: Date | string
@@ -5683,6 +8656,12 @@ export namespace Prisma {
   export type InvestorUpdateManyMutationInput = {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
+    company_name?: NullableStringFieldUpdateOperationsInput | string | null
+    company_website?: NullableStringFieldUpdateOperationsInput | string | null
+    company_description?: NullableStringFieldUpdateOperationsInput | string | null
     role?: StringFieldUpdateOperationsInput | string
     isActivated?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -5693,6 +8672,12 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
+    company_name?: NullableStringFieldUpdateOperationsInput | string | null
+    company_website?: NullableStringFieldUpdateOperationsInput | string | null
+    company_description?: NullableStringFieldUpdateOperationsInput | string | null
     role?: StringFieldUpdateOperationsInput | string
     isActivated?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -5704,13 +8689,19 @@ export namespace Prisma {
     description: string
     category: string
     budget: number
-    raised_amount: number
-    completed_at?: string | null
-    status?: string
+    raised_amount?: number | null
+    profile_picture?: string | null
+    cover_image?: string | null
+    pitch_video?: string | null
+    documents?: ProjectCreatedocumentsInput | string[]
+    location?: string | null
+    start_date?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutProjectsInput
     investor?: InvestorCreateNestedOneWithoutProjectsInput
+    investments?: InvestmentCreateNestedManyWithoutProjectInput
+    milestones?: MilestoneCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateInput = {
@@ -5719,13 +8710,19 @@ export namespace Prisma {
     description: string
     category: string
     budget: number
-    raised_amount: number
-    completed_at?: string | null
-    status?: string
+    raised_amount?: number | null
     userId: number
     investorId?: number | null
+    profile_picture?: string | null
+    cover_image?: string | null
+    pitch_video?: string | null
+    documents?: ProjectCreatedocumentsInput | string[]
+    location?: string | null
+    start_date?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    investments?: InvestmentUncheckedCreateNestedManyWithoutProjectInput
+    milestones?: MilestoneUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUpdateInput = {
@@ -5733,13 +8730,19 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
     budget?: FloatFieldUpdateOperationsInput | number
-    raised_amount?: FloatFieldUpdateOperationsInput | number
-    completed_at?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
+    raised_amount?: NullableFloatFieldUpdateOperationsInput | number | null
+    profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
+    cover_image?: NullableStringFieldUpdateOperationsInput | string | null
+    pitch_video?: NullableStringFieldUpdateOperationsInput | string | null
+    documents?: ProjectUpdatedocumentsInput | string[]
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    start_date?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutProjectsNestedInput
     investor?: InvestorUpdateOneWithoutProjectsNestedInput
+    investments?: InvestmentUpdateManyWithoutProjectNestedInput
+    milestones?: MilestoneUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateInput = {
@@ -5748,13 +8751,19 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
     budget?: FloatFieldUpdateOperationsInput | number
-    raised_amount?: FloatFieldUpdateOperationsInput | number
-    completed_at?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
+    raised_amount?: NullableFloatFieldUpdateOperationsInput | number | null
     userId?: IntFieldUpdateOperationsInput | number
     investorId?: NullableIntFieldUpdateOperationsInput | number | null
+    profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
+    cover_image?: NullableStringFieldUpdateOperationsInput | string | null
+    pitch_video?: NullableStringFieldUpdateOperationsInput | string | null
+    documents?: ProjectUpdatedocumentsInput | string[]
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    start_date?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    investments?: InvestmentUncheckedUpdateManyWithoutProjectNestedInput
+    milestones?: MilestoneUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectCreateManyInput = {
@@ -5763,11 +8772,15 @@ export namespace Prisma {
     description: string
     category: string
     budget: number
-    raised_amount: number
-    completed_at?: string | null
-    status?: string
+    raised_amount?: number | null
     userId: number
     investorId?: number | null
+    profile_picture?: string | null
+    cover_image?: string | null
+    pitch_video?: string | null
+    documents?: ProjectCreatedocumentsInput | string[]
+    location?: string | null
+    start_date?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -5777,9 +8790,13 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
     budget?: FloatFieldUpdateOperationsInput | number
-    raised_amount?: FloatFieldUpdateOperationsInput | number
-    completed_at?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
+    raised_amount?: NullableFloatFieldUpdateOperationsInput | number | null
+    profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
+    cover_image?: NullableStringFieldUpdateOperationsInput | string | null
+    pitch_video?: NullableStringFieldUpdateOperationsInput | string | null
+    documents?: ProjectUpdatedocumentsInput | string[]
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    start_date?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -5790,11 +8807,146 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
     budget?: FloatFieldUpdateOperationsInput | number
-    raised_amount?: FloatFieldUpdateOperationsInput | number
-    completed_at?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
+    raised_amount?: NullableFloatFieldUpdateOperationsInput | number | null
     userId?: IntFieldUpdateOperationsInput | number
     investorId?: NullableIntFieldUpdateOperationsInput | number | null
+    profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
+    cover_image?: NullableStringFieldUpdateOperationsInput | string | null
+    pitch_video?: NullableStringFieldUpdateOperationsInput | string | null
+    documents?: ProjectUpdatedocumentsInput | string[]
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    start_date?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InvestmentCreateInput = {
+    amount: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    project: ProjectCreateNestedOneWithoutInvestmentsInput
+    investor: InvestorCreateNestedOneWithoutInvestmentsInput
+  }
+
+  export type InvestmentUncheckedCreateInput = {
+    id?: number
+    amount: number
+    projectId: number
+    investorId: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type InvestmentUpdateInput = {
+    amount?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    project?: ProjectUpdateOneRequiredWithoutInvestmentsNestedInput
+    investor?: InvestorUpdateOneRequiredWithoutInvestmentsNestedInput
+  }
+
+  export type InvestmentUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    amount?: FloatFieldUpdateOperationsInput | number
+    projectId?: IntFieldUpdateOperationsInput | number
+    investorId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InvestmentCreateManyInput = {
+    id?: number
+    amount: number
+    projectId: number
+    investorId: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type InvestmentUpdateManyMutationInput = {
+    amount?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InvestmentUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    amount?: FloatFieldUpdateOperationsInput | number
+    projectId?: IntFieldUpdateOperationsInput | number
+    investorId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MilestoneCreateInput = {
+    title: string
+    description: string
+    amount: number
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    project: ProjectCreateNestedOneWithoutMilestonesInput
+  }
+
+  export type MilestoneUncheckedCreateInput = {
+    id?: number
+    title: string
+    description: string
+    amount: number
+    status?: string
+    projectId: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type MilestoneUpdateInput = {
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    project?: ProjectUpdateOneRequiredWithoutMilestonesNestedInput
+  }
+
+  export type MilestoneUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    projectId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MilestoneCreateManyInput = {
+    id?: number
+    title: string
+    description: string
+    amount: number
+    status?: string
+    projectId: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type MilestoneUpdateManyMutationInput = {
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MilestoneUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    projectId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -6122,10 +9274,26 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type InvestmentListRelationFilter = {
+    every?: InvestmentWhereInput
+    some?: InvestmentWhereInput
+    none?: InvestmentWhereInput
+  }
+
+  export type InvestmentOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type InvestorCountOrderByAggregateInput = {
     id?: SortOrder
     email?: SortOrder
     phone?: SortOrder
+    password?: SortOrder
+    name?: SortOrder
+    profile_picture?: SortOrder
+    company_name?: SortOrder
+    company_website?: SortOrder
+    company_description?: SortOrder
     role?: SortOrder
     isActivated?: SortOrder
     createdAt?: SortOrder
@@ -6140,6 +9308,12 @@ export namespace Prisma {
     id?: SortOrder
     email?: SortOrder
     phone?: SortOrder
+    password?: SortOrder
+    name?: SortOrder
+    profile_picture?: SortOrder
+    company_name?: SortOrder
+    company_website?: SortOrder
+    company_description?: SortOrder
     role?: SortOrder
     isActivated?: SortOrder
     createdAt?: SortOrder
@@ -6150,6 +9324,12 @@ export namespace Prisma {
     id?: SortOrder
     email?: SortOrder
     phone?: SortOrder
+    password?: SortOrder
+    name?: SortOrder
+    profile_picture?: SortOrder
+    company_name?: SortOrder
+    company_website?: SortOrder
+    company_description?: SortOrder
     role?: SortOrder
     isActivated?: SortOrder
     createdAt?: SortOrder
@@ -6182,6 +9362,14 @@ export namespace Prisma {
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
+  export type StringNullableListFilter<$PrismaModel = never> = {
+    equals?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    has?: string | StringFieldRefInput<$PrismaModel> | null
+    hasEvery?: string[] | ListStringFieldRefInput<$PrismaModel>
+    hasSome?: string[] | ListStringFieldRefInput<$PrismaModel>
+    isEmpty?: boolean
+  }
+
   export type UserScalarRelationFilter = {
     is?: UserWhereInput
     isNot?: UserWhereInput
@@ -6192,6 +9380,16 @@ export namespace Prisma {
     isNot?: InvestorWhereInput | null
   }
 
+  export type MilestoneListRelationFilter = {
+    every?: MilestoneWhereInput
+    some?: MilestoneWhereInput
+    none?: MilestoneWhereInput
+  }
+
+  export type MilestoneOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type ProjectCountOrderByAggregateInput = {
     id?: SortOrder
     title?: SortOrder
@@ -6199,10 +9397,14 @@ export namespace Prisma {
     category?: SortOrder
     budget?: SortOrder
     raised_amount?: SortOrder
-    completed_at?: SortOrder
-    status?: SortOrder
     userId?: SortOrder
     investorId?: SortOrder
+    profile_picture?: SortOrder
+    cover_image?: SortOrder
+    pitch_video?: SortOrder
+    documents?: SortOrder
+    location?: SortOrder
+    start_date?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -6222,10 +9424,13 @@ export namespace Prisma {
     category?: SortOrder
     budget?: SortOrder
     raised_amount?: SortOrder
-    completed_at?: SortOrder
-    status?: SortOrder
     userId?: SortOrder
     investorId?: SortOrder
+    profile_picture?: SortOrder
+    cover_image?: SortOrder
+    pitch_video?: SortOrder
+    location?: SortOrder
+    start_date?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -6237,10 +9442,13 @@ export namespace Prisma {
     category?: SortOrder
     budget?: SortOrder
     raised_amount?: SortOrder
-    completed_at?: SortOrder
-    status?: SortOrder
     userId?: SortOrder
     investorId?: SortOrder
+    profile_picture?: SortOrder
+    cover_image?: SortOrder
+    pitch_video?: SortOrder
+    location?: SortOrder
+    start_date?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -6283,6 +9491,102 @@ export namespace Prisma {
     _sum?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedIntNullableFilter<$PrismaModel>
     _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type ProjectScalarRelationFilter = {
+    is?: ProjectWhereInput
+    isNot?: ProjectWhereInput
+  }
+
+  export type InvestorScalarRelationFilter = {
+    is?: InvestorWhereInput
+    isNot?: InvestorWhereInput
+  }
+
+  export type InvestmentCountOrderByAggregateInput = {
+    id?: SortOrder
+    amount?: SortOrder
+    projectId?: SortOrder
+    investorId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type InvestmentAvgOrderByAggregateInput = {
+    id?: SortOrder
+    amount?: SortOrder
+    projectId?: SortOrder
+    investorId?: SortOrder
+  }
+
+  export type InvestmentMaxOrderByAggregateInput = {
+    id?: SortOrder
+    amount?: SortOrder
+    projectId?: SortOrder
+    investorId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type InvestmentMinOrderByAggregateInput = {
+    id?: SortOrder
+    amount?: SortOrder
+    projectId?: SortOrder
+    investorId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type InvestmentSumOrderByAggregateInput = {
+    id?: SortOrder
+    amount?: SortOrder
+    projectId?: SortOrder
+    investorId?: SortOrder
+  }
+
+  export type MilestoneCountOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    amount?: SortOrder
+    status?: SortOrder
+    projectId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type MilestoneAvgOrderByAggregateInput = {
+    id?: SortOrder
+    amount?: SortOrder
+    projectId?: SortOrder
+  }
+
+  export type MilestoneMaxOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    amount?: SortOrder
+    status?: SortOrder
+    projectId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type MilestoneMinOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    amount?: SortOrder
+    status?: SortOrder
+    projectId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type MilestoneSumOrderByAggregateInput = {
+    id?: SortOrder
+    amount?: SortOrder
+    projectId?: SortOrder
   }
 
   export type ProjectCreateNestedManyWithoutUserInput = {
@@ -6366,11 +9670,25 @@ export namespace Prisma {
     connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
   }
 
+  export type InvestmentCreateNestedManyWithoutInvestorInput = {
+    create?: XOR<InvestmentCreateWithoutInvestorInput, InvestmentUncheckedCreateWithoutInvestorInput> | InvestmentCreateWithoutInvestorInput[] | InvestmentUncheckedCreateWithoutInvestorInput[]
+    connectOrCreate?: InvestmentCreateOrConnectWithoutInvestorInput | InvestmentCreateOrConnectWithoutInvestorInput[]
+    createMany?: InvestmentCreateManyInvestorInputEnvelope
+    connect?: InvestmentWhereUniqueInput | InvestmentWhereUniqueInput[]
+  }
+
   export type ProjectUncheckedCreateNestedManyWithoutInvestorInput = {
     create?: XOR<ProjectCreateWithoutInvestorInput, ProjectUncheckedCreateWithoutInvestorInput> | ProjectCreateWithoutInvestorInput[] | ProjectUncheckedCreateWithoutInvestorInput[]
     connectOrCreate?: ProjectCreateOrConnectWithoutInvestorInput | ProjectCreateOrConnectWithoutInvestorInput[]
     createMany?: ProjectCreateManyInvestorInputEnvelope
     connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+  }
+
+  export type InvestmentUncheckedCreateNestedManyWithoutInvestorInput = {
+    create?: XOR<InvestmentCreateWithoutInvestorInput, InvestmentUncheckedCreateWithoutInvestorInput> | InvestmentCreateWithoutInvestorInput[] | InvestmentUncheckedCreateWithoutInvestorInput[]
+    connectOrCreate?: InvestmentCreateOrConnectWithoutInvestorInput | InvestmentCreateOrConnectWithoutInvestorInput[]
+    createMany?: InvestmentCreateManyInvestorInputEnvelope
+    connect?: InvestmentWhereUniqueInput | InvestmentWhereUniqueInput[]
   }
 
   export type ProjectUpdateManyWithoutInvestorNestedInput = {
@@ -6387,6 +9705,20 @@ export namespace Prisma {
     deleteMany?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
   }
 
+  export type InvestmentUpdateManyWithoutInvestorNestedInput = {
+    create?: XOR<InvestmentCreateWithoutInvestorInput, InvestmentUncheckedCreateWithoutInvestorInput> | InvestmentCreateWithoutInvestorInput[] | InvestmentUncheckedCreateWithoutInvestorInput[]
+    connectOrCreate?: InvestmentCreateOrConnectWithoutInvestorInput | InvestmentCreateOrConnectWithoutInvestorInput[]
+    upsert?: InvestmentUpsertWithWhereUniqueWithoutInvestorInput | InvestmentUpsertWithWhereUniqueWithoutInvestorInput[]
+    createMany?: InvestmentCreateManyInvestorInputEnvelope
+    set?: InvestmentWhereUniqueInput | InvestmentWhereUniqueInput[]
+    disconnect?: InvestmentWhereUniqueInput | InvestmentWhereUniqueInput[]
+    delete?: InvestmentWhereUniqueInput | InvestmentWhereUniqueInput[]
+    connect?: InvestmentWhereUniqueInput | InvestmentWhereUniqueInput[]
+    update?: InvestmentUpdateWithWhereUniqueWithoutInvestorInput | InvestmentUpdateWithWhereUniqueWithoutInvestorInput[]
+    updateMany?: InvestmentUpdateManyWithWhereWithoutInvestorInput | InvestmentUpdateManyWithWhereWithoutInvestorInput[]
+    deleteMany?: InvestmentScalarWhereInput | InvestmentScalarWhereInput[]
+  }
+
   export type ProjectUncheckedUpdateManyWithoutInvestorNestedInput = {
     create?: XOR<ProjectCreateWithoutInvestorInput, ProjectUncheckedCreateWithoutInvestorInput> | ProjectCreateWithoutInvestorInput[] | ProjectUncheckedCreateWithoutInvestorInput[]
     connectOrCreate?: ProjectCreateOrConnectWithoutInvestorInput | ProjectCreateOrConnectWithoutInvestorInput[]
@@ -6401,6 +9733,24 @@ export namespace Prisma {
     deleteMany?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
   }
 
+  export type InvestmentUncheckedUpdateManyWithoutInvestorNestedInput = {
+    create?: XOR<InvestmentCreateWithoutInvestorInput, InvestmentUncheckedCreateWithoutInvestorInput> | InvestmentCreateWithoutInvestorInput[] | InvestmentUncheckedCreateWithoutInvestorInput[]
+    connectOrCreate?: InvestmentCreateOrConnectWithoutInvestorInput | InvestmentCreateOrConnectWithoutInvestorInput[]
+    upsert?: InvestmentUpsertWithWhereUniqueWithoutInvestorInput | InvestmentUpsertWithWhereUniqueWithoutInvestorInput[]
+    createMany?: InvestmentCreateManyInvestorInputEnvelope
+    set?: InvestmentWhereUniqueInput | InvestmentWhereUniqueInput[]
+    disconnect?: InvestmentWhereUniqueInput | InvestmentWhereUniqueInput[]
+    delete?: InvestmentWhereUniqueInput | InvestmentWhereUniqueInput[]
+    connect?: InvestmentWhereUniqueInput | InvestmentWhereUniqueInput[]
+    update?: InvestmentUpdateWithWhereUniqueWithoutInvestorInput | InvestmentUpdateWithWhereUniqueWithoutInvestorInput[]
+    updateMany?: InvestmentUpdateManyWithWhereWithoutInvestorInput | InvestmentUpdateManyWithWhereWithoutInvestorInput[]
+    deleteMany?: InvestmentScalarWhereInput | InvestmentScalarWhereInput[]
+  }
+
+  export type ProjectCreatedocumentsInput = {
+    set: string[]
+  }
+
   export type UserCreateNestedOneWithoutProjectsInput = {
     create?: XOR<UserCreateWithoutProjectsInput, UserUncheckedCreateWithoutProjectsInput>
     connectOrCreate?: UserCreateOrConnectWithoutProjectsInput
@@ -6413,12 +9763,45 @@ export namespace Prisma {
     connect?: InvestorWhereUniqueInput
   }
 
+  export type InvestmentCreateNestedManyWithoutProjectInput = {
+    create?: XOR<InvestmentCreateWithoutProjectInput, InvestmentUncheckedCreateWithoutProjectInput> | InvestmentCreateWithoutProjectInput[] | InvestmentUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: InvestmentCreateOrConnectWithoutProjectInput | InvestmentCreateOrConnectWithoutProjectInput[]
+    createMany?: InvestmentCreateManyProjectInputEnvelope
+    connect?: InvestmentWhereUniqueInput | InvestmentWhereUniqueInput[]
+  }
+
+  export type MilestoneCreateNestedManyWithoutProjectInput = {
+    create?: XOR<MilestoneCreateWithoutProjectInput, MilestoneUncheckedCreateWithoutProjectInput> | MilestoneCreateWithoutProjectInput[] | MilestoneUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: MilestoneCreateOrConnectWithoutProjectInput | MilestoneCreateOrConnectWithoutProjectInput[]
+    createMany?: MilestoneCreateManyProjectInputEnvelope
+    connect?: MilestoneWhereUniqueInput | MilestoneWhereUniqueInput[]
+  }
+
+  export type InvestmentUncheckedCreateNestedManyWithoutProjectInput = {
+    create?: XOR<InvestmentCreateWithoutProjectInput, InvestmentUncheckedCreateWithoutProjectInput> | InvestmentCreateWithoutProjectInput[] | InvestmentUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: InvestmentCreateOrConnectWithoutProjectInput | InvestmentCreateOrConnectWithoutProjectInput[]
+    createMany?: InvestmentCreateManyProjectInputEnvelope
+    connect?: InvestmentWhereUniqueInput | InvestmentWhereUniqueInput[]
+  }
+
+  export type MilestoneUncheckedCreateNestedManyWithoutProjectInput = {
+    create?: XOR<MilestoneCreateWithoutProjectInput, MilestoneUncheckedCreateWithoutProjectInput> | MilestoneCreateWithoutProjectInput[] | MilestoneUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: MilestoneCreateOrConnectWithoutProjectInput | MilestoneCreateOrConnectWithoutProjectInput[]
+    createMany?: MilestoneCreateManyProjectInputEnvelope
+    connect?: MilestoneWhereUniqueInput | MilestoneWhereUniqueInput[]
+  }
+
   export type FloatFieldUpdateOperationsInput = {
     set?: number
     increment?: number
     decrement?: number
     multiply?: number
     divide?: number
+  }
+
+  export type ProjectUpdatedocumentsInput = {
+    set?: string[]
+    push?: string | string[]
   }
 
   export type UserUpdateOneRequiredWithoutProjectsNestedInput = {
@@ -6439,12 +9822,110 @@ export namespace Prisma {
     update?: XOR<XOR<InvestorUpdateToOneWithWhereWithoutProjectsInput, InvestorUpdateWithoutProjectsInput>, InvestorUncheckedUpdateWithoutProjectsInput>
   }
 
+  export type InvestmentUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<InvestmentCreateWithoutProjectInput, InvestmentUncheckedCreateWithoutProjectInput> | InvestmentCreateWithoutProjectInput[] | InvestmentUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: InvestmentCreateOrConnectWithoutProjectInput | InvestmentCreateOrConnectWithoutProjectInput[]
+    upsert?: InvestmentUpsertWithWhereUniqueWithoutProjectInput | InvestmentUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: InvestmentCreateManyProjectInputEnvelope
+    set?: InvestmentWhereUniqueInput | InvestmentWhereUniqueInput[]
+    disconnect?: InvestmentWhereUniqueInput | InvestmentWhereUniqueInput[]
+    delete?: InvestmentWhereUniqueInput | InvestmentWhereUniqueInput[]
+    connect?: InvestmentWhereUniqueInput | InvestmentWhereUniqueInput[]
+    update?: InvestmentUpdateWithWhereUniqueWithoutProjectInput | InvestmentUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: InvestmentUpdateManyWithWhereWithoutProjectInput | InvestmentUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: InvestmentScalarWhereInput | InvestmentScalarWhereInput[]
+  }
+
+  export type MilestoneUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<MilestoneCreateWithoutProjectInput, MilestoneUncheckedCreateWithoutProjectInput> | MilestoneCreateWithoutProjectInput[] | MilestoneUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: MilestoneCreateOrConnectWithoutProjectInput | MilestoneCreateOrConnectWithoutProjectInput[]
+    upsert?: MilestoneUpsertWithWhereUniqueWithoutProjectInput | MilestoneUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: MilestoneCreateManyProjectInputEnvelope
+    set?: MilestoneWhereUniqueInput | MilestoneWhereUniqueInput[]
+    disconnect?: MilestoneWhereUniqueInput | MilestoneWhereUniqueInput[]
+    delete?: MilestoneWhereUniqueInput | MilestoneWhereUniqueInput[]
+    connect?: MilestoneWhereUniqueInput | MilestoneWhereUniqueInput[]
+    update?: MilestoneUpdateWithWhereUniqueWithoutProjectInput | MilestoneUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: MilestoneUpdateManyWithWhereWithoutProjectInput | MilestoneUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: MilestoneScalarWhereInput | MilestoneScalarWhereInput[]
+  }
+
   export type NullableIntFieldUpdateOperationsInput = {
     set?: number | null
     increment?: number
     decrement?: number
     multiply?: number
     divide?: number
+  }
+
+  export type InvestmentUncheckedUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<InvestmentCreateWithoutProjectInput, InvestmentUncheckedCreateWithoutProjectInput> | InvestmentCreateWithoutProjectInput[] | InvestmentUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: InvestmentCreateOrConnectWithoutProjectInput | InvestmentCreateOrConnectWithoutProjectInput[]
+    upsert?: InvestmentUpsertWithWhereUniqueWithoutProjectInput | InvestmentUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: InvestmentCreateManyProjectInputEnvelope
+    set?: InvestmentWhereUniqueInput | InvestmentWhereUniqueInput[]
+    disconnect?: InvestmentWhereUniqueInput | InvestmentWhereUniqueInput[]
+    delete?: InvestmentWhereUniqueInput | InvestmentWhereUniqueInput[]
+    connect?: InvestmentWhereUniqueInput | InvestmentWhereUniqueInput[]
+    update?: InvestmentUpdateWithWhereUniqueWithoutProjectInput | InvestmentUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: InvestmentUpdateManyWithWhereWithoutProjectInput | InvestmentUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: InvestmentScalarWhereInput | InvestmentScalarWhereInput[]
+  }
+
+  export type MilestoneUncheckedUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<MilestoneCreateWithoutProjectInput, MilestoneUncheckedCreateWithoutProjectInput> | MilestoneCreateWithoutProjectInput[] | MilestoneUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: MilestoneCreateOrConnectWithoutProjectInput | MilestoneCreateOrConnectWithoutProjectInput[]
+    upsert?: MilestoneUpsertWithWhereUniqueWithoutProjectInput | MilestoneUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: MilestoneCreateManyProjectInputEnvelope
+    set?: MilestoneWhereUniqueInput | MilestoneWhereUniqueInput[]
+    disconnect?: MilestoneWhereUniqueInput | MilestoneWhereUniqueInput[]
+    delete?: MilestoneWhereUniqueInput | MilestoneWhereUniqueInput[]
+    connect?: MilestoneWhereUniqueInput | MilestoneWhereUniqueInput[]
+    update?: MilestoneUpdateWithWhereUniqueWithoutProjectInput | MilestoneUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: MilestoneUpdateManyWithWhereWithoutProjectInput | MilestoneUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: MilestoneScalarWhereInput | MilestoneScalarWhereInput[]
+  }
+
+  export type ProjectCreateNestedOneWithoutInvestmentsInput = {
+    create?: XOR<ProjectCreateWithoutInvestmentsInput, ProjectUncheckedCreateWithoutInvestmentsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutInvestmentsInput
+    connect?: ProjectWhereUniqueInput
+  }
+
+  export type InvestorCreateNestedOneWithoutInvestmentsInput = {
+    create?: XOR<InvestorCreateWithoutInvestmentsInput, InvestorUncheckedCreateWithoutInvestmentsInput>
+    connectOrCreate?: InvestorCreateOrConnectWithoutInvestmentsInput
+    connect?: InvestorWhereUniqueInput
+  }
+
+  export type ProjectUpdateOneRequiredWithoutInvestmentsNestedInput = {
+    create?: XOR<ProjectCreateWithoutInvestmentsInput, ProjectUncheckedCreateWithoutInvestmentsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutInvestmentsInput
+    upsert?: ProjectUpsertWithoutInvestmentsInput
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutInvestmentsInput, ProjectUpdateWithoutInvestmentsInput>, ProjectUncheckedUpdateWithoutInvestmentsInput>
+  }
+
+  export type InvestorUpdateOneRequiredWithoutInvestmentsNestedInput = {
+    create?: XOR<InvestorCreateWithoutInvestmentsInput, InvestorUncheckedCreateWithoutInvestmentsInput>
+    connectOrCreate?: InvestorCreateOrConnectWithoutInvestmentsInput
+    upsert?: InvestorUpsertWithoutInvestmentsInput
+    connect?: InvestorWhereUniqueInput
+    update?: XOR<XOR<InvestorUpdateToOneWithWhereWithoutInvestmentsInput, InvestorUpdateWithoutInvestmentsInput>, InvestorUncheckedUpdateWithoutInvestmentsInput>
+  }
+
+  export type ProjectCreateNestedOneWithoutMilestonesInput = {
+    create?: XOR<ProjectCreateWithoutMilestonesInput, ProjectUncheckedCreateWithoutMilestonesInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutMilestonesInput
+    connect?: ProjectWhereUniqueInput
+  }
+
+  export type ProjectUpdateOneRequiredWithoutMilestonesNestedInput = {
+    create?: XOR<ProjectCreateWithoutMilestonesInput, ProjectUncheckedCreateWithoutMilestonesInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutMilestonesInput
+    upsert?: ProjectUpsertWithoutMilestonesInput
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutMilestonesInput, ProjectUpdateWithoutMilestonesInput>, ProjectUncheckedUpdateWithoutMilestonesInput>
   }
 
   export type NestedIntFilter<$PrismaModel = never> = {
@@ -6683,12 +10164,18 @@ export namespace Prisma {
     description: string
     category: string
     budget: number
-    raised_amount: number
-    completed_at?: string | null
-    status?: string
+    raised_amount?: number | null
+    profile_picture?: string | null
+    cover_image?: string | null
+    pitch_video?: string | null
+    documents?: ProjectCreatedocumentsInput | string[]
+    location?: string | null
+    start_date?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     investor?: InvestorCreateNestedOneWithoutProjectsInput
+    investments?: InvestmentCreateNestedManyWithoutProjectInput
+    milestones?: MilestoneCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutUserInput = {
@@ -6697,12 +10184,18 @@ export namespace Prisma {
     description: string
     category: string
     budget: number
-    raised_amount: number
-    completed_at?: string | null
-    status?: string
+    raised_amount?: number | null
     investorId?: number | null
+    profile_picture?: string | null
+    cover_image?: string | null
+    pitch_video?: string | null
+    documents?: ProjectCreatedocumentsInput | string[]
+    location?: string | null
+    start_date?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    investments?: InvestmentUncheckedCreateNestedManyWithoutProjectInput
+    milestones?: MilestoneUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutUserInput = {
@@ -6740,11 +10233,15 @@ export namespace Prisma {
     description?: StringFilter<"Project"> | string
     category?: StringFilter<"Project"> | string
     budget?: FloatFilter<"Project"> | number
-    raised_amount?: FloatFilter<"Project"> | number
-    completed_at?: StringNullableFilter<"Project"> | string | null
-    status?: StringFilter<"Project"> | string
+    raised_amount?: FloatNullableFilter<"Project"> | number | null
     userId?: IntFilter<"Project"> | number
     investorId?: IntNullableFilter<"Project"> | number | null
+    profile_picture?: StringNullableFilter<"Project"> | string | null
+    cover_image?: StringNullableFilter<"Project"> | string | null
+    pitch_video?: StringNullableFilter<"Project"> | string | null
+    documents?: StringNullableListFilter<"Project">
+    location?: StringNullableFilter<"Project"> | string | null
+    start_date?: StringNullableFilter<"Project"> | string | null
     createdAt?: DateTimeFilter<"Project"> | Date | string
     updatedAt?: DateTimeFilter<"Project"> | Date | string
   }
@@ -6754,12 +10251,18 @@ export namespace Prisma {
     description: string
     category: string
     budget: number
-    raised_amount: number
-    completed_at?: string | null
-    status?: string
+    raised_amount?: number | null
+    profile_picture?: string | null
+    cover_image?: string | null
+    pitch_video?: string | null
+    documents?: ProjectCreatedocumentsInput | string[]
+    location?: string | null
+    start_date?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutProjectsInput
+    investments?: InvestmentCreateNestedManyWithoutProjectInput
+    milestones?: MilestoneCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutInvestorInput = {
@@ -6768,12 +10271,18 @@ export namespace Prisma {
     description: string
     category: string
     budget: number
-    raised_amount: number
-    completed_at?: string | null
-    status?: string
+    raised_amount?: number | null
     userId: number
+    profile_picture?: string | null
+    cover_image?: string | null
+    pitch_video?: string | null
+    documents?: ProjectCreatedocumentsInput | string[]
+    location?: string | null
+    start_date?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    investments?: InvestmentUncheckedCreateNestedManyWithoutProjectInput
+    milestones?: MilestoneUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutInvestorInput = {
@@ -6783,6 +10292,31 @@ export namespace Prisma {
 
   export type ProjectCreateManyInvestorInputEnvelope = {
     data: ProjectCreateManyInvestorInput | ProjectCreateManyInvestorInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type InvestmentCreateWithoutInvestorInput = {
+    amount: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    project: ProjectCreateNestedOneWithoutInvestmentsInput
+  }
+
+  export type InvestmentUncheckedCreateWithoutInvestorInput = {
+    id?: number
+    amount: number
+    projectId: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type InvestmentCreateOrConnectWithoutInvestorInput = {
+    where: InvestmentWhereUniqueInput
+    create: XOR<InvestmentCreateWithoutInvestorInput, InvestmentUncheckedCreateWithoutInvestorInput>
+  }
+
+  export type InvestmentCreateManyInvestorInputEnvelope = {
+    data: InvestmentCreateManyInvestorInput | InvestmentCreateManyInvestorInput[]
     skipDuplicates?: boolean
   }
 
@@ -6800,6 +10334,34 @@ export namespace Prisma {
   export type ProjectUpdateManyWithWhereWithoutInvestorInput = {
     where: ProjectScalarWhereInput
     data: XOR<ProjectUpdateManyMutationInput, ProjectUncheckedUpdateManyWithoutInvestorInput>
+  }
+
+  export type InvestmentUpsertWithWhereUniqueWithoutInvestorInput = {
+    where: InvestmentWhereUniqueInput
+    update: XOR<InvestmentUpdateWithoutInvestorInput, InvestmentUncheckedUpdateWithoutInvestorInput>
+    create: XOR<InvestmentCreateWithoutInvestorInput, InvestmentUncheckedCreateWithoutInvestorInput>
+  }
+
+  export type InvestmentUpdateWithWhereUniqueWithoutInvestorInput = {
+    where: InvestmentWhereUniqueInput
+    data: XOR<InvestmentUpdateWithoutInvestorInput, InvestmentUncheckedUpdateWithoutInvestorInput>
+  }
+
+  export type InvestmentUpdateManyWithWhereWithoutInvestorInput = {
+    where: InvestmentScalarWhereInput
+    data: XOR<InvestmentUpdateManyMutationInput, InvestmentUncheckedUpdateManyWithoutInvestorInput>
+  }
+
+  export type InvestmentScalarWhereInput = {
+    AND?: InvestmentScalarWhereInput | InvestmentScalarWhereInput[]
+    OR?: InvestmentScalarWhereInput[]
+    NOT?: InvestmentScalarWhereInput | InvestmentScalarWhereInput[]
+    id?: IntFilter<"Investment"> | number
+    amount?: FloatFilter<"Investment"> | number
+    projectId?: IntFilter<"Investment"> | number
+    investorId?: IntFilter<"Investment"> | number
+    createdAt?: DateTimeFilter<"Investment"> | Date | string
+    updatedAt?: DateTimeFilter<"Investment"> | Date | string
   }
 
   export type UserCreateWithoutProjectsInput = {
@@ -6871,25 +10433,93 @@ export namespace Prisma {
   export type InvestorCreateWithoutProjectsInput = {
     email?: string | null
     phone?: string | null
+    password: string
+    name?: string | null
+    profile_picture?: string | null
+    company_name?: string | null
+    company_website?: string | null
+    company_description?: string | null
     role?: string
     isActivated?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    investments?: InvestmentCreateNestedManyWithoutInvestorInput
   }
 
   export type InvestorUncheckedCreateWithoutProjectsInput = {
     id?: number
     email?: string | null
     phone?: string | null
+    password: string
+    name?: string | null
+    profile_picture?: string | null
+    company_name?: string | null
+    company_website?: string | null
+    company_description?: string | null
     role?: string
     isActivated?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    investments?: InvestmentUncheckedCreateNestedManyWithoutInvestorInput
   }
 
   export type InvestorCreateOrConnectWithoutProjectsInput = {
     where: InvestorWhereUniqueInput
     create: XOR<InvestorCreateWithoutProjectsInput, InvestorUncheckedCreateWithoutProjectsInput>
+  }
+
+  export type InvestmentCreateWithoutProjectInput = {
+    amount: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    investor: InvestorCreateNestedOneWithoutInvestmentsInput
+  }
+
+  export type InvestmentUncheckedCreateWithoutProjectInput = {
+    id?: number
+    amount: number
+    investorId: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type InvestmentCreateOrConnectWithoutProjectInput = {
+    where: InvestmentWhereUniqueInput
+    create: XOR<InvestmentCreateWithoutProjectInput, InvestmentUncheckedCreateWithoutProjectInput>
+  }
+
+  export type InvestmentCreateManyProjectInputEnvelope = {
+    data: InvestmentCreateManyProjectInput | InvestmentCreateManyProjectInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type MilestoneCreateWithoutProjectInput = {
+    title: string
+    description: string
+    amount: number
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type MilestoneUncheckedCreateWithoutProjectInput = {
+    id?: number
+    title: string
+    description: string
+    amount: number
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type MilestoneCreateOrConnectWithoutProjectInput = {
+    where: MilestoneWhereUniqueInput
+    create: XOR<MilestoneCreateWithoutProjectInput, MilestoneUncheckedCreateWithoutProjectInput>
+  }
+
+  export type MilestoneCreateManyProjectInputEnvelope = {
+    data: MilestoneCreateManyProjectInput | MilestoneCreateManyProjectInput[]
+    skipDuplicates?: boolean
   }
 
   export type UserUpsertWithoutProjectsInput = {
@@ -6978,20 +10608,350 @@ export namespace Prisma {
   export type InvestorUpdateWithoutProjectsInput = {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
+    company_name?: NullableStringFieldUpdateOperationsInput | string | null
+    company_website?: NullableStringFieldUpdateOperationsInput | string | null
+    company_description?: NullableStringFieldUpdateOperationsInput | string | null
     role?: StringFieldUpdateOperationsInput | string
     isActivated?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    investments?: InvestmentUpdateManyWithoutInvestorNestedInput
   }
 
   export type InvestorUncheckedUpdateWithoutProjectsInput = {
     id?: IntFieldUpdateOperationsInput | number
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
+    company_name?: NullableStringFieldUpdateOperationsInput | string | null
+    company_website?: NullableStringFieldUpdateOperationsInput | string | null
+    company_description?: NullableStringFieldUpdateOperationsInput | string | null
     role?: StringFieldUpdateOperationsInput | string
     isActivated?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    investments?: InvestmentUncheckedUpdateManyWithoutInvestorNestedInput
+  }
+
+  export type InvestmentUpsertWithWhereUniqueWithoutProjectInput = {
+    where: InvestmentWhereUniqueInput
+    update: XOR<InvestmentUpdateWithoutProjectInput, InvestmentUncheckedUpdateWithoutProjectInput>
+    create: XOR<InvestmentCreateWithoutProjectInput, InvestmentUncheckedCreateWithoutProjectInput>
+  }
+
+  export type InvestmentUpdateWithWhereUniqueWithoutProjectInput = {
+    where: InvestmentWhereUniqueInput
+    data: XOR<InvestmentUpdateWithoutProjectInput, InvestmentUncheckedUpdateWithoutProjectInput>
+  }
+
+  export type InvestmentUpdateManyWithWhereWithoutProjectInput = {
+    where: InvestmentScalarWhereInput
+    data: XOR<InvestmentUpdateManyMutationInput, InvestmentUncheckedUpdateManyWithoutProjectInput>
+  }
+
+  export type MilestoneUpsertWithWhereUniqueWithoutProjectInput = {
+    where: MilestoneWhereUniqueInput
+    update: XOR<MilestoneUpdateWithoutProjectInput, MilestoneUncheckedUpdateWithoutProjectInput>
+    create: XOR<MilestoneCreateWithoutProjectInput, MilestoneUncheckedCreateWithoutProjectInput>
+  }
+
+  export type MilestoneUpdateWithWhereUniqueWithoutProjectInput = {
+    where: MilestoneWhereUniqueInput
+    data: XOR<MilestoneUpdateWithoutProjectInput, MilestoneUncheckedUpdateWithoutProjectInput>
+  }
+
+  export type MilestoneUpdateManyWithWhereWithoutProjectInput = {
+    where: MilestoneScalarWhereInput
+    data: XOR<MilestoneUpdateManyMutationInput, MilestoneUncheckedUpdateManyWithoutProjectInput>
+  }
+
+  export type MilestoneScalarWhereInput = {
+    AND?: MilestoneScalarWhereInput | MilestoneScalarWhereInput[]
+    OR?: MilestoneScalarWhereInput[]
+    NOT?: MilestoneScalarWhereInput | MilestoneScalarWhereInput[]
+    id?: IntFilter<"Milestone"> | number
+    title?: StringFilter<"Milestone"> | string
+    description?: StringFilter<"Milestone"> | string
+    amount?: FloatFilter<"Milestone"> | number
+    status?: StringFilter<"Milestone"> | string
+    projectId?: IntFilter<"Milestone"> | number
+    createdAt?: DateTimeFilter<"Milestone"> | Date | string
+    updatedAt?: DateTimeFilter<"Milestone"> | Date | string
+  }
+
+  export type ProjectCreateWithoutInvestmentsInput = {
+    title: string
+    description: string
+    category: string
+    budget: number
+    raised_amount?: number | null
+    profile_picture?: string | null
+    cover_image?: string | null
+    pitch_video?: string | null
+    documents?: ProjectCreatedocumentsInput | string[]
+    location?: string | null
+    start_date?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutProjectsInput
+    investor?: InvestorCreateNestedOneWithoutProjectsInput
+    milestones?: MilestoneCreateNestedManyWithoutProjectInput
+  }
+
+  export type ProjectUncheckedCreateWithoutInvestmentsInput = {
+    id?: number
+    title: string
+    description: string
+    category: string
+    budget: number
+    raised_amount?: number | null
+    userId: number
+    investorId?: number | null
+    profile_picture?: string | null
+    cover_image?: string | null
+    pitch_video?: string | null
+    documents?: ProjectCreatedocumentsInput | string[]
+    location?: string | null
+    start_date?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    milestones?: MilestoneUncheckedCreateNestedManyWithoutProjectInput
+  }
+
+  export type ProjectCreateOrConnectWithoutInvestmentsInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutInvestmentsInput, ProjectUncheckedCreateWithoutInvestmentsInput>
+  }
+
+  export type InvestorCreateWithoutInvestmentsInput = {
+    email?: string | null
+    phone?: string | null
+    password: string
+    name?: string | null
+    profile_picture?: string | null
+    company_name?: string | null
+    company_website?: string | null
+    company_description?: string | null
+    role?: string
+    isActivated?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    projects?: ProjectCreateNestedManyWithoutInvestorInput
+  }
+
+  export type InvestorUncheckedCreateWithoutInvestmentsInput = {
+    id?: number
+    email?: string | null
+    phone?: string | null
+    password: string
+    name?: string | null
+    profile_picture?: string | null
+    company_name?: string | null
+    company_website?: string | null
+    company_description?: string | null
+    role?: string
+    isActivated?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    projects?: ProjectUncheckedCreateNestedManyWithoutInvestorInput
+  }
+
+  export type InvestorCreateOrConnectWithoutInvestmentsInput = {
+    where: InvestorWhereUniqueInput
+    create: XOR<InvestorCreateWithoutInvestmentsInput, InvestorUncheckedCreateWithoutInvestmentsInput>
+  }
+
+  export type ProjectUpsertWithoutInvestmentsInput = {
+    update: XOR<ProjectUpdateWithoutInvestmentsInput, ProjectUncheckedUpdateWithoutInvestmentsInput>
+    create: XOR<ProjectCreateWithoutInvestmentsInput, ProjectUncheckedCreateWithoutInvestmentsInput>
+    where?: ProjectWhereInput
+  }
+
+  export type ProjectUpdateToOneWithWhereWithoutInvestmentsInput = {
+    where?: ProjectWhereInput
+    data: XOR<ProjectUpdateWithoutInvestmentsInput, ProjectUncheckedUpdateWithoutInvestmentsInput>
+  }
+
+  export type ProjectUpdateWithoutInvestmentsInput = {
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    budget?: FloatFieldUpdateOperationsInput | number
+    raised_amount?: NullableFloatFieldUpdateOperationsInput | number | null
+    profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
+    cover_image?: NullableStringFieldUpdateOperationsInput | string | null
+    pitch_video?: NullableStringFieldUpdateOperationsInput | string | null
+    documents?: ProjectUpdatedocumentsInput | string[]
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    start_date?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutProjectsNestedInput
+    investor?: InvestorUpdateOneWithoutProjectsNestedInput
+    milestones?: MilestoneUpdateManyWithoutProjectNestedInput
+  }
+
+  export type ProjectUncheckedUpdateWithoutInvestmentsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    budget?: FloatFieldUpdateOperationsInput | number
+    raised_amount?: NullableFloatFieldUpdateOperationsInput | number | null
+    userId?: IntFieldUpdateOperationsInput | number
+    investorId?: NullableIntFieldUpdateOperationsInput | number | null
+    profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
+    cover_image?: NullableStringFieldUpdateOperationsInput | string | null
+    pitch_video?: NullableStringFieldUpdateOperationsInput | string | null
+    documents?: ProjectUpdatedocumentsInput | string[]
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    start_date?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    milestones?: MilestoneUncheckedUpdateManyWithoutProjectNestedInput
+  }
+
+  export type InvestorUpsertWithoutInvestmentsInput = {
+    update: XOR<InvestorUpdateWithoutInvestmentsInput, InvestorUncheckedUpdateWithoutInvestmentsInput>
+    create: XOR<InvestorCreateWithoutInvestmentsInput, InvestorUncheckedCreateWithoutInvestmentsInput>
+    where?: InvestorWhereInput
+  }
+
+  export type InvestorUpdateToOneWithWhereWithoutInvestmentsInput = {
+    where?: InvestorWhereInput
+    data: XOR<InvestorUpdateWithoutInvestmentsInput, InvestorUncheckedUpdateWithoutInvestmentsInput>
+  }
+
+  export type InvestorUpdateWithoutInvestmentsInput = {
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
+    company_name?: NullableStringFieldUpdateOperationsInput | string | null
+    company_website?: NullableStringFieldUpdateOperationsInput | string | null
+    company_description?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    isActivated?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    projects?: ProjectUpdateManyWithoutInvestorNestedInput
+  }
+
+  export type InvestorUncheckedUpdateWithoutInvestmentsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
+    company_name?: NullableStringFieldUpdateOperationsInput | string | null
+    company_website?: NullableStringFieldUpdateOperationsInput | string | null
+    company_description?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    isActivated?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    projects?: ProjectUncheckedUpdateManyWithoutInvestorNestedInput
+  }
+
+  export type ProjectCreateWithoutMilestonesInput = {
+    title: string
+    description: string
+    category: string
+    budget: number
+    raised_amount?: number | null
+    profile_picture?: string | null
+    cover_image?: string | null
+    pitch_video?: string | null
+    documents?: ProjectCreatedocumentsInput | string[]
+    location?: string | null
+    start_date?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutProjectsInput
+    investor?: InvestorCreateNestedOneWithoutProjectsInput
+    investments?: InvestmentCreateNestedManyWithoutProjectInput
+  }
+
+  export type ProjectUncheckedCreateWithoutMilestonesInput = {
+    id?: number
+    title: string
+    description: string
+    category: string
+    budget: number
+    raised_amount?: number | null
+    userId: number
+    investorId?: number | null
+    profile_picture?: string | null
+    cover_image?: string | null
+    pitch_video?: string | null
+    documents?: ProjectCreatedocumentsInput | string[]
+    location?: string | null
+    start_date?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    investments?: InvestmentUncheckedCreateNestedManyWithoutProjectInput
+  }
+
+  export type ProjectCreateOrConnectWithoutMilestonesInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutMilestonesInput, ProjectUncheckedCreateWithoutMilestonesInput>
+  }
+
+  export type ProjectUpsertWithoutMilestonesInput = {
+    update: XOR<ProjectUpdateWithoutMilestonesInput, ProjectUncheckedUpdateWithoutMilestonesInput>
+    create: XOR<ProjectCreateWithoutMilestonesInput, ProjectUncheckedCreateWithoutMilestonesInput>
+    where?: ProjectWhereInput
+  }
+
+  export type ProjectUpdateToOneWithWhereWithoutMilestonesInput = {
+    where?: ProjectWhereInput
+    data: XOR<ProjectUpdateWithoutMilestonesInput, ProjectUncheckedUpdateWithoutMilestonesInput>
+  }
+
+  export type ProjectUpdateWithoutMilestonesInput = {
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    budget?: FloatFieldUpdateOperationsInput | number
+    raised_amount?: NullableFloatFieldUpdateOperationsInput | number | null
+    profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
+    cover_image?: NullableStringFieldUpdateOperationsInput | string | null
+    pitch_video?: NullableStringFieldUpdateOperationsInput | string | null
+    documents?: ProjectUpdatedocumentsInput | string[]
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    start_date?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutProjectsNestedInput
+    investor?: InvestorUpdateOneWithoutProjectsNestedInput
+    investments?: InvestmentUpdateManyWithoutProjectNestedInput
+  }
+
+  export type ProjectUncheckedUpdateWithoutMilestonesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    budget?: FloatFieldUpdateOperationsInput | number
+    raised_amount?: NullableFloatFieldUpdateOperationsInput | number | null
+    userId?: IntFieldUpdateOperationsInput | number
+    investorId?: NullableIntFieldUpdateOperationsInput | number | null
+    profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
+    cover_image?: NullableStringFieldUpdateOperationsInput | string | null
+    pitch_video?: NullableStringFieldUpdateOperationsInput | string | null
+    documents?: ProjectUpdatedocumentsInput | string[]
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    start_date?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    investments?: InvestmentUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectCreateManyUserInput = {
@@ -7000,10 +10960,14 @@ export namespace Prisma {
     description: string
     category: string
     budget: number
-    raised_amount: number
-    completed_at?: string | null
-    status?: string
+    raised_amount?: number | null
     investorId?: number | null
+    profile_picture?: string | null
+    cover_image?: string | null
+    pitch_video?: string | null
+    documents?: ProjectCreatedocumentsInput | string[]
+    location?: string | null
+    start_date?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -7013,12 +10977,18 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
     budget?: FloatFieldUpdateOperationsInput | number
-    raised_amount?: FloatFieldUpdateOperationsInput | number
-    completed_at?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
+    raised_amount?: NullableFloatFieldUpdateOperationsInput | number | null
+    profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
+    cover_image?: NullableStringFieldUpdateOperationsInput | string | null
+    pitch_video?: NullableStringFieldUpdateOperationsInput | string | null
+    documents?: ProjectUpdatedocumentsInput | string[]
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    start_date?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     investor?: InvestorUpdateOneWithoutProjectsNestedInput
+    investments?: InvestmentUpdateManyWithoutProjectNestedInput
+    milestones?: MilestoneUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutUserInput = {
@@ -7027,12 +10997,18 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
     budget?: FloatFieldUpdateOperationsInput | number
-    raised_amount?: FloatFieldUpdateOperationsInput | number
-    completed_at?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
+    raised_amount?: NullableFloatFieldUpdateOperationsInput | number | null
     investorId?: NullableIntFieldUpdateOperationsInput | number | null
+    profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
+    cover_image?: NullableStringFieldUpdateOperationsInput | string | null
+    pitch_video?: NullableStringFieldUpdateOperationsInput | string | null
+    documents?: ProjectUpdatedocumentsInput | string[]
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    start_date?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    investments?: InvestmentUncheckedUpdateManyWithoutProjectNestedInput
+    milestones?: MilestoneUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateManyWithoutUserInput = {
@@ -7041,10 +11017,14 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
     budget?: FloatFieldUpdateOperationsInput | number
-    raised_amount?: FloatFieldUpdateOperationsInput | number
-    completed_at?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
+    raised_amount?: NullableFloatFieldUpdateOperationsInput | number | null
     investorId?: NullableIntFieldUpdateOperationsInput | number | null
+    profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
+    cover_image?: NullableStringFieldUpdateOperationsInput | string | null
+    pitch_video?: NullableStringFieldUpdateOperationsInput | string | null
+    documents?: ProjectUpdatedocumentsInput | string[]
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    start_date?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -7055,10 +11035,22 @@ export namespace Prisma {
     description: string
     category: string
     budget: number
-    raised_amount: number
-    completed_at?: string | null
-    status?: string
+    raised_amount?: number | null
     userId: number
+    profile_picture?: string | null
+    cover_image?: string | null
+    pitch_video?: string | null
+    documents?: ProjectCreatedocumentsInput | string[]
+    location?: string | null
+    start_date?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type InvestmentCreateManyInvestorInput = {
+    id?: number
+    amount: number
+    projectId: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -7068,12 +11060,18 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
     budget?: FloatFieldUpdateOperationsInput | number
-    raised_amount?: FloatFieldUpdateOperationsInput | number
-    completed_at?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
+    raised_amount?: NullableFloatFieldUpdateOperationsInput | number | null
+    profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
+    cover_image?: NullableStringFieldUpdateOperationsInput | string | null
+    pitch_video?: NullableStringFieldUpdateOperationsInput | string | null
+    documents?: ProjectUpdatedocumentsInput | string[]
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    start_date?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutProjectsNestedInput
+    investments?: InvestmentUpdateManyWithoutProjectNestedInput
+    milestones?: MilestoneUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutInvestorInput = {
@@ -7082,12 +11080,18 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
     budget?: FloatFieldUpdateOperationsInput | number
-    raised_amount?: FloatFieldUpdateOperationsInput | number
-    completed_at?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
+    raised_amount?: NullableFloatFieldUpdateOperationsInput | number | null
     userId?: IntFieldUpdateOperationsInput | number
+    profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
+    cover_image?: NullableStringFieldUpdateOperationsInput | string | null
+    pitch_video?: NullableStringFieldUpdateOperationsInput | string | null
+    documents?: ProjectUpdatedocumentsInput | string[]
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    start_date?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    investments?: InvestmentUncheckedUpdateManyWithoutProjectNestedInput
+    milestones?: MilestoneUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateManyWithoutInvestorInput = {
@@ -7096,10 +11100,107 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
     budget?: FloatFieldUpdateOperationsInput | number
-    raised_amount?: FloatFieldUpdateOperationsInput | number
-    completed_at?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
+    raised_amount?: NullableFloatFieldUpdateOperationsInput | number | null
     userId?: IntFieldUpdateOperationsInput | number
+    profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
+    cover_image?: NullableStringFieldUpdateOperationsInput | string | null
+    pitch_video?: NullableStringFieldUpdateOperationsInput | string | null
+    documents?: ProjectUpdatedocumentsInput | string[]
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    start_date?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InvestmentUpdateWithoutInvestorInput = {
+    amount?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    project?: ProjectUpdateOneRequiredWithoutInvestmentsNestedInput
+  }
+
+  export type InvestmentUncheckedUpdateWithoutInvestorInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    amount?: FloatFieldUpdateOperationsInput | number
+    projectId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InvestmentUncheckedUpdateManyWithoutInvestorInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    amount?: FloatFieldUpdateOperationsInput | number
+    projectId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InvestmentCreateManyProjectInput = {
+    id?: number
+    amount: number
+    investorId: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type MilestoneCreateManyProjectInput = {
+    id?: number
+    title: string
+    description: string
+    amount: number
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type InvestmentUpdateWithoutProjectInput = {
+    amount?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    investor?: InvestorUpdateOneRequiredWithoutInvestmentsNestedInput
+  }
+
+  export type InvestmentUncheckedUpdateWithoutProjectInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    amount?: FloatFieldUpdateOperationsInput | number
+    investorId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InvestmentUncheckedUpdateManyWithoutProjectInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    amount?: FloatFieldUpdateOperationsInput | number
+    investorId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MilestoneUpdateWithoutProjectInput = {
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MilestoneUncheckedUpdateWithoutProjectInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MilestoneUncheckedUpdateManyWithoutProjectInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
