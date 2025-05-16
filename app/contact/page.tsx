@@ -112,8 +112,8 @@ export default function ContactPage() {
               We'd Love to <span className="text-primary">Hear from You</span>
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto animation-delay-200 animate-fade-in">
-              Have questions about UdayeeConnect? Looking for support? Or just
-              want to share your feedback? We're here to help.
+              Have questions about Uday? Looking for support? Or just want to
+              share your feedback? We're here to help.
             </p>
           </div>
         </div>
@@ -156,7 +156,7 @@ export default function ContactPage() {
                     <ContactItem
                       icon={<Mail className="h-5 w-5 text-primary" />}
                       title="Email Us"
-                      detail="contact@udayeeconnect.com"
+                      detail="contact@Uday.com"
                     />
 
                     <ContactItem
@@ -319,7 +319,7 @@ export default function ContactPage() {
                 <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-primary rounded-full"></span>
               </h2>
               <p className="text-muted-foreground max-w-xl mx-auto">
-                Find answers to common questions about UdayeeConnect
+                Find answers to common questions about Uday
               </p>
             </div>
 
@@ -329,12 +329,12 @@ export default function ContactPage() {
                 answer="Registration is simple! Click on the 'Sign Up' button, select 'Student', and follow the guided process to create your account and set up your startup profile."
               />
               <FaqItem
-                question="What type of startups can join UdayeeConnect?"
+                question="What type of startups can join Uday?"
                 answer="We welcome student-led startups from all industries and sectors. Whether you're working on tech, sustainability, healthcare, or creative projects, our platform is designed to support you."
               />
               <FaqItem
                 question="How are investments structured?"
-                answer="UdayeeConnect uses a milestone-based investment approach. Funds are released as entrepreneurs complete predefined milestones, providing accountability for founders and security for investors."
+                answer="Uday uses a milestone-based investment approach. Funds are released as entrepreneurs complete predefined milestones, providing accountability for founders and security for investors."
               />
               <FaqItem
                 question="Can I invest in multiple startups?"
@@ -354,7 +354,7 @@ export default function ContactPage() {
               <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary/5 rounded-full -mb-20 -ml-20"></div>
               <div className="relative z-10">
                 <h2 className="text-2xl md:text-3xl font-bold mb-4 text-foreground">
-                  Ready to Join the UdayeeConnect Community?
+                  Ready to Join the Uday Community?
                 </h2>
                 <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
                   Whether you're a student with a brilliant idea or an investor

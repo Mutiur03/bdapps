@@ -11,7 +11,7 @@ import {
 
 export function HomeFooter() {
   return (
-    <footer className="bg-foreground text-background">
+    <footer className="bg-sidebar-foreground text-background">
       <div className="container mx-auto px-4 py-8 sm:py-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Logo and Description */}
@@ -139,15 +139,13 @@ export function HomeFooter() {
               </li>
               <li className="flex items-center">
                 <Mail className="h-5 w-5 text-primary mr-2" />
-                <span className="text-secondary">info@udayeeconnect.com</span>
+                <span className="text-secondary">info@Uday.com</span>
               </li>
             </ul>
           </div>
         </div>
         <div className="border-t border-border mt-8 sm:mt-10 pt-6 text-center text-sm text-secondary">
-          <p>
-            © {new Date().getFullYear()} UdayeeConnect. All rights reserved.
-          </p>
+          <p>© {new Date().getFullYear()} Uday. All rights reserved.</p>
         </div>
       </div>
     </footer>
