@@ -1,5 +1,4 @@
 import type React from "react";
-import { HomeFooter } from "../home/home-footer";
 import {
   Card,
   CardContent,
@@ -91,7 +90,7 @@ export function InvestorDashboard() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">
+        <h1 className="text-3xl font-bold tracking-tight text-primary">
           Investor Dashboard
         </h1>
         <p className="text-muted-foreground">
@@ -100,59 +99,104 @@ export function InvestorDashboard() {
         </p>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <StatsCard
-          title="Total Invested"
-          value={portfolioStats.totalInvested}
-          description={`Across ${portfolioStats.activeInvestments} startups`}
-          icon={<DollarSign className="h-4 w-4 text-primary" />}
-        />
-        <StatsCard
-          title="Active Investments"
-          value={portfolioStats.activeInvestments.toString()}
-          description={`${portfolioStats.pendingMilestones} pending milestones`}
-          icon={<Users className="h-4 w-4 text-primary" />}
-        />
-        <StatsCard
-          title="Completed Milestones"
-          value={portfolioStats.completedMilestones.toString()}
-          description={`From ${portfolioStats.activeInvestments} startups`}
-          icon={<Calendar className="h-4 w-4 text-primary" />}
-        />
-        <StatsCard
-          title="Average Return"
-          value={portfolioStats.averageReturn}
-          description="Based on completed investments"
-          icon={<TrendingUp className="h-4 w-4 text-primary" />}
-          valueClassName="text-primary"
-        />
+      {/* Stats Cards - 2 column grid layout for larger stats */}
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* Investment Overview */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle>Investment Overview</CardTitle>
+            <CardDescription>Summary of your portfolio</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="text-center p-3 bg-muted rounded-md">
+                <p className="text-2xl font-bold text-secondary-foreground">
+                  {portfolioStats.totalInvested}
+                </p>
+                <p className="text-xs text-muted-foreground">Total Invested</p>
+              </div>
+              <div className="text-center p-3 bg-muted rounded-md">
+                <p className="text-2xl font-bold text-secondary-foreground">
+                  {portfolioStats.activeInvestments}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Active Investments
+                </p>
+              </div>
+            </div>
+            <div className="flex justify-between items-center pt-2">
+              <Link href="/investor/portfolio">
+                <Button
+                  variant="outline"
+                  className="border-primary text-primary hover:bg-secondary"
+                >
+                  View Portfolio
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Milestones Progress Card */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle>Milestones Progress</CardTitle>
+            <CardDescription>Track your investment returns</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex justify-between items-end">
+              <div>
+                <p className="text-sm text-muted-foreground">Return Rate</p>
+                <p className="text-3xl font-bold text-secondary-foreground">
+                  {portfolioStats.averageReturn}
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="text-sm text-muted-foreground">Total Completed</p>
+                <p className="text-xl font-medium text-secondary-foreground">
+                  {portfolioStats.completedMilestones}
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-4 pt-2">
+              <div className="text-center p-3 bg-muted rounded-md">
+                <p className="text-2xl font-bold text-secondary-foreground">
+                  {portfolioStats.activeInvestments}
+                </p>
+                <p className="text-xs text-muted-foreground">Active Startups</p>
+              </div>
+              <div className="text-center p-3 bg-muted rounded-md">
+                <p className="text-2xl font-bold text-secondary-foreground">
+                  {portfolioStats.completedMilestones}
+                </p>
+                <p className="text-xs text-muted-foreground">Completed</p>
+              </div>
+              <div className="text-center p-3 bg-muted rounded-md">
+                <p className="text-2xl font-bold text-chart-3">
+                  {portfolioStats.pendingMilestones}
+                </p>
+                <p className="text-xs text-muted-foreground">Pending</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Main Content Tabs */}
-      <Tabs defaultValue="investments" className="space-y-6">
-        <TabsList className="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground">
-          <TabsTrigger
-            value="investments"
-            className="data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"
-          >
-            Active Investments
-          </TabsTrigger>
-          <TabsTrigger
-            value="recommended"
-            className="data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"
-          >
-            Recommended Startups
-          </TabsTrigger>
+      <Tabs defaultValue="investments" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="investments">Active Investments</TabsTrigger>
+          <TabsTrigger value="recommended">Recommended Startups</TabsTrigger>
         </TabsList>
 
         {/* Active Investments Tab */}
-        <TabsContent value="investments" className="space-y-5">
-          <h2 className="text-xl font-semibold text-foreground">
+        <TabsContent value="investments" className="space-y-4">
+          <h2 className="text-xl font-semibold text-primary">
             Your Active Investments
           </h2>
 
-          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {recentInvestments.map((investment) => (
               <Card
                 key={investment.id}
@@ -161,7 +205,7 @@ export function InvestorDashboard() {
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
                     <div>
-                      <CardTitle className="text-lg text-foreground">
+                      <CardTitle className="text-lg text-secondary-foreground">
                         {investment.startupName}
                       </CardTitle>
                       <CardDescription>
@@ -169,11 +213,11 @@ export function InvestorDashboard() {
                       </CardDescription>
                     </div>
                     {investment.completed ? (
-                      <span className="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full font-medium">
+                      <span className="bg-ring text-foreground text-xs px-2 py-1 rounded-full font-medium border border-border">
                         Completed
                       </span>
                     ) : (
-                      <span className="bg-amber-100 text-amber-700 text-xs px-2 py-1 rounded-full font-medium">
+                      <span className="bg-chart-4 text-foreground text-xs px-2 py-1 rounded-full font-medium border border-border">
                         In Progress
                       </span>
                     )}
@@ -209,15 +253,14 @@ export function InvestorDashboard() {
                     </div>
                     <Progress
                       value={investment.progress}
-                      className="h-2"
-                      aria-label="Progress"
+                      className="h-2 bg-secondary"
                       indicatorClassName="bg-primary"
                     />
                   </div>
 
                   <div className="flex justify-between items-center pt-2 border-t border-border">
                     {!investment.completed ? (
-                      <span className="text-sm text-amber-600 font-medium flex items-center">
+                      <span className="text-sm text-primary font-medium flex items-center">
                         <Calendar className="h-3.5 w-3.5 mr-1" />
                         {investment.daysLeft} days left
                       </span>
@@ -229,7 +272,7 @@ export function InvestorDashboard() {
                     )}
                     <Link
                       href={`/investor/startups/${investment.id}`}
-                      className="text-sm font-medium text-primary hover:text-primary/70 flex items-center"
+                      className="text-sm font-medium text-chart-3 hover:text-chart-3/70 flex items-center"
                     >
                       View Details
                       <ArrowUpRight className="ml-1 h-3 w-3" />
@@ -244,7 +287,7 @@ export function InvestorDashboard() {
             <Link href="/investor/portfolio">
               <Button
                 variant="outline"
-                className="text-primary border-primary hover:bg-primary/5"
+                className="border-primary text-primary hover:bg-secondary"
               >
                 View All Investments
               </Button>
@@ -253,12 +296,12 @@ export function InvestorDashboard() {
         </TabsContent>
 
         {/* Recommended Startups Tab */}
-        <TabsContent value="recommended" className="space-y-5">
-          <h2 className="text-xl font-semibold text-foreground">
+        <TabsContent value="recommended" className="space-y-4">
+          <h2 className="text-xl font-semibold text-primary">
             Recommended For You
           </h2>
 
-          <div className="grid gap-5 md:grid-cols-2">
+          <div className="grid gap-4 md:grid-cols-2">
             {recommendedStartups.map((startup) => (
               <Card
                 key={startup.id}
@@ -273,14 +316,14 @@ export function InvestorDashboard() {
                 <CardHeader>
                   <div className="flex justify-between items-start">
                     <div>
-                      <CardTitle className="text-foreground">
+                      <CardTitle className="text-secondary-foreground">
                         {startup.name}
                       </CardTitle>
                       <CardDescription>
                         {startup.founder} • {startup.university}
                       </CardDescription>
                     </div>
-                    <span className="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">
+                    <span className="bg-ring text-foreground text-xs px-2 py-1 rounded-full border border-border">
                       {startup.category}
                     </span>
                   </div>
@@ -317,7 +360,7 @@ export function InvestorDashboard() {
                           )) *
                         100
                       }
-                      className="h-2"
+                      className="h-2 bg-secondary"
                       indicatorClassName="bg-primary"
                     />
                   </div>
@@ -340,7 +383,7 @@ export function InvestorDashboard() {
             <Link href="/investor/startups">
               <Button
                 variant="outline"
-                className="text-primary border-primary hover:bg-primary/5"
+                className="border-primary text-primary hover:bg-secondary"
               >
                 Browse All Startups
               </Button>
@@ -348,41 +391,65 @@ export function InvestorDashboard() {
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Quick Actions - Added to match the udayee dashboard structure */}
+      <div className="space-y-4">
+        <h2 className="text-xl font-semibold text-primary">Quick Actions</h2>
+        <div className="grid gap-4 md:grid-cols-3">
+          <Link href="/investor/startups">
+            <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+              <CardContent className="p-6 flex flex-col items-center text-center">
+                <div className="h-12 w-12 rounded-full flex items-center justify-center mb-4 bg-secondary">
+                  <DollarSign className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="font-medium text-lg text-foreground">
+                  Browse Startups
+                </h3>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Find new investment opportunities
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link href="/investor/portfolio">
+            <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+              <CardContent className="p-6 flex flex-col items-center text-center">
+                <div className="h-12 w-12 rounded-full flex items-center justify-center mb-4 bg-secondary">
+                  <TrendingUp className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="font-medium text-lg text-foreground">
+                  Portfolio Overview
+                </h3>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Track your investments and returns
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link href="/investor/messages">
+            <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+              <CardContent className="p-6 flex flex-col items-center text-center">
+                <div className="h-12 w-12 rounded-full flex items-center justify-center mb-4 bg-secondary">
+                  <Users className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="font-medium text-lg text-foreground">
+                  Message Startups
+                </h3>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Communicate with your portfolio companies
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }
 
-// Stats Card Component
-function StatsCard({
-  title,
-  value,
-  description,
-  icon,
-  valueClassName,
-}: {
-  title: string;
-  value: string;
-  description: string;
-  icon: React.ReactNode;
-  valueClassName?: string;
-}) {
-  return (
-    <Card className="hover:shadow-md transition-shadow duration-200">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium text-foreground">
-          {title}
-        </CardTitle>
-        <div className="rounded-full p-1 bg-primary/10">{icon}</div>
-      </CardHeader>
-      <CardContent>
-        <div className={cn("text-2xl font-bold", valueClassName)}>{value}</div>
-        <p className="text-xs text-muted-foreground pt-1">{description}</p>
-      </CardContent>
-    </Card>
-  );
-}
-
-// Button component
+// Button component - updated to match udayee dashboard styling
 function Button({
   children,
   variant = "default",
@@ -400,7 +467,10 @@ function Button({
         "px-4 py-2 rounded-md font-medium flex items-center justify-center transition-colors",
         variant === "default"
           ? "bg-primary text-primary-foreground hover:bg-primary/90"
-          : "bg-transparent border border-input hover:bg-accent hover:text-accent-foreground",
+          : "",
+        variant === "outline"
+          ? "bg-transparent border border-primary text-primary hover:bg-secondary"
+          : "",
         className
       )}
       {...props}

@@ -17,19 +17,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import {
-  User,
-  Bell,
-  Shield,
-  CreditCard,
-  LogOut,
-  Briefcase,
-  AtSign,
-  Phone,
-  Mail, // Added missing Mail icon import
-} from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+import { Bell, Shield, CreditCard, LogOut, Sliders } from "lucide-react";
 
 export function InvestorSettings() {
   const { toast } = useToast();
@@ -37,12 +25,6 @@ export function InvestorSettings() {
 
   // Mock data - in a real app, this would come from an API
   const [userData, setUserData] = useState({
-    name: "Ayesha Khan",
-    email: "ayesha.khan@greenventures.com",
-    phone: "+880 1712 345678",
-    company: "Green Ventures",
-    position: "Investment Manager",
-    investmentPreferences: ["Environment", "Technology", "Healthcare"],
     notifications: {
       email: true,
       push: true,
@@ -67,11 +49,6 @@ export function InvestorSettings() {
     ],
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setUserData((prev) => ({ ...prev, [name]: value }));
-  };
-
   const handleNotificationChange = (key: string, checked: boolean) => {
     setUserData((prev) => ({
       ...prev,
@@ -80,19 +57,6 @@ export function InvestorSettings() {
         [key]: checked,
       },
     }));
-  };
-
-  const handleSaveProfile = async () => {
-    setSaving(true);
-
-    // Simulate API call
-    setTimeout(() => {
-      setSaving(false);
-      toast({
-        title: "Profile Updated",
-        description: "Your profile has been successfully updated.",
-      });
-    }, 1000);
   };
 
   const handleSaveNotifications = async () => {
@@ -126,218 +90,56 @@ export function InvestorSettings() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">
+        <h1 className="text-3xl font-bold tracking-tight text-primary">
           Settings
         </h1>
         <p className="text-muted-foreground">
-          Manage your account settings and preferences
+          Configure your application preferences and account security
         </p>
       </div>
 
-      <Tabs defaultValue="profile" className="space-y-6">
-        <TabsList className="bg-muted text-muted-foreground p-1 rounded-md">
-          <TabsTrigger
-            value="profile"
-            className="flex items-center gap-2 data-[state=active]:bg-background data-[state=active]:text-foreground"
-          >
-            <User className="h-4 w-4" />
-            <span>Profile</span>
-          </TabsTrigger>
+      <Tabs defaultValue="notifications" className="space-y-6">
+        <TabsList>
           <TabsTrigger
             value="notifications"
-            className="flex items-center gap-2 data-[state=active]:bg-background data-[state=active]:text-foreground"
+            className="flex items-center gap-2"
           >
             <Bell className="h-4 w-4" />
             <span>Notifications</span>
           </TabsTrigger>
-          <TabsTrigger
-            value="payment"
-            className="flex items-center gap-2 data-[state=active]:bg-background data-[state=active]:text-foreground"
-          >
+          <TabsTrigger value="payment" className="flex items-center gap-2">
             <CreditCard className="h-4 w-4" />
             <span>Payment Methods</span>
           </TabsTrigger>
-          <TabsTrigger
-            value="security"
-            className="flex items-center gap-2 data-[state=active]:bg-background data-[state=active]:text-foreground"
-          >
+          <TabsTrigger value="security" className="flex items-center gap-2">
             <Shield className="h-4 w-4" />
             <span>Security</span>
           </TabsTrigger>
+          <TabsTrigger value="preferences" className="flex items-center gap-2">
+            <Sliders className="h-4 w-4" />
+            <span>Preferences</span>
+          </TabsTrigger>
         </TabsList>
-
-        {/* Profile Tab */}
-        <TabsContent value="profile" className="space-y-6">
-          <Card className="overflow-hidden hover:shadow-sm transition-shadow">
-            <CardHeader className="pb-2 border-b border-border">
-              <div className="flex items-center gap-4">
-                <Avatar className="h-16 w-16 border-2 border-border">
-                  <AvatarImage
-                    src="/placeholder-avatar.jpg"
-                    alt={userData.name}
-                  />
-                  <AvatarFallback className="bg-primary/10 text-primary text-xl">
-                    {userData.name
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <CardTitle>{userData.name}</CardTitle>
-                  <CardDescription>
-                    {userData.position} at {userData.company}
-                  </CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-6 pt-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="name" className="text-foreground">
-                    Full Name
-                  </Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="name"
-                      name="name"
-                      value={userData.name}
-                      onChange={handleInputChange}
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="text-foreground">
-                    Email
-                  </Label>
-                  <div className="relative">
-                    <AtSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      value={userData.email}
-                      onChange={handleInputChange}
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="phone" className="text-foreground">
-                    Phone Number
-                  </Label>
-                  <div className="relative">
-                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="phone"
-                      name="phone"
-                      value={userData.phone}
-                      onChange={handleInputChange}
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="company" className="text-foreground">
-                    Company
-                  </Label>
-                  <div className="relative">
-                    <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="company"
-                      name="company"
-                      value={userData.company}
-                      onChange={handleInputChange}
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="position" className="text-foreground">
-                  Position
-                </Label>
-                <Input
-                  id="position"
-                  name="position"
-                  value={userData.position}
-                  onChange={handleInputChange}
-                />
-              </div>
-
-              <div className="space-y-3">
-                <Label className="text-foreground">
-                  Investment Preferences
-                </Label>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {userData.investmentPreferences.map((pref) => (
-                    <Badge
-                      key={pref}
-                      variant="outline"
-                      className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/20"
-                    >
-                      {pref}
-                    </Badge>
-                  ))}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-8 text-sm border-primary text-primary hover:bg-primary/10"
-                  >
-                    Edit Preferences
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-            <CardFooter className="flex justify-end border-t border-border pt-4">
-              <Button
-                onClick={handleSaveProfile}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground"
-                disabled={saving}
-              >
-                {saving ? "Saving..." : "Save Changes"}
-              </Button>
-            </CardFooter>
-          </Card>
-        </TabsContent>
 
         {/* Notifications Tab */}
         <TabsContent value="notifications" className="space-y-6">
-          <Card className="hover:shadow-sm transition-shadow">
-            <CardHeader className="border-b border-border">
+          <Card>
+            <CardHeader>
               <CardTitle>Notification Preferences</CardTitle>
               <CardDescription>
                 Choose how you want to be notified
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6 pt-6">
+            <CardContent className="space-y-6">
               <div className="space-y-4">
-                <h3 className="text-sm font-medium text-foreground">
-                  Notification Channels
-                </h3>
+                <h3 className="text-sm font-medium">Notification Channels</h3>
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 rounded-md bg-muted/30 hover:bg-muted/50">
+                  <div className="flex items-center justify-between">
                     <Label
                       htmlFor="email-notifications"
-                      className="flex items-center gap-3 flex-1 cursor-pointer"
+                      className="flex-1 cursor-pointer"
                     >
-                      <div className="p-1.5 rounded-full bg-primary/10">
-                        <Mail className="h-4 w-4 text-primary" />
-                      </div>
-                      <div>
-                        <span className="font-medium">Email Notifications</span>
-                        <p className="text-xs text-muted-foreground mt-0.5">
-                          Receive updates via email
-                        </p>
-                      </div>
+                      Email Notifications
                     </Label>
                     <Switch
                       id="email-notifications"
@@ -347,23 +149,49 @@ export function InvestorSettings() {
                       }
                     />
                   </div>
-
-                  {/* Similar updates for other notification channels... */}
+                  <div className="flex items-center justify-between">
+                    <Label
+                      htmlFor="push-notifications"
+                      className="flex-1 cursor-pointer"
+                    >
+                      Push Notifications
+                    </Label>
+                    <Switch
+                      id="push-notifications"
+                      checked={userData.notifications.push}
+                      onCheckedChange={(checked) =>
+                        handleNotificationChange("push", checked)
+                      }
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label
+                      htmlFor="sms-notifications"
+                      className="flex-1 cursor-pointer"
+                    >
+                      SMS Notifications
+                    </Label>
+                    <Switch
+                      id="sms-notifications"
+                      checked={userData.notifications.sms}
+                      onCheckedChange={(checked) =>
+                        handleNotificationChange("sms", checked)
+                      }
+                    />
+                  </div>
                 </div>
               </div>
 
               <div className="space-y-4">
-                <h3 className="text-sm font-medium text-foreground">
-                  Notification Types
-                </h3>
+                <h3 className="text-sm font-medium">Notification Types</h3>
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 rounded-md bg-muted/30 hover:bg-muted/50">
+                  <div className="flex items-center justify-between">
                     <Label
                       htmlFor="startup-updates"
                       className="flex-1 cursor-pointer"
                     >
-                      <span className="font-medium">Startup Updates</span>
-                      <p className="text-xs text-muted-foreground mt-0.5">
+                      Startup Updates
+                      <p className="text-xs text-muted-foreground">
                         Get notified when startups you've invested in post
                         updates
                       </p>
@@ -376,12 +204,50 @@ export function InvestorSettings() {
                       }
                     />
                   </div>
-
-                  {/* Similar updates for other notification types... */}
+                  <div className="flex items-center justify-between">
+                    <Label
+                      htmlFor="milestone-completions"
+                      className="flex-1 cursor-pointer"
+                    >
+                      Milestone Completions
+                      <p className="text-xs text-muted-foreground">
+                        Get notified when milestone deliverables are completed
+                      </p>
+                    </Label>
+                    <Switch
+                      id="milestone-completions"
+                      checked={userData.notifications.milestoneCompletions}
+                      onCheckedChange={(checked) =>
+                        handleNotificationChange(
+                          "milestoneCompletions",
+                          checked
+                        )
+                      }
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label
+                      htmlFor="new-startups"
+                      className="flex-1 cursor-pointer"
+                    >
+                      New Startups
+                      <p className="text-xs text-muted-foreground">
+                        Get notified when new startups matching your interests
+                        are added
+                      </p>
+                    </Label>
+                    <Switch
+                      id="new-startups"
+                      checked={userData.notifications.newStartups}
+                      onCheckedChange={(checked) =>
+                        handleNotificationChange("newStartups", checked)
+                      }
+                    />
+                  </div>
                 </div>
               </div>
             </CardContent>
-            <CardFooter className="flex justify-end border-t border-border pt-4">
+            <CardFooter className="flex justify-end">
               <Button
                 onClick={handleSaveNotifications}
                 className="bg-primary hover:bg-primary/90 text-primary-foreground"
@@ -395,14 +261,14 @@ export function InvestorSettings() {
 
         {/* Payment Methods Tab */}
         <TabsContent value="payment" className="space-y-6">
-          <Card className="hover:shadow-sm transition-shadow">
-            <CardHeader className="border-b border-border">
+          <Card>
+            <CardHeader>
               <CardTitle>Payment Methods</CardTitle>
               <CardDescription>
                 Manage your payment methods for investments
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4 pt-6">
+            <CardContent className="space-y-4">
               {userData.paymentMethods.map((method) => (
                 <div
                   key={method.id}
@@ -415,15 +281,13 @@ export function InvestorSettings() {
                       className={`w-10 h-10 rounded-full flex items-center justify-center ${
                         method.type === "bKash"
                           ? "bg-primary/10 text-primary"
-                          : "bg-accent/20 text-accent-foreground"
+                          : "bg-muted text-muted-foreground"
                       }`}
                     >
                       {method.type === "bKash" ? "b" : "C"}
                     </div>
                     <div>
-                      <p className="font-medium text-foreground">
-                        {method.type}
-                      </p>
+                      <p className="font-medium">{method.type}</p>
                       <p className="text-sm text-muted-foreground">
                         {method.number}
                       </p>
@@ -431,27 +295,20 @@ export function InvestorSettings() {
                   </div>
                   <div className="flex items-center gap-2">
                     {method.isDefault ? (
-                      <Badge
-                        variant="outline"
-                        className="bg-primary/10 text-primary border-primary/20"
-                      >
+                      <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">
                         Default
-                      </Badge>
+                      </span>
                     ) : (
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => handleSetDefaultPayment(method.id)}
-                        className="text-xs h-8 text-primary border-primary hover:bg-primary/10"
+                        className="text-xs h-8 border-primary text-primary hover:bg-primary/10"
                       >
                         Set as Default
                       </Button>
                     )}
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-xs h-8 hover:bg-muted"
-                    >
+                    <Button variant="ghost" size="sm" className="text-xs h-8">
                       Edit
                     </Button>
                   </div>
@@ -460,7 +317,7 @@ export function InvestorSettings() {
 
               <Button
                 variant="outline"
-                className="w-full mt-4 text-primary border-primary hover:bg-primary/10"
+                className="w-full mt-2 border-primary text-primary hover:bg-primary/10"
               >
                 Add New Payment Method
               </Button>
@@ -470,41 +327,85 @@ export function InvestorSettings() {
 
         {/* Security Tab */}
         <TabsContent value="security" className="space-y-6">
-          <Card className="hover:shadow-sm transition-shadow">
-            <CardHeader className="border-b border-border">
+          <Card>
+            <CardHeader>
               <CardTitle>Security Settings</CardTitle>
               <CardDescription>Manage your account security</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-5 pt-6">
+            <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="current-password" className="text-foreground">
-                  Current Password
-                </Label>
+                <Label htmlFor="current-password">Current Password</Label>
                 <Input id="current-password" type="password" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="new-password" className="text-foreground">
-                  New Password
-                </Label>
+                <Label htmlFor="new-password">New Password</Label>
                 <Input id="new-password" type="password" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="confirm-password" className="text-foreground">
-                  Confirm New Password
-                </Label>
+                <Label htmlFor="confirm-password">Confirm New Password</Label>
                 <Input id="confirm-password" type="password" />
               </div>
             </CardContent>
-            <CardFooter className="flex justify-between border-t border-border pt-4">
+            <CardFooter className="flex justify-between">
               <Button
                 variant="outline"
-                className="text-destructive border-destructive hover:bg-destructive/10 hover:text-destructive"
+                className="text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive"
               >
                 <LogOut className="h-4 w-4 mr-2" />
                 Sign Out
               </Button>
               <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
                 Change Password
+              </Button>
+            </CardFooter>
+          </Card>
+        </TabsContent>
+
+        {/* Preferences Tab */}
+        <TabsContent value="preferences" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Application Preferences</CardTitle>
+              <CardDescription>Customize your app experience</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="dark-mode" className="flex-1 cursor-pointer">
+                    Dark Mode
+                    <p className="text-xs text-muted-foreground">
+                      Enable dark mode for the application
+                    </p>
+                  </Label>
+                  <Switch id="dark-mode" defaultChecked={false} />
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="language" className="flex-1">
+                    Language
+                  </Label>
+                  <div className="w-40">
+                    <select className="w-full h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm">
+                      <option value="en">English</option>
+                      <option value="bn">Bengali</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="auto-save" className="flex-1 cursor-pointer">
+                    Auto-save Drafts
+                    <p className="text-xs text-muted-foreground">
+                      Automatically save draft changes
+                    </p>
+                  </Label>
+                  <Switch id="auto-save" defaultChecked={true} />
+                </div>
+              </div>
+            </CardContent>
+            <CardFooter className="flex justify-end">
+              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                Save Preferences
               </Button>
             </CardFooter>
           </Card>
