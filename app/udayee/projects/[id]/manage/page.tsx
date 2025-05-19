@@ -1,12 +1,10 @@
 "use client";
 
-import React from "react";
-import { useState } from "react";
+import React, { useEffect, useMemo } from "react";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -22,24 +20,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -56,20 +41,61 @@ import {
   FileText,
   Eye,
   Clock,
-  ArrowUpRight,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { Project, useProjectStore } from "@/store/useProjectStore";
 
-// Placeholder image utility
+// Helper function to safely validate and format URLs
+export const safeUrl = (url: string | File | undefined | null): string => {
+  if (!url) return "";
+
+  if (url instanceof File) {
+    return URL.createObjectURL(url);
+  }
+
+  // Ensure url is a string before using string methods
+  if (typeof url !== 'string') {
+    return "";
+  }
+
+  const youtubeMatch = url.match(/(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([^&]+)/);
+  const shortYoutubeMatch = url.match(/(?:https?:\/\/)?youtu\.be\/([^?]+)/);
+  const shortsMatch = url.match(/(?:https?:\/\/)?(?:www\.)?youtube\.com\/shorts\/([^?&]+)/);
+  const vimeoMatch = url.match(/(?:https?:\/\/)?vimeo\.com\/(\d+)/);
+
+  if (youtubeMatch) {
+    return `https://www.youtube.com/embed/${youtubeMatch[1]}`;
+  }
+
+  if (shortYoutubeMatch) {
+    return `https://www.youtube.com/embed/${shortYoutubeMatch[1]}`;
+  }
+
+  if (shortsMatch) {
+    return `https://www.youtube.com/embed/${shortsMatch[1]}`;
+  }
+
+  if (vimeoMatch) {
+    return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+  }
+
+  if (url.startsWith('data:') || url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
+
+  if (!url.startsWith('/')) {
+    return `/${url}`;
+  }
+
+  return url;
+};
+
 const placeholders = {
-  cover:
-    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='400' viewBox='0 0 800 400'%3E%3Crect width='800' height='400' fill='%23f1f5f9'/%3E%3Ctext x='400' y='200' font-family='sans-serif' font-size='32' fill='%2394a3b8' text-anchor='middle' dominant-baseline='middle'%3EProject Cover Image%3C/text%3E%3C/svg%3E",
-  logo: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Crect width='200' height='200' fill='%23f1f5f9'/%3E%3Ctext x='100' y='100' font-family='sans-serif' font-size='80' fill='%2394a3b8' text-anchor='middle' dominant-baseline='middle'%3EE%3C/text%3E%3C/svg%3E",
-  avatar: (initial: string) =>
-    `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23f1f5f9'/%3E%3Ctext x='50' y='50' font-family='sans-serif' font-size='40' fill='%2394a3b8' text-anchor='middle' dominant-baseline='middle'%3E${initial}%3C/text%3E%3C/svg%3E`,
-  video:
-    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='450' viewBox='0 0 800 450'%3E%3Crect width='800' height='450' fill='%23f1f5f9'/%3E%3Ccircle cx='400' cy='225' r='80' fill='%23ffffff' opacity='0.8'/%3E%3Cpath d='M440 225 L380 265 L380 185 Z' fill='%2394a3b8'/%3E%3Ctext x='400' y='350' font-family='sans-serif' font-size='24' fill='%2394a3b8' text-anchor='middle'%3EVideo Placeholder%3C/text%3E%3C/svg%3E",
+  cover: "https://source.unsplash.com/random/1200x630/?project",
+  logo: "https://source.unsplash.com/random/400x400/?logo",
+  avatar: (initial: string) => `https://source.unsplash.com/random/100x100/?portrait,${initial}`,
+  video: "https://source.unsplash.com/random/800x450/?video",
 };
 
 export default function ManageProjectPage({
@@ -77,230 +103,178 @@ export default function ManageProjectPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  // Unwrap the params Promise to access the id
   const unwrappedParams = React.use(params);
   const projectId = unwrappedParams.id;
+  const {
+    projects,
+    fetchProjects,
+    saveProject,
+    milestones,
+    teamMembers,
+    updates,
+    formatProjectData,
+    addItem,
+    updateItem,
+    deleteItem,
+    formState,
+    setFormState,
+    mediaFormState,
+    setMediaFormState,
+    mediaChanged,
+    setMediaChanged,
+    formErrors,
+    setFormErrors,
+    isLoading,
+    setIsLoading,
+    setCurrentProjectId,
+    initializeFormState,
+    setRaisedAmount,
+  } = useProjectStore();
 
-  const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
-  const [teamMembers, setTeamMembers] = useState([
-    {
-      id: "t1",
-      name: "Rahul Ahmed",
-      role: "Project Lead",
-      initial: "R",
-    },
-    {
-      id: "t2",
-      name: "Shahin Khan",
-      role: "Developer",
-      initial: "S",
-    },
-    {
-      id: "t3",
-      name: "Nusrat Jahan",
-      role: "Marketing",
-      initial: "N",
-    },
-  ]);
-  const [milestones, setMilestones] = useState([
-    {
-      id: "m1",
-      title: "Market Research & Validation",
-      description:
-        "Conduct surveys and interviews with potential users to validate the problem and solution.",
-      amount: "৳3,000",
-      status: "completed",
-      completedDate: "March 2023",
-    },
-    {
-      id: "m2",
-      title: "Prototype Development",
-      description: "Build a working prototype of the main feature.",
-      amount: "৳8,000",
-      status: "completed",
-      completedDate: "July 2023",
-    },
-    {
-      id: "m3",
-      title: "Pilot Testing",
-      description: "Deploy the prototype for initial testing with beta users.",
-      amount: "৳7,000",
-      status: "in_progress",
-      progress: 85,
-      deadline: "May 15, 2025",
-    },
-    {
-      id: "m4",
-      title: "MVP Launch",
-      description: "Launch the minimum viable product to the public.",
-      amount: "৳7,000",
-      status: "planned",
-      deadline: "August 2025",
-    },
-  ]);
+  useEffect(() => {
+    setCurrentProjectId(projectId);
 
-  const [updates, setUpdates] = useState([
-    {
-      id: "u1",
-      title: "Pilot Testing Progress",
-      content:
-        "We've successfully deployed our initial version to 15 beta testers. Initial feedback shows positive results with a few areas to improve.",
-      date: "April 28, 2025",
-    },
-    {
-      id: "u2",
-      title: "New Team Member",
-      content:
-        "We're excited to welcome Farah Khan, a developer, to our team. She'll be leading the development of our main features.",
-      date: "April 15, 2025",
-    },
-  ]);
+    console.log("Fetching projects on page load");
+    fetchProjects();
 
-  // Load project data
-  const project = {
-    id: projectId,
-    name: "EcoSolutions",
-    description: "Sustainable waste management solutions for urban areas",
-    longDescription:
-      "EcoSolutions aims to address waste management challenges through a combination of technology and community engagement. Our solution uses IoT sensors to monitor waste levels in bins and optimize collection routes, while our mobile app encourages citizens to participate in recycling initiatives through gamification and rewards.",
-    category: "Environment",
-    fundingGoal: "৳25,000",
-    raisedSoFar: "৳18,000",
-    tags: ["sustainability", "waste management", "urban", "IoT", "community"],
-    university: "BUET",
-    department: "Environmental Engineering",
-    teamSize: 3,
-    coverImage: placeholders.cover,
-    logoImage: placeholders.logo,
-    status: "active",
-    createdAt: "January 15, 2023",
+  }, [projectId, fetchProjects, setCurrentProjectId]);
+
+  useEffect(() => {
+    const currentProject = projects.find((p) => String(p.id) === projectId);
+    if (currentProject) {
+      formatProjectData(currentProject);
+      initializeFormState(currentProject);
+    }
+  }, [projects, projectId, formatProjectData, initializeFormState,fetchProjects]);
+
+  const currentProject = useMemo(() => {
+    return projects.find((p) => String(p.id) === projectId) || {
+      id: projectId,
+      title: "",
+      description: "",
+      category: "",
+      budget: 0,
+      raised_amount: 0,
+      tags: "",
+      status: "draft" as const,
+      cover_image: placeholders.cover,
+      profile_picture: placeholders.logo,
+      createdAt: new Date().toDateString(),
+    };
+  }, [projects, projectId]);
+  useEffect(() => {
+    // Calculate total raised amount when milestones change
+    const totalRaised = milestones.reduce(
+      (acc, milestone) => acc + (Number(milestone.raised_amount) || 0),
+      0
+    );
+    if (currentProject && totalRaised !== currentProject.raised_amount) {
+      setFormState({ raised_amount: totalRaised });
+    }
+  }, [milestones, currentProject, setFormState]);
+
+  const fundingProgress = useMemo(() => {
+    const raised = Number(currentProject.raised_amount) || 0;
+    const budget = Number(currentProject.budget) || 1; // Avoid division by zero
+    return (raised / budget) * 100;
+  }, [currentProject.raised_amount, currentProject.budget]);
+
+
+  const handleFileChange = (type: 'coverImage' | 'logoImage' | 'video' | 'additionalImage', e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    const file = e.target.files[0];
+    setMediaFormState({ [type]: file });
   };
 
-  // Calculate funding progress
-  const fundingProgress =
-    (Number.parseInt(project.raisedSoFar.replace(/[^0-9]/g, "")) /
-      Number.parseInt(project.fundingGoal.replace(/[^0-9]/g, ""))) *
-    100;
+  const handlepitch_videoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setMediaFormState({ pitch_video: e.target.value });
+  };
 
-  // Form validation schema
-  const formSchema = z.object({
-    name: z.string().min(3, {
-      message: "Project name must be at least 3 characters.",
-    }),
-    description: z.string().min(10, {
-      message: "Description must be at least 10 characters.",
-    }),
-    longDescription: z.string().min(50, {
-      message: "Detailed description must be at least 50 characters.",
-    }),
-    category: z.string({
-      required_error: "Please select a category.",
-    }),
-    fundingGoal: z.string(),
-    tags: z.string(),
-    university: z.string(),
-    department: z.string(),
-    teamSize: z.string(),
-  });
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormState({ [name]: value });
 
-  // Initialize form
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: project.name,
-      description: project.description,
-      longDescription: project.longDescription,
-      category: project.category,
-      fundingGoal: project.fundingGoal,
-      tags: project.tags.join(", "),
-      university: project.university,
-      department: project.department,
-      teamSize: project.teamSize.toString(),
-    },
-  });
+    if (formErrors[name]) {
+      setFormErrors({ ...formErrors, [name]: "" });
+    }
+  };
 
-  // Form submission handler
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const handleSelectChange = (name: string, value: string) => {
+    setFormState({ [name]: value });
+
+    if (formErrors[name]) {
+      setFormErrors({ ...formErrors, [name]: "" });
+    }
+  };
+
+  const validateForm = () => {
+    const errors: Record<string, string> = {};
+
+    if (!formState.title || formState.title.length < 3) {
+      errors.title = "Project name must be at least 3 characters";
+    }
+
+    if (!formState.description || formState.description.length < 50) {
+      errors.description = "Description must be at least 50 characters";
+    }
+
+    if (!formState.category) {
+      errors.category = "Please select a category";
+    }
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const onSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
     setIsLoading(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      console.log(values);
+    try {
+      const updatedProject: Partial<Project> = {
+        id: projectId, // Ensure ID is included in the update
+        title: formState.title,
+        description: formState.description,
+        category: formState.category,
+        budget: formState.budget,
+        tags: formState.tags,
+        status: currentProject.status,
+        raised_amount: Number(formState.raised_amount), // Ensure it's a number
+      };
+
+      if (mediaChanged) {
+        updatedProject.cover_image = mediaFormState.coverImage;
+        updatedProject.profile_picture = mediaFormState.logoImage;
+        updatedProject.pitch_video = mediaFormState.pitch_video;
+      }
+
+      updatedProject.milestones = milestones.map(milestone => ({
+        ...milestone,
+        amount: Number(milestone.amount),
+        raised_amount: Number(milestone.raised_amount),
+        progress: Number(milestone.progress)
+      }));
+
+      console.log("Saving project data:", updatedProject);
+      await saveProject(projectId, updatedProject);
+
+      // Force a refetch after saving to ensure we have the latest data
+      console.log("Refetching projects after save");
+      await fetchProjects();
+
+      setMediaChanged(false);
+      alert("Project saved successfully!");
+    } catch (error) {
+      console.error("Failed to save project:", error);
+      alert("Failed to save project. See console for details.");
+    } finally {
       setIsLoading(false);
-      toast({
-        title: "Project Updated",
-        description: "Your project has been successfully updated.",
-      });
-    }, 1000);
-  };
-
-  // Add new milestone
-  const addMilestone = () => {
-    const newMilestone = {
-      id: `m${milestones.length + 1}`,
-      title: "New Milestone",
-      description: "Describe what you will achieve in this milestone",
-      amount: "৳0",
-      status: "planned",
-      deadline: "Future date",
-    };
-
-    setMilestones([...milestones, newMilestone]);
-  };
-
-  // Delete milestone
-  const deleteMilestone = (id: string) => {
-    setMilestones(milestones.filter((milestone) => milestone.id !== id));
-  };
-
-  // Add new update - Use static strings for dates to avoid hydration issues
-  const addUpdate = () => {
-    const newUpdate = {
-      id: `u${updates.length + 1}`,
-      title: "New Update",
-      content: "Share your progress or announcements with your audience",
-      date: "Today", // Static string instead of dynamic date formatting
-    };
-
-    setUpdates([...updates, newUpdate]);
-  };
-
-  // Delete update
-  const deleteUpdate = (id: string) => {
-    setUpdates(updates.filter((update) => update.id !== id));
-  };
-
-  // Team member update functions
-  const updateTeamMemberName = (id: string, name: string) => {
-    setTeamMembers(
-      teamMembers.map((member) =>
-        member.id === id ? { ...member, name, initial: name.charAt(0) } : member
-      )
-    );
-  };
-
-  const updateTeamMemberRole = (id: string, role: string) => {
-    setTeamMembers(
-      teamMembers.map((member) =>
-        member.id === id ? { ...member, role } : member
-      )
-    );
-  };
-
-  const addTeamMember = () => {
-    const newMember = {
-      id: `t${teamMembers.length + 1}`,
-      name: "New Team Member",
-      role: "Role",
-      initial: "N",
-    };
-
-    setTeamMembers([...teamMembers, newMember]);
-  };
-
-  const deleteTeamMember = (id: string) => {
-    setTeamMembers(teamMembers.filter((member) => member.id !== id));
+    }
   };
 
   return (
@@ -316,15 +290,14 @@ export default function ManageProjectPage({
         </div>
 
         <div className="flex gap-2">
-          {/* Fix URL structure to match app's routing */}
-          <Link href={`/udayee/projects/preview/${projectId}`}>
+          <Link href={`/udayee/projects/${projectId}/preview`}>
             <Button variant="outline" className="flex items-center gap-2">
               <Eye className="h-4 w-4" />
               Preview
             </Button>
           </Link>
           <Button
-            onClick={form.handleSubmit(onSubmit)}
+            onClick={onSubmit}
             className="bg-primary hover:bg-primary/90 text-primary-foreground flex items-center gap-2"
             disabled={isLoading}
           >
@@ -334,34 +307,36 @@ export default function ManageProjectPage({
         </div>
       </div>
 
-      {/* Project Status Card */}
       <Card className="border-l-4 border-l-primary">
         <CardContent className="flex flex-col md:flex-row justify-between items-start md:items-center py-4">
           <div className="flex items-center gap-3">
             <div className="h-14 w-14 rounded-lg overflow-hidden">
               <Image
-                src={project.logoImage}
-                alt={project.name}
+                src={currentProject.profile_picture ? safeUrl(currentProject.profile_picture) : placeholders.logo}
+                alt={currentProject.title || "Project"}
                 width={56}
                 height={56}
                 className="object-cover"
               />
             </div>
             <div>
-              <h2 className="text-xl font-semibold">{project.name}</h2>
+              <h2 className="text-xl font-semibold">{currentProject.title}</h2>
               <div className="flex items-center gap-2">
                 <Badge
-                  variant={project.status === "active" ? "default" : "outline"}
+                  variant={currentProject.status === "active" ? "default" : "outline"}
                   className={
-                    project.status === "active"
+                    currentProject.status === "active"
                       ? "bg-primary text-primary-foreground"
                       : ""
                   }
                 >
-                  {project.status === "active" ? "Active" : "Draft"}
+                  {currentProject.status === "active" ? "Active" : "Draft"}
                 </Badge>
                 <span className="text-sm text-muted-foreground">
-                  Created on {project.createdAt}
+                  Created on{" "}
+                  {currentProject.createdAt
+                    ? new Date(currentProject.createdAt).toLocaleDateString()
+                    : "N/A"}
                 </span>
               </div>
             </div>
@@ -381,12 +356,14 @@ export default function ManageProjectPage({
                   className="h-2 bg-primary/10"
                 />
               </div>
+              <div className="text-xs text-muted-foreground mt-1">
+                ৳{currentProject.raised_amount || 0} of ৳{currentProject.budget || 0}
+              </div>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Main Editor */}
       <Tabs defaultValue="info" className="space-y-6">
         <TabsList className="bg-background border border-border rounded-md p-1 w-full flex flex-wrap">
           <TabsTrigger
@@ -433,222 +410,161 @@ export default function ManageProjectPage({
           </TabsTrigger>
         </TabsList>
 
-        {/* Basic Info Tab */}
         <TabsContent value="info">
           <Card>
             <CardHeader>
               <CardTitle>Basic Information</CardTitle>
               <CardDescription>
-                Edit your project's core information
+                Edit your project&apos;s core information
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Form {...form}>
-                <form className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField
-                      control={form.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Project Name</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Enter project name"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
+              <form className="space-y-6" onSubmit={onSubmit}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label htmlFor="title" className="text-sm font-medium">
+                      Project Name
+                    </label>
+                    <Input
+                      id="title"
+                      name="title"
+                      placeholder="Enter project name"
+                      value={formState.title}
+                      onChange={handleInputChange}
+                      className={formErrors.title ? "border-destructive" : ""}
                     />
+                    {formErrors.title && (
+                      <p className="text-sm text-destructive">{formErrors.title}</p>
+                    )}
+                  </div>
 
-                    <FormField
-                      control={form.control}
-                      name="category"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Category</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select a category" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="Environment">
-                                Environment
-                              </SelectItem>
-                              <SelectItem value="Technology">
-                                Technology
-                              </SelectItem>
-                              <SelectItem value="Education">
-                                Education
-                              </SelectItem>
-                              <SelectItem value="Healthcare">
-                                Healthcare
-                              </SelectItem>
-                              <SelectItem value="Agriculture">
-                                Agriculture
-                              </SelectItem>
-                              <SelectItem value="Finance">Finance</SelectItem>
-                              <SelectItem value="E-commerce">
-                                E-commerce
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                  <div className="space-y-2">
+                    <label htmlFor="category" className="text-sm font-medium">
+                      Category
+                    </label>
+                    <Select
+                      onValueChange={(value) => handleSelectChange("category", value)}
+                      value={formState.category}
+                    >
+                      <SelectTrigger className={formErrors.category ? "border-destructive" : ""}>
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Environment">Environment</SelectItem>
+                        <SelectItem value="Technology">Technology</SelectItem>
+                        <SelectItem value="Education">Education</SelectItem>
+                        <SelectItem value="Healthcare">Healthcare</SelectItem>
+                        <SelectItem value="Agriculture">Agriculture</SelectItem>
+                        <SelectItem value="Finance">Finance</SelectItem>
+                        <SelectItem value="E-commerce">E-commerce</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {formErrors.category && (
+                      <p className="text-sm text-destructive">{formErrors.category}</p>
+                    )}
+                  </div>
 
-                    <FormField
-                      control={form.control}
+                  <div className="md:col-span-2 space-y-2">
+                    <label htmlFor="description" className="text-sm font-medium">
+                      Full Description
+                    </label>
+                    <Textarea
+                      id="description"
                       name="description"
-                      render={({ field }) => (
-                        <FormItem className="md:col-span-2">
-                          <FormLabel>Short Description</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              placeholder="A brief description of your project"
-                              className="resize-none"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormDescription>
-                            This will be displayed in project cards and search
-                            results (100-150 characters)
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                      placeholder="Detailed information about your project"
+                      className={`min-h-[200px] ${formErrors.longDescription ? "border-destructive" : ""}`}
+                      value={formState.description}
+                      onChange={handleInputChange}
                     />
+                    <p className="text-sm text-muted-foreground">
+                      Provide comprehensive details about your project, goals, and vision
+                    </p>
+                    {formErrors.description && (
+                      <p className="text-sm text-destructive">{formErrors.description}</p>
+                    )}
+                  </div>
 
-                    <FormField
-                      control={form.control}
-                      name="longDescription"
-                      render={({ field }) => (
-                        <FormItem className="md:col-span-2">
-                          <FormLabel>Full Description</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              placeholder="Detailed information about your project"
-                              className="min-h-[200px]"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormDescription>
-                            Provide comprehensive details about your project,
-                            goals, and vision
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
+                  <div className="md:col-span-2 space-y-2">
+                    <label htmlFor="tags" className="text-sm font-medium">
+                      Tags
+                    </label>
+                    <Input
+                      id="tags"
                       name="tags"
-                      render={({ field }) => (
-                        <FormItem className="md:col-span-2">
-                          <FormLabel>Tags</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="sustainability, waste management, urban"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormDescription>
-                            Separate tags with commas
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                      placeholder="sustainability, waste management, urban"
+                      value={formState.tags}
+                      onChange={handleInputChange}
                     />
+                    <p className="text-sm text-muted-foreground">
+                      Separate tags with commas
+                    </p>
+                  </div>
 
-                    <FormField
-                      control={form.control}
-                      name="fundingGoal"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Funding Goal</FormLabel>
-                          <FormControl>
-                            <Input placeholder="৳25,000" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="teamSize"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Team Size</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select team size" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="1">Solo (1 person)</SelectItem>
-                              <SelectItem value="2">2 people</SelectItem>
-                              <SelectItem value="3">3 people</SelectItem>
-                              <SelectItem value="4">4 people</SelectItem>
-                              <SelectItem value="5+">5+ people</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="university"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>University</FormLabel>
-                          <FormControl>
-                            <Input placeholder="BUET" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="department"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Department</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Environmental Engineering"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                  <div className="space-y-2">
+                    <label htmlFor="budget" className="text-sm font-medium">
+                      Funding Goal
+                    </label>
+                    <Input
+                      id="budget"
+                      name="budget"
+                      placeholder="৳25,000"
+                      value={formState.budget}
+                      onChange={handleInputChange}
                     />
                   </div>
-                </form>
-              </Form>
+
+                  <div className="space-y-2">
+                    <label htmlFor="teamSize" className="text-sm font-medium">
+                      Team Size
+                    </label>
+                    <Select
+                      onValueChange={(value) => handleSelectChange("teamSize", value)}
+                      value={formState.teamSize}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select team size" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1">Solo (1 person)</SelectItem>
+                        <SelectItem value="2">2 people</SelectItem>
+                        <SelectItem value="3">3 people</SelectItem>
+                        <SelectItem value="4">4 people</SelectItem>
+                        <SelectItem value="5+">5+ people</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label htmlFor="university" className="text-sm font-medium">
+                      University
+                    </label>
+                    <Input
+                      id="university"
+                      name="university"
+                      placeholder="BUET"
+                      value={formState.university}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label htmlFor="department" className="text-sm font-medium">
+                      Department
+                    </label>
+                    <Input
+                      id="department"
+                      name="department"
+                      placeholder="Environmental Engineering"
+                      value={formState.department}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                </div>
+              </form>
             </CardContent>
           </Card>
         </TabsContent>
 
-        {/* Milestones Tab */}
         <TabsContent value="milestones">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
@@ -659,7 +575,7 @@ export default function ManageProjectPage({
                 </CardDescription>
               </div>
               <Button
-                onClick={addMilestone}
+                onClick={() => addItem('milestone')}
                 className="bg-primary hover:bg-primary/90 text-primary-foreground"
               >
                 <Plus className="h-4 w-4 mr-2" />
@@ -680,11 +596,7 @@ export default function ManageProjectPage({
                         </div>
                         <Input
                           value={milestone.title}
-                          onChange={(e) => {
-                            const updatedMilestones = [...milestones];
-                            updatedMilestones[index].title = e.target.value;
-                            setMilestones(updatedMilestones);
-                          }}
+                          onChange={(e) => updateItem('milestone', milestone.id!, 'title', e.target.value)}
                           className="border-0 bg-transparent px-2 text-base font-medium focus-visible:ring-0 focus-visible:ring-offset-0"
                         />
                       </div>
@@ -693,20 +605,21 @@ export default function ManageProjectPage({
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" className="h-8 px-2">
                               <Badge
-                                variant="outline"
-                                className={`${
-                                  milestone.status === "completed"
-                                    ? "bg-primary/10 text-primary border-primary/20"
-                                    : milestone.status === "in_progress"
+                                variant={milestone.status === "completed"
+                                  ? "default"
+                                  : "outline"}
+                                className={`${milestone.status === "completed"
+                                  ? "bg-primary/10 text-primary border-primary/20"
+                                  : milestone.status === "in-progress"
                                     ? "bg-amber-500/10 text-amber-500 border-amber-500/20"
                                     : "bg-muted text-muted-foreground"
-                                }`}
+                                  }`}
                               >
                                 {milestone.status === "completed"
                                   ? "Completed"
-                                  : milestone.status === "in_progress"
-                                  ? "In Progress"
-                                  : "Planned"}
+                                  : milestone.status === "in-progress"
+                                    ? "In Progress"
+                                    : "Planned"}
                               </Badge>
                               <ChevronDown className="h-4 w-4 ml-1" />
                             </Button>
@@ -714,33 +627,31 @@ export default function ManageProjectPage({
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem
                               onClick={() => {
-                                const updatedMilestones = [...milestones];
-                                updatedMilestones[index].status = "planned";
-                                setMilestones(updatedMilestones);
+                                updateItem('milestone', milestone.id!, 'status', 'planned'); updateItem('milestone', milestone.id!, 'plannedAt', new Date().toLocaleDateString());
+
                               }}
+
                             >
                               Planned
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() => {
-                                const updatedMilestones = [...milestones];
-                                updatedMilestones[index].status = "in_progress";
-                                updatedMilestones[index].progress = 0;
-                                setMilestones(updatedMilestones);
+                                updateItem('milestone', milestone.id!, 'status', 'in-progress');
+                                updateItem('milestone', milestone.id!, 'progress', 0);
+                                updateItem('milestone', milestone.id!, 'raised_amount', 0);
+                                updateItem('milestone', milestone.id!, 'deadlineAt', new Date().toLocaleDateString());
+                                setRaisedAmount();
+
                               }}
                             >
                               In Progress
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() => {
-                                const updatedMilestones = [...milestones];
-                                updatedMilestones[index].status = "completed";
-                                updatedMilestones[index].completedDate =
-                                  new Date().toLocaleDateString("en-US", {
-                                    year: "numeric",
-                                    month: "long",
-                                  });
-                                setMilestones(updatedMilestones);
+                                updateItem('milestone', milestone.id!, 'status', 'completed');
+                                updateItem('milestone', milestone.id!, 'completedAt', new Date().toLocaleDateString());
+                                updateItem('milestone', milestone.id!, 'raised_amount', milestone.amount);
+                                setRaisedAmount();
                               }}
                             >
                               Completed
@@ -751,7 +662,7 @@ export default function ManageProjectPage({
                           variant="destructive"
                           size="icon"
                           className="h-8 w-8"
-                          onClick={() => deleteMilestone(milestone.id)}
+                          onClick={() => deleteItem('milestone', milestone.id!)}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -764,12 +675,7 @@ export default function ManageProjectPage({
                         <p className="text-sm font-medium">Description</p>
                         <Textarea
                           value={milestone.description}
-                          onChange={(e) => {
-                            const updatedMilestones = [...milestones];
-                            updatedMilestones[index].description =
-                              e.target.value;
-                            setMilestones(updatedMilestones);
-                          }}
+                          onChange={(e) => updateItem('milestone', milestone.id!, 'description', e.target.value)}
                           placeholder="Describe what you'll achieve in this milestone"
                           className="resize-none h-24"
                         />
@@ -784,10 +690,22 @@ export default function ManageProjectPage({
                             <Input
                               value={milestone.amount}
                               onChange={(e) => {
-                                const updatedMilestones = [...milestones];
-                                updatedMilestones[index].amount =
-                                  e.target.value;
-                                setMilestones(updatedMilestones);
+                                const newAmount = e.target.value;
+                                updateItem('milestone', milestone.id!, 'amount', newAmount);
+
+                                // If milestone is completed, also update the raised_amount to match
+                                if (milestone.status === "completed") {
+                                  updateItem('milestone', milestone.id!, 'raised_amount', newAmount);
+                                  setRaisedAmount();
+                                }
+
+                                // If milestone is in progress, recalculate progress percentage
+                                if (milestone.status === "in-progress" && milestone.raised_amount) {
+                                  const raised = Number(milestone.raised_amount) || 0;
+                                  const amount = Number(newAmount) || 1;
+                                  const newProgress = Math.min(Math.round((raised / amount) * 100), 100);
+                                  updateItem('milestone', milestone.id!, 'progress', newProgress);
+                                }
                               }}
                               placeholder="৳0"
                             />
@@ -797,40 +715,48 @@ export default function ManageProjectPage({
                             <div className="space-y-2">
                               <p className="text-sm font-medium">Deadline</p>
                               <Input
-                                value={milestone.deadline}
-                                onChange={(e) => {
-                                  const updatedMilestones = [...milestones];
-                                  updatedMilestones[index].deadline =
-                                    e.target.value;
-                                  setMilestones(updatedMilestones);
-                                }}
+                                value={milestone.plannedAt}
+                                onChange={(e) => updateItem('milestone', milestone.id!, 'plannedAt', e.target.value)}
                                 placeholder="Month Year"
                               />
                             </div>
                           )}
 
-                          {milestone.status === "in_progress" && (
-                            <div className="space-y-2">
-                              <div className="flex justify-between">
-                                <p className="text-sm font-medium">Progress</p>
-                                <span className="text-sm">
-                                  {milestone.progress}%
-                                </span>
+                          {milestone.status === "in-progress" && (
+                            <>
+                              <div className="space-y-2">
+                                <p className="text-sm font-medium">Deadline</p>
+                                <Input
+                                  value={milestone.deadlineAt}
+                                  onChange={(e) => updateItem('milestone', milestone.id!, 'deadlineAt', e.target.value)}
+                                  placeholder="Month Year"
+                                />
                               </div>
-                              <Input
-                                type="range"
-                                min="0"
-                                max="100"
-                                value={milestone.progress}
-                                onChange={(e) => {
-                                  const updatedMilestones = [...milestones];
-                                  updatedMilestones[index].progress = parseInt(
-                                    e.target.value
-                                  );
-                                  setMilestones(updatedMilestones);
-                                }}
-                              />
-                            </div>
+                              <div className="space-y-2">
+                                <p className="text-sm font-medium">Raised Amount</p>
+                                <Input
+                                  value={milestone.raised_amount}
+                                  onChange={(e) => {
+                                    const raised_amount = Number(e.target.value);
+                                    const amount = milestone.amount || 1;
+                                    const newProgress = Math.min(Math.round((raised_amount / amount) * 100), 100);
+                                    updateItem('milestone', milestone.id!, 'raised_amount', e.target.value);
+                                    updateItem('milestone', milestone.id!, 'progress', newProgress);
+                                    setRaisedAmount();
+
+                                  }}
+                                  placeholder="৳0"
+                                />
+                              </div>
+                              <div className="space-y-2 col-span-2">
+                                <div className="flex justify-between">
+                                  <p className="text-sm font-medium">Progress</p>
+                                  <span className="text-sm">
+                                    {milestone.progress}% of ৳{milestone.amount || 0}
+                                  </span>
+                                </div>
+                              </div>
+                            </>
                           )}
 
                           {milestone.status === "completed" && (
@@ -839,22 +765,17 @@ export default function ManageProjectPage({
                                 Completed Date
                               </p>
                               <Input
-                                value={milestone.completedDate}
-                                onChange={(e) => {
-                                  const updatedMilestones = [...milestones];
-                                  updatedMilestones[index].completedDate =
-                                    e.target.value;
-                                  setMilestones(updatedMilestones);
-                                }}
+                                value={milestone.completedAt}
+                                onChange={(e) => updateItem('milestone', milestone.id!, 'completedAt', e.target.value)}
                                 placeholder="Month Year"
                               />
                             </div>
                           )}
                         </div>
 
-                        {milestone.status === "in_progress" &&
-                          milestone.progress && (
-                            <div className="pt-2">
+                        {milestone.status === "in-progress" &&
+                          milestone.progress !== undefined && (
+                            <div>
                               <Progress
                                 value={milestone.progress}
                                 className="h-2 bg-primary/10"
@@ -866,30 +787,10 @@ export default function ManageProjectPage({
                   </CardContent>
                 </Card>
               ))}
-
-              {milestones.length === 0 && (
-                <div className="text-center py-8 bg-muted/20 border border-dashed rounded-lg">
-                  <h3 className="text-lg font-medium text-muted-foreground">
-                    No Milestones Added
-                  </h3>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Add milestones to break down your project funding into
-                    achievable steps
-                  </p>
-                  <Button
-                    onClick={addMilestone}
-                    className="mt-4 bg-primary hover:bg-primary/90 text-primary-foreground"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add First Milestone
-                  </Button>
-                </div>
-              )}
             </CardContent>
           </Card>
         </TabsContent>
 
-        {/* Media Tab */}
         <TabsContent value="media">
           <Card>
             <CardHeader>
@@ -899,7 +800,6 @@ export default function ManageProjectPage({
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Cover Image */}
               <div className="space-y-4">
                 <div>
                   <h3 className="text-lg font-medium">Cover Image</h3>
@@ -912,22 +812,32 @@ export default function ManageProjectPage({
                 <div className="border rounded-lg overflow-hidden">
                   <div className="aspect-[2/1] relative bg-muted">
                     <Image
-                      src={project.coverImage}
+                      src={safeUrl(mediaFormState.coverImage)}
                       alt="Cover image"
                       fill
                       className="object-cover"
                     />
                   </div>
                   <div className="p-4 bg-muted/10 flex justify-end">
-                    <Button variant="outline">
-                      <FileImage className="h-4 w-4 mr-2" />
-                      Change Image
-                    </Button>
+                    <label htmlFor="cover-image-upload">
+                      <input
+                        id="cover-image-upload"
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => handleFileChange('coverImage', e)}
+                      />
+                      <Button variant="outline" className="cursor-pointer" asChild>
+                        <span>
+                          <FileImage className="h-4 w-4 mr-2" />
+                          Change Image
+                        </span>
+                      </Button>
+                    </label>
                   </div>
                 </div>
               </div>
 
-              {/* Logo Image */}
               <div className="space-y-4">
                 <div>
                   <h3 className="text-lg font-medium">Logo Image</h3>
@@ -940,67 +850,66 @@ export default function ManageProjectPage({
                 <div className="flex items-center gap-4">
                   <div className="h-24 w-24 rounded-lg overflow-hidden border">
                     <Image
-                      src={project.logoImage}
+                      src={safeUrl(mediaFormState.logoImage)}
                       alt="Logo image"
                       width={96}
                       height={96}
                       className="object-cover w-full h-full"
                     />
                   </div>
-                  <Button variant="outline">
-                    <FileImage className="h-4 w-4 mr-2" />
-                    Change Logo
-                  </Button>
+                  <label htmlFor="logo-image-upload">
+                    <input
+                      id="logo-image-upload"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => handleFileChange('logoImage', e)}
+                    />
+                    <Button variant="outline" className="cursor-pointer" asChild>
+                      <span>
+                        <FileImage className="h-4 w-4 mr-2" />
+                        Change Logo
+                      </span>
+                    </Button>
+                  </label>
                 </div>
               </div>
 
-              {/* Pitch Video */}
               <div className="space-y-4">
                 <div>
                   <h3 className="text-lg font-medium">Pitch Video</h3>
                   <p className="text-sm text-muted-foreground">
-                    Upload a video presenting your project and goals
+                    Add a YouTube or Vimeo video URL showcasing your project
                   </p>
                 </div>
 
                 <div className="border rounded-lg overflow-hidden">
                   <div className="aspect-video bg-muted">
-                    <Image
-                      src={placeholders.video}
-                      alt="Video placeholder"
-                      width={800}
-                      height={450}
-                      className="w-full h-auto"
-                    />
+                    {mediaFormState.pitch_video ? (
+                      <iframe
+                        src={safeUrl(mediaFormState.pitch_video)}
+                        className="w-full h-full"
+                        title="YouTube video player"
+                      ></iframe>
+                    ) : (
+                      <Image
+                        src={mediaFormState.pitch_video || placeholders.video}
+                        alt="Video placeholder"
+                        width={800}
+                        height={450}
+                        className="w-full h-auto"
+                      />
+                    )}
                   </div>
-                  <div className="p-4 bg-muted/10 flex justify-end">
-                    <Button variant="outline">
-                      <FileImage className="h-4 w-4 mr-2" />
-                      Upload Video
-                    </Button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Additional Images */}
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-lg font-medium">Additional Images</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Add more images showcasing your project
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="aspect-square bg-muted rounded-md border-2 border-dashed flex items-center justify-center">
-                    <Button variant="ghost" className="h-auto py-8">
-                      <div>
-                        <Plus className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
-                        <p className="text-sm text-muted-foreground">
-                          Add Image
-                        </p>
-                      </div>
-                    </Button>
+                  <div className="p-4 bg-muted/10">
+                    <div className="flex flex-col gap-2">
+                      <Input
+                        placeholder="Enter YouTube or Vimeo URL"
+                        value={safeUrl(mediaFormState.pitch_video)}
+                        onChange={handlepitch_videoChange}
+                      />
+                      <p className="text-xs text-muted-foreground">For example: https://www.youtube.com/embed/VIDEO_ID</p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1008,7 +917,6 @@ export default function ManageProjectPage({
           </Card>
         </TabsContent>
 
-        {/* Team Tab */}
         <TabsContent value="team">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
@@ -1020,75 +928,154 @@ export default function ManageProjectPage({
               </div>
               <Button
                 className="bg-primary hover:bg-primary/90 text-primary-foreground"
-                onClick={addTeamMember}
+                onClick={() => addItem('teamMember')}
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Add Team Member
               </Button>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {teamMembers.map((member) => (
-                  <div
+                  <Card
                     key={member.id}
-                    className="border rounded-lg overflow-hidden"
+                    className="border-l-4 border-l-primary/40 overflow-hidden"
                   >
-                    <div className="p-4 bg-muted/10">
-                      <div className="flex items-center gap-4">
-                        <div className="h-12 w-12 rounded-full overflow-hidden border">
-                          <Image
-                            src={placeholders.avatar(member.initial)}
-                            alt={member.name}
-                            width={48}
-                            height={48}
-                            className="w-full h-full"
-                          />
+                    <CardHeader className="bg-muted/40 py-3 px-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className="h-12 w-12 rounded-full overflow-hidden border">
+                            <Image
+                              src={safeUrl(placeholders.avatar(member.initial))}
+                              alt={member.name}
+                              width={48}
+                              height={48}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+
+                          <div>
+                            <Input
+                              value={member.name}
+                              onChange={(e) =>
+                                updateItem('teamMember', member.id, 'name', e.target.value)
+                              }
+                              className="font-medium border-0 bg-transparent px-0 text-base focus-visible:ring-0 focus-visible:ring-offset-0"
+                              placeholder="Team member name"
+                            />
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <Select
+                                value={member.role}
+                                onValueChange={(value) =>
+                                  updateItem('teamMember', member.id, 'role', value)
+                                }
+                              >
+                                <SelectTrigger className="h-7 w-[150px] border-0 bg-transparent p-0 text-sm focus:ring-0">
+                                  <SelectValue placeholder="Select role" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="Team Lead">Team Lead</SelectItem>
+                                  <SelectItem value="Project Manager">Project Manager</SelectItem>
+                                  <SelectItem value="Developer">Developer</SelectItem>
+                                  <SelectItem value="Designer">Designer</SelectItem>
+                                  <SelectItem value="Researcher">Researcher</SelectItem>
+                                  <SelectItem value="Marketing">Marketing</SelectItem>
+                                  <SelectItem value="Finance">Finance</SelectItem>
+                                  <SelectItem value="Member">Member</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
                         </div>
 
-                        <div className="flex-grow space-y-1">
-                          <Input
-                            value={member.name}
-                            onChange={(e) =>
-                              updateTeamMemberName(member.id, e.target.value)
-                            }
-                            className="font-medium"
-                            placeholder="Team member name"
-                          />
-                          <div className="flex gap-2">
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => deleteItem('teamMember', member.id)}
+                          >
+                            <Trash2 className="h-4 w-4 text-muted-foreground" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="p-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-4">
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium">Email Address</label>
                             <Input
-                              value={member.role}
+                              value={member.email || ""}
                               onChange={(e) =>
-                                updateTeamMemberRole(member.id, e.target.value)
+                                updateItem('teamMember', member.id, 'email', e.target.value)
                               }
-                              placeholder="Role"
-                              className="text-sm"
+                              placeholder="member@university.edu"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium">University/Institution</label>
+                            <Input
+                              value={member.university || ""}
+                              onChange={(e) =>
+                                updateItem('teamMember', member.id, 'university', e.target.value)
+                              }
+                              placeholder="University or Institution name"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium">Department</label>
+                            <Input
+                              value={member.department || ""}
+                              onChange={(e) =>
+                                updateItem('teamMember', member.id, 'department', e.target.value)
+                              }
+                              placeholder="e.g., Computer Science, Engineering"
                             />
                           </div>
                         </div>
 
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => deleteTeamMember(member.id)}
-                        >
-                          <Trash2 className="h-4 w-4 text-muted-foreground" />
-                        </Button>
+                        <div className="space-y-4">
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium">Skills/Expertise</label>
+                            <Input
+                              value={member.skills || ""}
+                              onChange={(e) =>
+                                updateItem('teamMember', member.id, 'skills', e.target.value)
+                              }
+                              placeholder="e.g., Python, Research, Design"
+                            />
+                            <p className="text-xs text-muted-foreground">Separate skills with commas</p>
+                          </div>
+
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium">Bio</label>
+                            <Textarea
+                              value={member.bio || ""}
+                              onChange={(e) =>
+                                updateItem('teamMember', member.id, 'bio', e.target.value)
+                              }
+                              placeholder="Brief introduction about the team member"
+                              className="min-h-[120px] resize-none"
+                            />
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
+                    </CardContent>
+                  </Card>
                 ))}
 
                 {teamMembers.length === 0 && (
-                  <div className="text-center py-8 bg-muted/20 border border-dashed rounded-lg">
-                    <h3 className="text-lg font-medium text-muted-foreground">
-                      No Team Members Added
-                    </h3>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Add team members to showcase your project team
+                  <div className="text-center py-8">
+                    <Users className="h-12 w-12 mx-auto text-muted-foreground/30 mb-3" />
+                    <h3 className="text-lg font-medium text-muted-foreground">No Team Members Yet</h3>
+                    <p className="text-sm text-muted-foreground mt-1 mb-4">
+                      Add team members to showcase who&apos;s working on this project
                     </p>
                     <Button
-                      onClick={addTeamMember}
-                      className="mt-4 bg-primary hover:bg-primary/90 text-primary-foreground"
+                      onClick={() => addItem('teamMember')}
+                      className="bg-primary hover:bg-primary/90 text-primary-foreground"
                     >
                       <Plus className="h-4 w-4 mr-2" />
                       Add First Team Member
@@ -1100,7 +1087,6 @@ export default function ManageProjectPage({
           </Card>
         </TabsContent>
 
-        {/* Updates Tab */}
         <TabsContent value="updates">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
@@ -1111,7 +1097,7 @@ export default function ManageProjectPage({
                 </CardDescription>
               </div>
               <Button
-                onClick={addUpdate}
+                onClick={() => addItem('update')}
                 className="bg-primary hover:bg-primary/90 text-primary-foreground"
               >
                 <Plus className="h-4 w-4 mr-2" />
@@ -1119,17 +1105,13 @@ export default function ManageProjectPage({
               </Button>
             </CardHeader>
             <CardContent className="space-y-4">
-              {updates.map((update, index) => (
+              {updates.map((update) => (
                 <Card key={update.id} className="overflow-hidden">
                   <CardHeader className="bg-muted/40 py-3 px-4">
                     <div className="flex justify-between items-center">
                       <Input
                         value={update.title}
-                        onChange={(e) => {
-                          const updatedUpdates = [...updates];
-                          updatedUpdates[index].title = e.target.value;
-                          setUpdates(updatedUpdates);
-                        }}
+                        onChange={(e) => updateItem('update', update.id, 'title', e.target.value)}
                         className="border-0 bg-transparent px-0 text-base font-medium focus-visible:ring-0 focus-visible:ring-offset-0"
                         placeholder="Update title"
                       />
@@ -1143,7 +1125,7 @@ export default function ManageProjectPage({
                           variant="destructive"
                           size="icon"
                           className="h-8 w-8"
-                          onClick={() => deleteUpdate(update.id)}
+                          onClick={() => deleteItem('update', update.id)}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -1153,40 +1135,17 @@ export default function ManageProjectPage({
                   <CardContent className="p-4">
                     <Textarea
                       value={update.content}
-                      onChange={(e) => {
-                        const updatedUpdates = [...updates];
-                        updatedUpdates[index].content = e.target.value;
-                        setUpdates(updatedUpdates);
-                      }}
+                      onChange={(e) => updateItem('update', update.id, 'content', e.target.value)}
                       placeholder="Share your progress or announcements with your audience"
                       className="resize-none min-h-[100px] border-0 focus-visible:ring-0 p-0"
                     />
                   </CardContent>
                 </Card>
               ))}
-
-              {updates.length === 0 && (
-                <div className="text-center py-8 bg-muted/20 border border-dashed rounded-lg">
-                  <h3 className="text-lg font-medium text-muted-foreground">
-                    No Updates Posted
-                  </h3>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Keep your audience informed by posting regular updates
-                  </p>
-                  <Button
-                    onClick={addUpdate}
-                    className="mt-4 bg-primary hover:bg-primary/90 text-primary-foreground"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Post First Update
-                  </Button>
-                </div>
-              )}
             </CardContent>
           </Card>
         </TabsContent>
 
-        {/* Documents Tab */}
         <TabsContent value="documents">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
@@ -1285,7 +1244,6 @@ export default function ManageProjectPage({
         </TabsContent>
       </Tabs>
 
-      {/* Bottom Action Bar - Fix URL structure here too */}
       <div className="flex flex-col sm:flex-row justify-between gap-4 pt-4">
         <div className="flex gap-2">
           <Link href={`/udayee/projects`}>
@@ -1293,22 +1251,22 @@ export default function ManageProjectPage({
           </Link>
         </div>
         <div className="flex gap-2">
-          <Link href={`/udayee/projects/preview/${projectId}`}>
+          <Link href={`/udayee/projects/${projectId}/preview`}>
             <Button variant="outline" className="flex items-center gap-2">
               <Eye className="h-4 w-4" />
               Preview
             </Button>
           </Link>
           <Button
-            onClick={form.handleSubmit(onSubmit)}
+            onClick={onSubmit}
             className="bg-primary hover:bg-primary/90 text-primary-foreground flex items-center gap-2"
-            disabled={isLoading}
           >
             <Save className="h-4 w-4" />
             {isLoading ? "Saving..." : "Save Changes"}
           </Button>
         </div>
       </div>
+
     </div>
   );
 }

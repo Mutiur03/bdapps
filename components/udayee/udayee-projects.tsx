@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -12,68 +12,52 @@ import {
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Edit, Trash2, Eye, ArrowUpRight, Target } from "lucide-react";
+import { Plus, Eye, ArrowUpRight, Target } from "lucide-react";
 import Link from "next/link";
 import { UdayeeCreateProjectDialog } from "@/components/udayee/udayee-create-project-dialog";
-import { useToast } from "@/hooks/use-toast";
+import { Milestone, useProjectStore } from "@/store/useProjectStore";
 
 export function UdayeeProjects() {
-  const { toast } = useToast();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [projects, setProjects] = useState([
-    {
-      id: "1",
-      name: "EcoSolutions",
-      description: "Sustainable waste management solutions for urban areas",
-      category: "Environment",
-      fundingGoal: "৳25,000",
-      raisedSoFar: "৳18,000",
-      status: "active",
-      milestones: 4,
-      completedMilestones: 2,
-      createdAt: "January 15, 2023",
-    },
-    {
-      id: "2",
-      name: "StudyBuddy",
-      description: "AI-powered study assistant for university students",
-      category: "Education",
-      fundingGoal: "৳15,000",
-      raisedSoFar: "৳3,000",
-      status: "active",
-      milestones: 3,
-      completedMilestones: 0,
-      createdAt: "March 10, 2023",
-    },
-    {
-      id: "3",
-      name: "LocalFresh",
-      description: "Connecting local farmers with urban consumers",
-      category: "Agriculture",
-      fundingGoal: "৳20,000",
-      raisedSoFar: "৳0",
-      status: "draft",
-      milestones: 3,
-      completedMilestones: 0,
-      createdAt: "April 5, 2023",
-    },
-  ]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { projects = [], fetchProjects } = useProjectStore();
 
-  const handleDeleteProject = (id: string) => {
-    setProjects(projects.filter((project) => project.id !== id));
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        await fetchProjects();
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-    toast({
-      title: "Project Deleted",
-      description: "Your project has been successfully deleted.",
-    });
-  };
+    fetchData();
+  }, [fetchProjects]);
 
-  const activeProjects = projects.filter(
-    (project) => project.status === "active"
-  );
-  const draftProjects = projects.filter(
-    (project) => project.status === "draft"
-  );
+  const activeProjects = !isLoading && projects
+    ? projects.filter((project) => project.status === "active")
+    : [];
+  const draftProjects = !isLoading && projects
+    ? projects.filter((project) => project.status === "draft")
+    : [];
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-primary">
+              My Projects
+            </h1>
+            <p className="text-muted-foreground">Loading projects...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -106,7 +90,6 @@ export function UdayeeProjects() {
                 <ProjectCard
                   key={project.id}
                   project={project}
-                  onDelete={() => handleDeleteProject(project.id)}
                 />
               ))}
             </div>
@@ -115,7 +98,7 @@ export function UdayeeProjects() {
               <CardContent className="py-10 text-center">
                 <h3 className="text-lg font-medium">No Active Projects</h3>
                 <p className="text-muted-foreground mt-2">
-                  You don't have any active projects yet. Create a new project
+                  You don&apos;t have any active projects yet. Create a new project
                   to get started.
                 </p>
                 <Button
@@ -137,7 +120,6 @@ export function UdayeeProjects() {
                 <ProjectCard
                   key={project.id}
                   project={project}
-                  onDelete={() => handleDeleteProject(project.id)}
                 />
               ))}
             </div>
@@ -146,7 +128,7 @@ export function UdayeeProjects() {
               <CardContent className="py-10 text-center">
                 <h3 className="text-lg font-medium">No Draft Projects</h3>
                 <p className="text-muted-foreground mt-2">
-                  You don't have any draft projects. Create a new project and
+                  You don&apos;t have any draft projects. Create a new project and
                   save it as a draft.
                 </p>
                 <Button
@@ -170,16 +152,15 @@ export function UdayeeProjects() {
 
 function ProjectCard({
   project,
-  onDelete,
 }: {
   project: any;
-  onDelete: () => void;
 }) {
+  const { handlePublishProject } = useProjectStore();
   const fundingProgress =
     project.status === "active"
-      ? (Number.parseInt(project.raisedSoFar.replace(/[^0-9]/g, "")) /
-          Number.parseInt(project.fundingGoal.replace(/[^0-9]/g, ""))) *
-        100
+      ? ((project.raised_amount ? Number.parseInt(project.raised_amount.toString().replace(/[^0-9]/g, "") || "0") : 0) /
+        (project.budget ? Number.parseInt(project.budget.toString().replace(/[^0-9]/g, "") || "0") : 1)) *
+      100
       : 0;
 
   return (
@@ -188,16 +169,15 @@ function ProjectCard({
         <div className="flex justify-between items-start">
           <div>
             <CardTitle className="text-lg text-primary">
-              {project.name}
+              {project.title}
             </CardTitle>
-            <CardDescription>Created on {project.createdAt}</CardDescription>
+            <CardDescription>Created on {project.createdAt?.toString().split("T")[0] || "N/A"}</CardDescription>
           </div>
           <span
-            className={`text-xs px-2 py-1 rounded-full ${
-              project.status === "active"
-                ? "bg-muted text-primary"
-                : "bg-card text-muted-foreground"
-            }`}
+            className={`text-xs px-2 py-1 rounded-full ${project.status === "active"
+              ? "bg-muted text-primary"
+              : "bg-card text-muted-foreground"
+              }`}
           >
             {project.status === "active" ? "Active" : "Draft"}
           </span>
@@ -205,13 +185,15 @@ function ProjectCard({
       </CardHeader>
       <CardContent className="space-y-4">
         <p className="text-sm text-muted-foreground line-clamp-2">
-          {project.description}
+          {project.description?.length > 50
+            ? `${project.description.substring(0, 50)}...`
+            : project.description || "No description"}
         </p>
 
         <div className="flex justify-between text-sm">
           <span className="text-muted-foreground">Category:</span>
           <span className="font-medium text-secondary-foreground">
-            {project.category}
+            {project.category || "Uncategorized"}
           </span>
         </div>
 
@@ -221,13 +203,13 @@ function ProjectCard({
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Funding Goal:</span>
                 <span className="font-medium text-secondary-foreground">
-                  {project.fundingGoal}
+                  {project.budget || "0"}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Raised So Far:</span>
                 <span className="font-medium text-secondary-foreground">
-                  {project.raisedSoFar}
+                  {project.raised_amount ? project.raised_amount : 0}
                 </span>
               </div>
               <Progress
@@ -241,8 +223,9 @@ function ProjectCard({
               <div className="flex items-center gap-1">
                 <Target className="h-4 w-4 text-chart-4" />
                 <span className="text-secondary-foreground">
-                  {project.completedMilestones}/{project.milestones} milestones
-                  completed
+                  {Array.isArray(project.milestones)
+                    ? `${project.milestones.filter((milestone: Milestone) => milestone.status === "completed").length}/${project.milestones.length} milestones completed`
+                    : "0/0 milestones completed"}
                 </span>
               </div>
             </div>
@@ -277,6 +260,7 @@ function ProjectCard({
           ) : (
             <Button
               size="sm"
+              onClick={() => handlePublishProject(project.id)}
               className="h-8 bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-1"
             >
               Publish

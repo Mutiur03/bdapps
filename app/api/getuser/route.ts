@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import prisma from "@/lib/prisma";
+import { se } from "date-fns/locale";
 
 export const GET = async () => {
   try {
@@ -24,13 +25,35 @@ export const GET = async () => {
     } else {
       user = await prisma.user.findUnique({
         where: { id: Number(session.user.id) },
+        include: {
+          Project: {
+            select: {
+              id: true,
+              title: true,
+              description: true,
+              createdAt: true,
+              updatedAt: true,
+              status: true,
+            },
+          },
+        },
       });
     }
 
     if (user === null) {
-      return new NextResponse(JSON.stringify({ error: "User not found" }), {
-        status: 404,
-      });
+      // Clear session if user not found in database
+      const response = new NextResponse(
+        JSON.stringify({ error: "User not found" }),
+        {
+          status: 404,
+        }
+      );
+
+      response.cookies.delete("next-auth.callback-url");
+      response.cookies.delete("next-auth.csrf-token");
+      response.cookies.delete("next-auth.session-token");
+
+      return response;
     }
     const userWithoutPassword = {
       ...user,

@@ -25,6 +25,7 @@ export async function POST(request: Request) {
       pitch_video,
       location,
       start_date,
+      status,
     } = Object.fromEntries(body.entries());
     const documents = body.getAll("documents");
     const filePaths = path.join(
@@ -35,7 +36,7 @@ export async function POST(request: Request) {
       fs.mkdirSync(filePaths, { recursive: true });
     }
     const fileNames = await Promise.all(
-      documents.map(async (document: FormDataEntryValue) => {
+      documents?.map(async (document: FormDataEntryValue) => {
         if (!(document instanceof File)) {
           throw new Error("Document is not a file");
         }
@@ -52,15 +53,15 @@ export async function POST(request: Request) {
     const profile = profile_picture as File;
     const cover = cover_image as File;
     const pitch = pitch_video as File;
-    const profileName = `${Date.now()}-${profile.name}`;
-    const coverName = `${Date.now()}-${cover.name}`;
-    const pitchName = `${Date.now()}-${pitch.name}`;
+    const profileName = `${Date.now()}-${profile?.name}`;
+    const coverName = `${Date.now()}-${cover?.name}`;
+    const pitchName = `${Date.now()}-${pitch?.name}`;
     const profilePath = path.join(filePaths, profileName);
     const coverPath = path.join(filePaths, coverName);
     const pitchPath = path.join(filePaths, pitchName);
-    const profileBuffer = await profile.arrayBuffer();
-    const coverBuffer = await cover.arrayBuffer();
-    const pitchBuffer = await pitch.arrayBuffer();
+    const profileBuffer = await profile?.arrayBuffer();
+    const coverBuffer = await cover?.arrayBuffer();
+    const pitchBuffer = await pitch?.arrayBuffer();
     const profileUint8Array = new Uint8Array(profileBuffer);
     const coverUint8Array = new Uint8Array(coverBuffer);
     const pitchUint8Array = new Uint8Array(pitchBuffer);
@@ -73,17 +74,19 @@ export async function POST(request: Request) {
     const pitch_video_url = `uploads/project_documents/${userId}/` + pitchName;
     const res = await prisma.project.create({
       data: {
-        title: title.toString(),
-        description: description.toString(),
-        budget: Number(budget),
-        category: category.toString(),
+        title: title?.toString(),
+        description: description?.toString(),
+        budget: parseFloat(budget?.toString() || "0"),
+        category: category?.toString(),
         userId: Number(userId),
         documents: [...fileNames],
         profile_picture: profile_picture_url,
         cover_image: cover_image_url,
         pitch_video: pitch_video_url,
-        location: location.toString(),
-        start_date: start_date.toString(),
+        location: location?.toString(),
+        start_date: start_date?.toString(),
+        status: status.toString(),
+        raised_amount: 0,
       },
     });
     console.log("Creating new post with data:", {
@@ -97,9 +100,15 @@ export async function POST(request: Request) {
       documents,
       location,
       start_date,
+      status,
     });
-
-    return NextResponse.json(res, { status: 201 });
+    await prisma.projectMember.create({
+      data: {
+        userId: Number(userId),
+        projectId: res.id,
+      },
+    });
+    return NextResponse.json(res);
   } catch (error) {
     console.error("Error creating post:", error);
     return NextResponse.json(
@@ -121,6 +130,33 @@ export async function GET() {
     const projects = await prisma.project.findMany({
       where: {
         userId: Number(userId),
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            university_email: true,
+            profile_picture: true,
+            university: true,
+            department: true,
+          },
+        },
+        milestones: true,
+        projectMembers: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                university_email: true,
+                profile_picture: true,
+                university: true,
+                department: true,
+              },
+            },
+          },
+        },
       },
     });
 
@@ -173,23 +209,24 @@ export async function PUT(request: Request) {
       });
     }
     const userId = (session.user as { id?: string })?.id;
+
     const body = await request.formData();
-    const { projectId, title, description, budget, category } =
+    console.log("Form data received:", body);
+
+    const { projectId, title, description, budget, category, status, tags } =
       Object.fromEntries(body.entries());
 
-    
     const existingProject = await prisma.project.findUnique({
       where: {
         id: Number(projectId),
         userId: Number(userId),
       },
     });
-
+    const milestones = body.get("milestones");
     if (!existingProject) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 });
     }
 
-    
     const filePaths = path.join(
       process.cwd(),
       `public/uploads/project_documents/${userId}`
@@ -198,100 +235,172 @@ export async function PUT(request: Request) {
       fs.mkdirSync(filePaths, { recursive: true });
     }
 
-    
-    const updateData: any = {
-      title: title.toString(),
-      description: description.toString(),
-      budget: Number(budget),
-      category: category.toString(),
-    };
-
-    
-    const profile_picture = body.get("profile_picture");
-    if (profile_picture instanceof File) {
-      const profile = profile_picture as File;
-      const profileName = `${Date.now()}-${profile.name}`;
-      const profilePath = path.join(filePaths, profileName);
-      const profileBuffer = await profile.arrayBuffer();
-      const profileUint8Array = new Uint8Array(profileBuffer);
-      fs.writeFileSync(profilePath, profileUint8Array);
-      updateData.profile_picture = `uploads/project_documents/${userId}/${profileName}`;
+    interface Milestone {
+      title: string;
+      description: string;
+      amount: number;
+      status: string;
+      progress?: number;
+      raised_amount?: number;
     }
 
-    
-    const cover_image = body.get("cover_image");
-    if (cover_image instanceof File) {
-      const cover = cover_image as File;
-      const coverName = `${Date.now()}-${cover.name}`;
-      const coverPath = path.join(filePaths, coverName);
-      const coverBuffer = await cover.arrayBuffer();
-      const coverUint8Array = new Uint8Array(coverBuffer);
-      fs.writeFileSync(coverPath, coverUint8Array);
-      updateData.cover_image = `uploads/project_documents/${userId}/${coverName}`;
+    let parsedMilestones: Milestone[] = [];
+    if (milestones) {
+      parsedMilestones = JSON.parse(milestones as string);
+      console.log("Parsed milestones:", parsedMilestones);
+
+      interface MilestoneInput {
+        title: string;
+        description: string;
+        amount: number;
+        status: string;
+        progress?: number;
+        raised_amount?: number;
+        completedAt?: string;
+        plannedAt?: string;
+        deadlineAt?: string;
+      }
+
+      await prisma.milestone.deleteMany({
+        where: {
+          projectId: Number(projectId),
+        },
+      });
+      console.log(parsedMilestones.length);
+
+      if (parsedMilestones.length > 0) {
+        await prisma.milestone.createMany({
+          data: parsedMilestones.map((milestone: MilestoneInput) => ({
+            title: milestone?.title ? milestone.title.toString() : "",
+            description: milestone?.description
+              ? milestone.description.toString()
+              : "",
+            amount: Number(milestone?.amount) || 0,
+            status: milestone?.status ? milestone.status.toString() : "planned",
+            completedAt:
+              milestone?.status === "completed"
+                ? milestone.completedAt?.toString()
+                : null,
+            plannedAt:
+              milestone?.status === "planned"
+                ? milestone.plannedAt?.toString()
+                : null,
+            deadlineAt:
+              milestone?.status === "in-progress"
+                ? milestone.deadlineAt?.toString()
+                : null,
+            progress:
+              milestone?.status === "in-progress" && milestone?.progress
+                ? Number(milestone.progress)
+                : 0,
+            raised_amount:
+              milestone?.status !== "planned" && milestone?.raised_amount
+                ? Number(milestone.raised_amount)
+                : null,
+            projectId: Number(projectId),
+          })),
+        });
+      }
+      const raised_amount = parsedMilestones.reduce((acc, milestone) => {
+        if (milestone.status !== "planned" && milestone.raised_amount) {
+          return acc + Number(milestone.raised_amount);
+        }
+        return acc;
+      }, 0);
+      console.log("Total raised amount:", raised_amount);
+
+      const updateData: any = {
+        title: title.toString(),
+        description: description.toString(),
+        budget: Number(budget),
+        category: category.toString(),
+        status: status.toString(),
+        tags: tags.toString(),
+        raised_amount: raised_amount || 0,
+      };
+
+      const profile_picture = body.get("profile_picture");
+      if (profile_picture instanceof File) {
+        const profile = profile_picture as File;
+        const profileName = `${Date.now()}-${profile.name}`;
+        const profilePath = path.join(filePaths, profileName);
+        const profileBuffer = await profile.arrayBuffer();
+        const profileUint8Array = new Uint8Array(profileBuffer);
+        fs.writeFileSync(profilePath, profileUint8Array);
+        updateData.profile_picture = `uploads/project_documents/${userId}/${profileName}`;
+      }
+
+      const cover_image = body.get("cover_image");
+      if (cover_image instanceof File) {
+        const cover = cover_image as File;
+        const coverName = `${Date.now()}-${cover.name}`;
+        const coverPath = path.join(filePaths, coverName);
+        const coverBuffer = await cover.arrayBuffer();
+        const coverUint8Array = new Uint8Array(coverBuffer);
+        fs.writeFileSync(coverPath, coverUint8Array);
+        updateData.cover_image = `uploads/project_documents/${userId}/${coverName}`;
+      }
+
+      const pitch_video = body.get("pitch_video");
+      if (pitch_video) {
+        // const pitch = pitch_video as File;
+        // const pitchName = `${Date.now()}-${pitch.name}`;
+        // const pitchPath = path.join(filePaths, pitchName);
+        // const pitchBuffer = await pitch.arrayBuffer();
+        // const pitchUint8Array = new Uint8Array(pitchBuffer);
+        // fs.writeFileSync(pitchPath, pitchUint8Array);
+        updateData.pitch_video = pitch_video.toString();
+      }
+
+      const location = body.get("location");
+      if (location) {
+        updateData.location = location.toString();
+      }
+
+      const start_date = body.get("start_date");
+      if (start_date) {
+        updateData.start_date = start_date.toString();
+      }
+
+      const newDocuments = body.getAll("documents");
+      if (newDocuments && newDocuments.length > 0) {
+        const newFileNames = await Promise.all(
+          newDocuments.map(async (document: FormDataEntryValue) => {
+            if (!(document instanceof File)) {
+              return null;
+            }
+            const file = document as File;
+            const fileName = `${Date.now()}-${file.name}`;
+            const filePath = path.join(filePaths, fileName);
+            const buffer = await file.arrayBuffer();
+            const uint8Array = new Uint8Array(buffer);
+            fs.writeFileSync(filePath, uint8Array);
+            return `uploads/project_documents/${userId}/${fileName}`;
+          })
+        ).then((names) => names.filter((name) => name !== null));
+
+        const existingDocs = existingProject.documents || [];
+        updateData.documents = [...existingDocs, ...newFileNames];
+      }
+
+      const updatedProject = await prisma.project.update({
+        where: {
+          id: Number(projectId),
+          userId: Number(userId),
+        },
+        data: updateData,
+        include: {
+          milestones: true,
+        },
+      });
+      return NextResponse.json(
+        {
+          message: "Project updated successfully",
+          project: updatedProject,
+        },
+        { status: 200 }
+      );
     }
-
-    
-    const pitch_video = body.get("pitch_video");
-    if (pitch_video instanceof File) {
-      const pitch = pitch_video as File;
-      const pitchName = `${Date.now()}-${pitch.name}`;
-      const pitchPath = path.join(filePaths, pitchName);
-      const pitchBuffer = await pitch.arrayBuffer();
-      const pitchUint8Array = new Uint8Array(pitchBuffer);
-      fs.writeFileSync(pitchPath, pitchUint8Array);
-      updateData.pitch_video = `uploads/project_documents/${userId}/${pitchName}`;
-    }
-
-    
-    const location = body.get("location");
-    if (location) {
-      updateData.location = location.toString();
-    }
-
-    const start_date = body.get("start_date");
-    if (start_date) {
-      updateData.start_date = start_date.toString();
-    }
-
-    
-    const newDocuments = body.getAll("documents");
-    if (newDocuments && newDocuments.length > 0) {
-      const newFileNames = await Promise.all(
-        newDocuments.map(async (document: FormDataEntryValue) => {
-          if (!(document instanceof File)) {
-            return null; 
-          }
-          const file = document as File;
-          const fileName = `${Date.now()}-${file.name}`;
-          const filePath = path.join(filePaths, fileName);
-          const buffer = await file.arrayBuffer();
-          const uint8Array = new Uint8Array(buffer);
-          fs.writeFileSync(filePath, uint8Array);
-          return `uploads/project_documents/${userId}/${fileName}`;
-        })
-      ).then((names) => names.filter((name) => name !== null)); 
-
-      
-      const existingDocs = existingProject.documents || [];
-      updateData.documents = [...existingDocs, ...newFileNames];
-    }
-
-    
-    const updatedProject = await prisma.project.update({
-      where: {
-        id: Number(projectId),
-        userId: Number(userId),
-      },
-      data: updateData,
-    });
-
-    return NextResponse.json(
-      {
-        message: "Project updated successfully",
-        project: updatedProject,
-      },
-      { status: 200 }
-    );
   } catch (error) {
     console.error("Error updating project:", error);
     return NextResponse.json(

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
+import { Project } from "./useProjectStore";
 interface SocialLinks {
   platform: string;
   url: string;
@@ -36,6 +37,7 @@ interface User {
   image: string;
   createdAt: string;
   updatedAt: string;
+  Project: Project[];
 }
 interface UserStore {
   user: User | null;

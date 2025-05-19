@@ -22,10 +22,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={cn(
-          "min-h-screen bg-[hsl(var(--background))] text-[hsl(var(--foreground))] font-sans antialiased",
-          inter.className
-        )}
+        cz-shortcut-listen="true"
+        // className={cn(
+        //   "min-h-screen bg-[hsl(var(--background))] text-[hsl(var(--foreground))] font-sans antialiased",
+        //   inter.className
+        // )}
       >
         <LoadUserClient />
         <Toaster />

@@ -229,8 +229,9 @@ export function UdayeeOnboarding() {
         email: formData.university_email,
         password: formData.password,
         role: "user",
-        redirect: false,
+        redirect: true,
         callbackUrl: "/",
+        remember: false,
       });
       toast.success("Registration successful! Please check your email for verification.");
       if (res?.error) {

@@ -17,7 +17,9 @@ export default function LoadUserClient() {
                     await getUser(); // Make sure this is awaited
                 }
             } catch (err) {
+                location.href="/";
                 console.error('Failed to load user:', err);
+                
             } finally {
                 setIsLoading(false); 
             }

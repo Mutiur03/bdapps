@@ -1,6 +1,14 @@
 import { NextAuthOptions } from "next-auth";
 
 declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string;
+      role: string;
+      isActivated?: boolean;
+      remember?: boolean; // Add remember property
+    };
+  }
   interface User {
     id: string;
     role: string;
@@ -129,7 +137,6 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id as string;
         session.user.role = token.role as string;
         session.user.isActivated = token.isActivated as boolean;
-
         // Set the session expiry time based on remember preference
         const isRemembered = token.remember as boolean | undefined;
         session.maxAge = isRemembered ? 30 * 24 * 60 * 60 : 24 * 60 * 60; // 30 days or 1 day
