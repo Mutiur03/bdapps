@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -10,10 +10,13 @@ import { Eye, EyeOff, ArrowLeft, Lightbulb } from "lucide-react";
 import Link from "next/link";
 import { HomeNavbar } from "@/components/home/home-navbar";
 import { HomeFooter } from "@/components/home/home-footer";
+import { signIn } from "next-auth/react";
+import useUserStore from "@/store/useUserStore";
 
 export default function StudentSignin() {
   const [isClient, setIsClient] = useState(false);
-  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { getUser } = useUserStore();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -26,7 +29,7 @@ export default function StudentSignin() {
   useEffect(() => {
     setIsClient(true);
   }, []);
-
+  const callbackUrl = searchParams.get('callbackUrl') || '/'; // fallback if not present
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -43,9 +46,22 @@ export default function StudentSignin() {
     setError("");
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      router.push("/student/dashboard");
+      const res = await signIn("credentials", {
+        email: formData.email,
+        password: formData.password,
+        role: "user",
+        remember: formData.rememberMe,
+        redirect: true,
+        callbackUrl: callbackUrl,
+      });
+      if (res?.error) {
+        setError(res.error);
+      }
+      else{
+        getUser();
+      }
     } catch (err) {
+      console.error(err);
       setError("Invalid credentials. Please try again.");
     } finally {
       setIsLoading(false);

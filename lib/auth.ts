@@ -1,19 +1,28 @@
 import { NextAuthOptions } from "next-auth";
 
 declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string;
+      role: string;
+      isActivated?: boolean;
+      remember?: boolean; // Add remember property
+    };
+  }
   interface User {
     id: string;
     role: string;
     email?: string;
-
     phone?: string;
     isActivated?: boolean;
+    remember?: boolean; // Add remember property
   }
 }
 
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
+
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -26,12 +35,14 @@ export const authOptions: NextAuthOptions = {
           type: "text",
           placeholder: "admin or user or investor",
         },
+        remember: { label: "Remember Me", type: "boolean" }, // Add remember field
       },
       async authorize(credentials) {
         // Validate credentials exist
         if (!credentials) {
           throw new Error("No credentials provided");
         }
+        console.log("Credentials:", credentials);
 
         // Handle user role
         if (credentials.role === "user") {
@@ -69,6 +80,7 @@ export const authOptions: NextAuthOptions = {
             email: user.university_email ?? undefined,
             role: user.role ?? "user",
             isActivated: user.isActivated,
+            remember: credentials.remember === "true", // Convert string to boolean
           };
         } else if (credentials.role === "investor") {
           if (!credentials.email || !credentials.password) {
@@ -102,6 +114,7 @@ export const authOptions: NextAuthOptions = {
             id: String(user.id),
             email: user.email ?? undefined,
             role: user.role ?? "investor",
+            remember: credentials.remember === "true", // Convert string to boolean
           };
         } else {
           throw new Error("Invalid role specified");
@@ -115,6 +128,7 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.role = user.role;
         token.isActivated = user.isActivated;
+        token.remember = user.remember; // Store remember preference in token
       }
       return token;
     },
@@ -123,16 +137,19 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id as string;
         session.user.role = token.role as string;
         session.user.isActivated = token.isActivated as boolean;
+        // Set the session expiry time based on remember preference
+        const isRemembered = token.remember as boolean | undefined;
+        session.maxAge = isRemembered ? 30 * 24 * 60 * 60 : 24 * 60 * 60; // 30 days or 1 day
       }
       return session;
     },
   },
   session: {
     strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60,
+    maxAge: 30 * 24 * 60 * 60, // Default max age (will be overridden by session callback)    strategy: "jwt",    signIn: "/signin",
   },
   pages: {
-    signIn: "/user/login",
+    signIn: "/signin",
   },
   secret: process.env.NEXTAUTH_SECRET,
 };

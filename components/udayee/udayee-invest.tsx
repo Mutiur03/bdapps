@@ -137,9 +137,7 @@ export function UdayeeInvest() {
   return (
     <div className="space-y-6">
       <div>
-        <h1
-          className={`text-3xl font-bold tracking-tight text-${themeColors.primary}`}
-        >
+        <h1 className="text-3xl font-bold tracking-tight text-primary">
           Invest in Startups
         </h1>
         <p className="text-muted-foreground">
@@ -159,36 +157,36 @@ export function UdayeeInvest() {
         </div>
         <Button
           variant="outline"
-          className={`flex items-center gap-2 border-${themeColors.primary}/50 hover:border-${themeColors.primary} hover:bg-${themeColors.primary}/10 text-${themeColors.primary}`}
+          className="flex items-center gap-2 border-primary/50 hover:border-primary hover:bg-primary/10 text-primary"
         >
           <Filter className="h-4 w-4" />
           Filters
         </Button>
       </div>
       {/* Tabs for different views */}
-      <Tabs defaultValue="all" className="space-y-4">
-        <TabsList className="bg-transparent border rounded-md p-1">
+      <Tabs defaultValue="all" className="space-y-4 w-full">
+        <TabsList className="bg-background border border-border rounded-md p-1 flex w-full justify-start">
           <TabsTrigger
             value="all"
-            className={`data-[state=active]:bg-${themeColors.primary} data-[state=active]:text-white`}
+            className="rounded-md data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 font-medium"
           >
             All Startups
           </TabsTrigger>
           <TabsTrigger
             value="trending"
-            className={`data-[state=active]:bg-${themeColors.primary} data-[state=active]:text-white`}
+            className="rounded-md data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 font-medium"
           >
             Trending
           </TabsTrigger>
           <TabsTrigger
             value="recent"
-            className={`data-[state=active]:bg-${themeColors.primary} data-[state=active]:text-white`}
+            className="rounded-md data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 font-medium"
           >
             Recently Added
           </TabsTrigger>
           <TabsTrigger
             value="university"
-            className={`data-[state=active]:bg-${themeColors.primary} data-[state=active]:text-white`}
+            className="rounded-md data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 font-medium"
           >
             By University
           </TabsTrigger>
@@ -277,13 +275,16 @@ function StartupCard({
     100;
 
   return (
-    <Card className="overflow-hidden hover:shadow-md transition-shadow">
+    <Card className="overflow-hidden hover:shadow-md transition-shadow flex flex-col h-full">
       {/* Add the image at the top of the card */}
-      <CardImage
-        src={startup.image}
-        alt={`${startup.name} cover image`}
-        aspectRatio="wide"
-      />
+      <div className="aspect-video relative overflow-hidden">
+        <CardImage
+          src={startup.image}
+          alt={`${startup.name} cover image`}
+          aspectRatio="wide"
+          className="w-full h-full object-cover"
+        />
+      </div>
 
       <CardHeader className="pb-2 relative">
         {/* Logo overlay on the image */}
@@ -294,9 +295,7 @@ function StartupCard({
             aspectRatio="square"
             className="w-full h-full"
             fallback={
-              <div
-                className={`bg-${themeColors.primary}/20 text-${themeColors.primary} h-full w-full flex items-center justify-center font-semibold text-xl`}
-              >
+              <div className="bg-primary/20 text-primary h-full w-full flex items-center justify-center font-semibold text-xl">
                 {startup.name.charAt(0)}
               </div>
             }
@@ -305,7 +304,7 @@ function StartupCard({
 
         <div className="flex justify-between items-start pt-4">
           <div>
-            <CardTitle className={`text-lg text-${themeColors.primary}`}>
+            <CardTitle className="text-lg text-primary">
               {startup.name}
             </CardTitle>
             <CardDescription>
@@ -314,29 +313,33 @@ function StartupCard({
           </div>
           <Badge
             variant="outline"
-            className={`bg-${themeColors.primary}/10 text-${themeColors.primary} border-${themeColors.primary}/20`}
+            className="bg-primary/10 text-primary border-primary/20"
           >
             {startup.category}
           </Badge>
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <p className="text-sm text-muted-foreground line-clamp-2">
+
+      <CardContent className="flex flex-col flex-grow space-y-4">
+        {/* Description - always 2 lines with ellipsis */}
+        <p className="text-sm text-muted-foreground line-clamp-2 min-h-[2.5rem]">
           {startup.description}
         </p>
 
+        {/* Tags - can wrap but maintain consistent space */}
         <div className="flex flex-wrap gap-2">
           {startup.tags.map((tag: string) => (
             <Badge
               key={tag}
               variant="outline"
-              className={`text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border-slate-200`}
+              className="text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 border-slate-200"
             >
               #{tag}
             </Badge>
           ))}
         </div>
 
+        {/* Funding progress - fixed height */}
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Funding Goal:</span>
@@ -346,43 +349,39 @@ function StartupCard({
             <span className="text-muted-foreground">Raised So Far:</span>
             <span className="font-medium">{startup.raisedSoFar}</span>
           </div>
-          <Progress
-            value={fundingProgress}
-            className={`h-2 bg-${themeColors.progress}`}
-          />
+          <Progress value={fundingProgress} className="h-2 bg-primary/10" />
           <div className="flex justify-between text-xs text-muted-foreground">
             <span>Progress</span>
             <span>{fundingProgress.toFixed(0)}%</span>
           </div>
         </div>
 
-        <div className="flex justify-between items-center pt-2">
-          <div className="flex items-center gap-1 text-xs text-muted-foreground">
-            {startup.trending ? (
-              <>
-                <TrendingUp
-                  className={`h-3 w-3 text-${themeColors.secondary}`}
-                />
-                <span className={`font-medium text-${themeColors.secondary}`}>
-                  Trending
-                </span>
-              </>
-            ) : (
-              <>
-                <Clock className="h-3 w-3" />
-                <span>Added recently</span>
-              </>
-            )}
+        {/* Push the footer to the bottom */}
+        <div className="mt-auto pt-4">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              {startup.trending ? (
+                <>
+                  <TrendingUp className="h-3 w-3 text-amber-500" />
+                  <span className="font-medium text-amber-500">Trending</span>
+                </>
+              ) : (
+                <>
+                  <Clock className="h-3 w-3" />
+                  <span>Added recently</span>
+                </>
+              )}
+            </div>
+            <Link href={`/udayee/invest/${startup.id}`}>
+              <Button
+                size="sm"
+                className="text-sm flex items-center bg-primary hover:bg-primary/90 text-white"
+              >
+                View Details
+                <ArrowUpRight className="ml-1 h-3 w-3" />
+              </Button>
+            </Link>
           </div>
-          <Link href={`/udayee/invest/${startup.id}`}>
-            <Button
-              size="sm"
-              className={`text-sm flex items-center bg-${themeColors.primary} hover:bg-${themeColors.primaryHover} text-white`}
-            >
-              View Details
-              <ArrowUpRight className="ml-1 h-3 w-3" />
-            </Button>
-          </Link>
         </div>
       </CardContent>
     </Card>

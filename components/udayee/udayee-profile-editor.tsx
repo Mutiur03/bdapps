@@ -31,93 +31,31 @@ import {
   Award,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import useUserStore from "@/store/useUserStore";
 
 export function UdayeeProfileEditor() {
   const { toast } = useToast();
   const [saving, setSaving] = useState(false);
-
-  // Mock data - in a real app, this would come from an API
-  const [studentData, setStudentData] = useState({
-    name: "Ariful Islam",
-    email: "ariful.islam@example.com",
-    phone: "+880 1712345678",
-    dateOfBirth: "1999-05-15",
-    profilePicture: "/placeholder-avatar.jpg",
-    bio: "Computer Science student passionate about web development and artificial intelligence.",
-    institution: "Bangladesh University of Engineering and Technology",
-    program: "Computer Science and Engineering",
-    graduationYear: "2025",
-    currentYear: "3rd year",
-    cgpa: "3.85",
-    skills: ["JavaScript", "React", "Node.js", "Python", "Machine Learning"],
-    interests: [
-      "Web Development",
-      "AI Research",
-      "Mobile App Development",
-      "Competitive Programming",
-    ],
-    socialLinks: {
-      linkedin: "https://linkedin.com/in/arifulislam",
-      github: "https://github.com/arifulislam",
-      portfolio: "https://arifulislam.dev",
-    },
-    careerGoals:
-      "Aspiring to become a full-stack developer with expertise in AI integration. Looking for internship opportunities in tech companies.",
-    address: "Dhaka, Bangladesh",
-  });
+  const { user, updateUser, pushUser } = useUserStore();
+  const [profilePicturePreview, setProfilePicturePreview] = useState<File | null>(null);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    setStudentData((prev) => ({ ...prev, [name]: value }));
+    updateUser({ [name]: value });
   };
 
   const handleSelectChange = (name: string, value: string) => {
-    setStudentData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSkillChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const skillsArray = e.target.value
-      .split(",")
-      .map((skill) => skill.trim())
-      .filter(Boolean);
-
-    setStudentData((prev) => ({ ...prev, skills: skillsArray }));
-  };
-
-  const handleInterestChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const interestsArray = e.target.value
-      .split(",")
-      .map((interest) => interest.trim())
-      .filter(Boolean);
-
-    setStudentData((prev) => ({ ...prev, interests: interestsArray }));
-  };
-
-  const handleSocialLinkChange = (platform: string, value: string) => {
-    setStudentData((prev) => ({
-      ...prev,
-      socialLinks: { ...prev.socialLinks, [platform]: value },
-    }));
+    updateUser({ [name]: value });
   };
 
   const handleProfilePictureChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     if (e.target.files && e.target.files[0]) {
-      // In a real app, you would upload the file to a server
-      // and get back a URL to display
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        if (event.target?.result) {
-          setStudentData((prev) => ({
-            ...prev,
-            profilePicture: event.target!.result as string,
-          }));
-        }
-      };
-      reader.readAsDataURL(e.target.files[0]);
+      const file = e.target.files[0];
+      setProfilePicturePreview(file);
     }
   };
 
@@ -125,15 +63,25 @@ export function UdayeeProfileEditor() {
     e.preventDefault();
     setSaving(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      setSaving(false);
-
+    try {
+      if (profilePicturePreview) {
+        await updateUser({ profile_picture: profilePicturePreview });
+      }
+      await pushUser();
       toast({
         title: "Profile Updated",
         description: "Your student profile has been successfully updated.",
       });
-    }, 1500);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      toast({
+        title: "Update Failed",
+        description: "There was an error updating your profile.",
+        variant: "destructive",
+      });
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -173,32 +121,34 @@ export function UdayeeProfileEditor() {
                   <div className="relative">
                     <Avatar className="w-32 h-32 border-2 border-primary">
                       <AvatarImage
-                        src={studentData.profilePicture}
-                        alt={studentData.name}
+                        src={profilePicturePreview ? URL.createObjectURL(profilePicturePreview) : user?.profile_picture || undefined}
+                        alt={user?.name || "User Avatar"}
                       />
                       <AvatarFallback className="text-4xl">
-                        {studentData.name
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")}
+                        {user?.name
+                          ? user?.name
+                            .split(" ")
+                            .map((n) => n[0])
+                            .join("")
+                          : "U"}
                       </AvatarFallback>
                     </Avatar>
                     <label
-                      htmlFor="profile-picture"
+                      htmlFor="profile_picture"
                       className="absolute bottom-0 right-0 bg-primary text-primary-foreground p-2 rounded-full cursor-pointer shadow-md hover:bg-primary/90 transition-colors"
                     >
                       <Camera className="h-4 w-4" />
                       <span className="sr-only">Change profile picture</span>
                     </label>
                     <input
-                      id="profile-picture"
+                      id="profile_picture"
                       type="file"
                       accept="image/*"
                       className="hidden"
                       onChange={handleProfilePictureChange}
                     />
                   </div>
-                  <h2 className="text-xl font-semibold">{studentData.name}</h2>
+                  <h2 className="text-xl font-semibold">{user?.name}</h2>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -207,19 +157,21 @@ export function UdayeeProfileEditor() {
                     <Input
                       id="name"
                       name="name"
-                      value={studentData.name}
+                      value={user?.name || ""}
                       onChange={handleChange}
                       required
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="dateOfBirth">Date of Birth</Label>
+                    <Label htmlFor="date_of_birth">Date of Birth</Label>
                     <Input
-                      id="dateOfBirth"
-                      name="dateOfBirth"
+                      id="date_of_birth"
+                      name="date_of_birth"
                       type="date"
-                      value={studentData.dateOfBirth}
+                      value={user?.date_of_birth
+                        ? new Date(user.date_of_birth).toLocaleDateString('en-CA')
+                        : new Date().toLocaleDateString('en-CA')}
                       onChange={handleChange}
                     />
                   </div>
@@ -227,21 +179,18 @@ export function UdayeeProfileEditor() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="email">Email Address</Label>
+                    <Label htmlFor="university_email">Email Address</Label>
                     <div className="flex">
                       <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-input bg-muted text-muted-foreground text-sm">
                         <Mail className="h-4 w-4" />
                       </span>
                       <Input
-                        id="email"
-                        name="email"
-                        type="email"
+                        id="university_email"
+                        name="university_email"
+                        type="university_email"
                         className="rounded-l-none"
-                        value={studentData.email}
-                        onChange={handleChange}
-                        required
+                        value={user?.university_email || ""}
                         readOnly
-
                       />
                     </div>
                   </div>
@@ -257,8 +206,7 @@ export function UdayeeProfileEditor() {
                         name="phone"
                         type="tel"
                         className="rounded-l-none"
-                        value={studentData.phone}
-                        onChange={handleChange}
+                        value={user?.phone || ""}
                         readOnly
                       />
                     </div>
@@ -270,7 +218,7 @@ export function UdayeeProfileEditor() {
                   <Input
                     id="address"
                     name="address"
-                    value={studentData.address}
+                    value={user?.address || ""}
                     onChange={handleChange}
                   />
                 </div>
@@ -281,7 +229,7 @@ export function UdayeeProfileEditor() {
                     id="bio"
                     name="bio"
                     placeholder="Tell us a bit about yourself"
-                    value={studentData.bio}
+                    value={user?.bio || ""}
                     onChange={handleChange}
                     rows={3}
                   />
@@ -304,15 +252,15 @@ export function UdayeeProfileEditor() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="institution">Current Institution</Label>
+                  <Label htmlFor="university">Current Institution</Label>
                   <div className="flex">
                     <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-input bg-muted text-muted-foreground text-sm">
                       <BookOpen className="h-4 w-4" />
                     </span>
                     <Input
-                      id="institution"
-                      name="institution"
-                      value={studentData.institution}
+                      id="university"
+                      name="university"
+                      value={user?.university || ""}
                       onChange={handleChange}
                       className="rounded-l-none"
                       required
@@ -323,25 +271,25 @@ export function UdayeeProfileEditor() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="program">Program/Degree</Label>
+                    <Label htmlFor="department">Program/Degree</Label>
                     <Input
-                      id="program"
-                      name="program"
-                      value={studentData.program}
+                      id="department"
+                      name="department"
+                      value={user?.department || ""}
                       onChange={handleChange}
                       required
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="currentYear">Current Year</Label>
+                    <Label htmlFor="year_of_study">Current Year</Label>
                     <Select
-                      value={studentData.currentYear}
+                      value={user?.year_of_study || ""}
                       onValueChange={(value) =>
-                        handleSelectChange("currentYear", value)
+                        handleSelectChange("year_of_study", value)
                       }
                     >
-                      <SelectTrigger id="currentYear">
+                      <SelectTrigger id="year_of_study">
                         <SelectValue placeholder="Select year" />
                       </SelectTrigger>
                       <SelectContent>
@@ -358,16 +306,17 @@ export function UdayeeProfileEditor() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="graduationYear">
+                    <Label htmlFor="graduation_year">
                       Expected Graduation Year
                     </Label>
                     <Input
-                      id="graduationYear"
-                      name="graduationYear"
+                      id="graduation_year"
+                      name="graduation_year"
                       type="text"
-                      value={studentData.graduationYear}
+                      value={user?.graduation_year || ""}
                       onChange={handleChange}
                     />
+
                   </div>
 
                   <div className="space-y-2">
@@ -375,8 +324,8 @@ export function UdayeeProfileEditor() {
                     <Input
                       id="cgpa"
                       name="cgpa"
-                      type="text"
-                      value={studentData.cgpa}
+                      type="number"
+                      value={user?.cgpa?.toString() || ""}
                       onChange={handleChange}
                     />
                   </div>
@@ -410,19 +359,37 @@ export function UdayeeProfileEditor() {
                   <Label htmlFor="skills">Skills</Label>
                   <Input
                     id="skills"
+                    name="skills"
                     placeholder="Enter skills separated by commas (e.g., JavaScript, React, Python)"
-                    value={studentData.skills.join(", ")}
-                    onChange={handleSkillChange}
+                    value={user?.skills || ""}
+                    onChange={handleChange}
                   />
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {studentData.skills.map((skill, index) => (
-                      <span
-                        key={index}
-                        className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm"
-                      >
-                        {skill}
-                      </span>
-                    ))}
+                  <div>
+                    {user?.skills
+                      ? user.skills.split(",").map((skill, index) =>
+                        skill.trim() ? (
+                          <span
+                            key={index}
+                            className="inline-flex items-center px-2 py-1 mr-2 text-sm font-medium text-primary bg-primary/10 border border-primary rounded-full"
+                          >
+                            {skill.trim()}
+                            <button
+                              type="button"
+                              className="ml-2 text-primary hover:text-primary/80"
+                              onClick={() => {
+                                const updatedSkills = user?.skills || ""
+                                  .split(",")
+                                  .filter((_, i) => i !== index)
+                                  .join(",");
+                                updateUser({ skills: updatedSkills });
+                              }}
+                            >
+                              &times;
+                            </button>
+                          </span>
+                        ) : null
+                      ) : null}
+
                   </div>
                 </div>
 
@@ -430,20 +397,38 @@ export function UdayeeProfileEditor() {
                   <Label htmlFor="interests">Interests</Label>
                   <Input
                     id="interests"
+                    name="interests"
                     placeholder="Enter interests separated by commas (e.g., Web Development, AI Research)"
-                    value={studentData.interests.join(", ")}
-                    onChange={handleInterestChange}
+                    value={user?.interests || ""}
+                    onChange={handleChange}
                   />
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {studentData.interests.map((interest, index) => (
-                      <span
-                        key={index}
-                        className="px-3 py-1 bg-secondary/20 text-secondary-foreground rounded-full text-sm"
-                      >
-                        {interest}
-                      </span>
-                    ))}
-                  </div>
+                </div>
+                <div>
+                  {user?.interests
+                    ? user?.interests.split(",").map((interest, index) =>
+                      interest.trim() ? (
+                        <span
+                          key={index}
+                          className="inline-flex items-center px-2 py-1 mr-2 text-sm font-medium text-primary bg-primary/10 border border-primary rounded-full"
+                        >
+                          {interest.trim()}
+                          <button
+                            type="button"
+                            className="ml-2 text-primary hover:text-primary/80"
+                            onClick={() => {
+                              const updatedInterests = user?.interests || ""
+                                .split(",")
+                                .filter((_, i) => i !== index)
+                                .join(",");
+                              updateUser({ interests: updatedInterests });
+                            }}
+                          >
+                            &times;
+                          </button>
+                        </span>
+                      ) : null
+                    ) : null}
+
                 </div>
               </CardContent>
             </Card>
@@ -459,41 +444,62 @@ export function UdayeeProfileEditor() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="linkedin">LinkedIn Profile</Label>
-                  <Input
-                    id="linkedin"
-                    placeholder="https://linkedin.com/in/username"
-                    value={studentData.socialLinks.linkedin}
-                    onChange={(e) =>
-                      handleSocialLinkChange("linkedin", e.target.value)
-                    }
-                  />
-                </div>
+                {Array.isArray(user?.social_links) && user.social_links.length > 0 ? (
+                  user.social_links.map((link, index) => (
+                    <div key={index} className="flex items-center space-x-2 mb-2">
+                      <Input
+                        type="text"
+                        placeholder="Platform (e.g., LinkedIn, GitHub)"
+                        value={link.platform || ""}
+                        onChange={(e) => {
+                          const updatedLinks = [...(user.social_links || [])];
+                          updatedLinks[index] = { ...updatedLinks[index], platform: e.target.value };
+                          updateUser({ social_links: updatedLinks });
+                        }}
+                      />
+                      <Input
+                        type="url"
+                        placeholder="URL (e.g., https://linkedin.com/in/yourprofile)"
+                        value={link.url || ""}
+                        onChange={(e) => {
+                          const updatedLinks = [...(user.social_links || [])];
+                          updatedLinks[index] = { ...updatedLinks[index], url: e.target.value };
+                          updateUser({ social_links: updatedLinks });
+                        }}
+                      />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        onClick={() => {
+                          const updatedLinks = user.social_links ?
+                            user.social_links.filter((_, i) => i !== index) :
+                            [];
+                          updateUser({ social_links: updatedLinks });
+                        }}
+                      >
+                        &times;
+                      </Button>
 
-                <div className="space-y-2">
-                  <Label htmlFor="github">GitHub Profile</Label>
-                  <Input
-                    id="github"
-                    placeholder="https://github.com/username"
-                    value={studentData.socialLinks.github}
-                    onChange={(e) =>
-                      handleSocialLinkChange("github", e.target.value)
-                    }
-                  />
-                </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-muted-foreground text-sm">No social links added yet.</p>
+                )}
 
-                <div className="space-y-2">
-                  <Label htmlFor="portfolio">Portfolio Website</Label>
-                  <Input
-                    id="portfolio"
-                    placeholder="https://yourwebsite.com"
-                    value={studentData.socialLinks.portfolio}
-                    onChange={(e) =>
-                      handleSocialLinkChange("portfolio", e.target.value)
-                    }
-                  />
-                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    const currentLinks = Array.isArray(user?.social_links) ? user.social_links : [];
+                    updateUser({
+                      social_links: [...currentLinks, { platform: '', url: '' }]
+                    });
+                  }}
+
+                  className="mt-2"
+                >
+                  Add Social Link
+                </Button>
               </CardContent>
             </Card>
 
@@ -506,12 +512,12 @@ export function UdayeeProfileEditor() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="careerGoals">Career Goals</Label>
+                  <Label htmlFor="career_goals">Career Goals</Label>
                   <Textarea
-                    id="careerGoals"
-                    name="careerGoals"
+                    id="career_goals"
+                    name="career_goals"
                     placeholder="Describe your career goals and aspirations"
-                    value={studentData.careerGoals}
+                    value={user?.career_goals || ""}
                     onChange={handleChange}
                     rows={3}
                   />

@@ -1,7 +1,5 @@
 "use client"
-
 import type React from "react"
-
 import { useState } from "react"
 import {
   Dialog,
@@ -16,56 +14,44 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useToast } from "@/hooks/use-toast"
-
+import axios from "axios"
+import { useProjectStore } from "@/store/useProjectStore"
 interface UdayeeCreateProjectDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
 }
-
 export function UdayeeCreateProjectDialog({ open, onOpenChange }: UdayeeCreateProjectDialogProps) {
-  const { toast } = useToast()
-  const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    category: "",
-    fundingGoal: "",
-  })
   const [isSubmitting, setIsSubmitting] = useState(false)
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
-
-  const handleSelectChange = (name: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
-
-  const handleSubmit = async (e: React.FormEvent, saveAsDraft = false) => {
+  const [formRef, setFormRef] = useState<HTMLFormElement | null>(null)
+  const { addProject } = useProjectStore()
+  const handleSubmit = async (e: React.FormEvent, isDraft: boolean = false) => {
     e.preventDefault()
     setIsSubmitting(true)
 
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      const form = e.currentTarget instanceof HTMLFormElement
+        ? e.currentTarget
+        : formRef;
+
+      if (!form) {
+        console.error("Form reference not found");
+        return;
+      }
+
+      const formDataToSubmit = new FormData(form);
+      formDataToSubmit.append("status", isDraft ? "draft" : "active");
+
+      console.log(...formDataToSubmit.entries());
+      const res = await axios.post("/api/user/project", formDataToSubmit);
+      console.log("Project created:", res.data);
+
+      addProject(res.data);
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    } finally {
       setIsSubmitting(false)
       onOpenChange(false)
-
-      toast({
-        title: saveAsDraft ? "Draft Saved" : "Project Created",
-        description: saveAsDraft
-          ? "Your project has been saved as a draft."
-          : "Your project has been created successfully.",
-      })
-
-      // Reset form
-      setFormData({
-        name: "",
-        description: "",
-        category: "",
-        fundingGoal: "",
-      })
-    }, 1500)
+    }
   }
 
   return (
@@ -77,45 +63,37 @@ export function UdayeeCreateProjectDialog({ open, onOpenChange }: UdayeeCreatePr
             Add a new startup project to your profile. You can save it as a draft or publish it right away.
           </DialogDescription>
         </DialogHeader>
-
-        <form onSubmit={(e) => handleSubmit(e, false)} className="space-y-6 py-4">
+        <form ref={setFormRef} onSubmit={(e) => handleSubmit(e, false)} className="space-y-6 py-4">
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Project Name</Label>
+              <Label htmlFor="title">Project Title</Label>
               <Input
-                id="name"
-                name="name"
+                id="title"
+                name="title"
                 placeholder="Enter your project name"
-                value={formData.name}
-                onChange={handleChange}
                 required
               />
             </div>
-
             <div className="space-y-2">
               <Label htmlFor="description">Description</Label>
               <Textarea
                 id="description"
                 name="description"
                 placeholder="Briefly describe your startup project"
-                value={formData.description}
-                onChange={handleChange}
                 rows={3}
                 required
               />
             </div>
-
             <div className="space-y-2">
               <Label htmlFor="category">Category</Label>
               <Select
-                value={formData.category}
-                onValueChange={(value) => handleSelectChange("category", value)}
+                name="category"
                 required
               >
                 <SelectTrigger id="category">
                   <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent >
                   <SelectItem value="Environment">Environment</SelectItem>
                   <SelectItem value="Healthcare">Healthcare</SelectItem>
                   <SelectItem value="Education">Education</SelectItem>
@@ -127,16 +105,13 @@ export function UdayeeCreateProjectDialog({ open, onOpenChange }: UdayeeCreatePr
                 </SelectContent>
               </Select>
             </div>
-
             <div className="space-y-2">
-              <Label htmlFor="fundingGoal">Funding Goal (৳)</Label>
+              <Label htmlFor="budget">Funding Goal (৳)</Label>
               <Input
-                id="fundingGoal"
-                name="fundingGoal"
+                id="budget"
+                name="budget"
                 type="number"
                 placeholder="Enter amount in BDT"
-                value={formData.fundingGoal}
-                onChange={handleChange}
                 required
               />
               <p className="text-xs text-muted-foreground">
@@ -144,7 +119,6 @@ export function UdayeeCreateProjectDialog({ open, onOpenChange }: UdayeeCreatePr
               </p>
             </div>
           </div>
-
           <DialogFooter className="flex justify-between sm:justify-between">
             <Button type="button" variant="outline" onClick={(e) => handleSubmit(e, true)} disabled={isSubmitting}>
               Save as Draft

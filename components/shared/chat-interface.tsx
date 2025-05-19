@@ -1,272 +1,358 @@
 "use client";
+import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
+import { formatDistanceToNow } from "date-fns";
 
-import type React from "react";
-
-import { useState, useRef, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Paperclip, Send, FileText, ImageIcon, DollarSign } from "lucide-react";
-import { MakeOfferDialog } from "@/components/investor/make-offer-dialog";
+interface Message {
+  id: string;
+  text: string;
+  senderId: string;
+  recipientId: string;
+  createdAt: string;
+  image?: string;
+}
 
 interface ChatInterfaceProps {
   recipientId: string;
-  recipientType: "investor" | "udayee";
-  userType: "investor" | "udayee";
+  recipientType: string;
+  userType: string;
+  currentUserId?: string;
 }
 
-export function ChatInterface({
-  recipientId,
-  recipientType,
-  userType,
-}: ChatInterfaceProps) {
+// Chat Header Component
+const ChatHeader = ({ recipient }: { recipient: any }) => {
+  return (
+    <div className="p-4 border-b border-border flex items-center gap-3">
+      <div className="w-10 h-10 rounded-full overflow-hidden bg-muted">
+        {recipient?.profilePicture ? (
+          <Image
+            src={recipient.profilePicture}
+            alt={recipient.name || "User"}
+            width={40}
+            height={40}
+            className="object-cover"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+            {(recipient?.name?.charAt(0) || "U").toUpperCase()}
+          </div>
+        )}
+      </div>
+      <div>
+        <h3 className="font-medium">{recipient?.name || "User"}</h3>
+        <p className="text-xs text-muted-foreground">
+          {recipient?.status || "Offline"}
+        </p>
+      </div>
+    </div>
+  );
+};
+
+// Message Input Component
+const MessageInput = ({
+  onSendMessage,
+}: {
+  onSendMessage: (text: string, image?: File) => void;
+}) => {
   const [message, setMessage] = useState("");
-  const [isOfferDialogOpen, setIsOfferDialogOpen] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [image, setImage] = useState<File | null>(null);
 
-  // Mock data - in a real app, this would come from an API
-  const recipient = {
-    id: recipientId,
-    name: recipientType === "udayee" ? "Rahul Ahmed" : "Ayesha Khan",
-    avatar: "/placeholder.svg?height=40&width=40",
-    startup: recipientType === "udayee" ? "EcoSolutions" : undefined,
-    company: recipientType === "investor" ? "Green Ventures" : undefined,
-  };
-
-  const [messages, setMessages] = useState([
-    {
-      id: "1",
-      sender: recipientType,
-      text:
-        recipientType === "udayee"
-          ? "Hello! Thank you for your interest in EcoSolutions. How can I help you today?"
-          : "Hi there! I'm interested in learning more about your startup. Could you tell me about your progress so far?",
-      timestamp: "10:30 AM",
-    },
-    {
-      id: "2",
-      sender: userType,
-      text:
-        recipientType === "udayee"
-          ? "Hi Rahul! I'm interested in your waste management solution. Could you share more details about your technology?"
-          : "Hello Ayesha! We've completed our market research and built a prototype. We're currently testing it in two neighborhoods in Dhaka.",
-      timestamp: "10:32 AM",
-    },
-    {
-      id: "3",
-      sender: recipientType,
-      text:
-        recipientType === "udayee"
-          ? "Of course! Our solution uses IoT sensors to monitor waste levels in bins and optimize collection routes. We also have a mobile app that encourages citizens to participate in recycling through gamification."
-          : "That sounds promising! What kind of investment are you looking for at this stage?",
-      timestamp: "10:35 AM",
-    },
-  ]);
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  const handleSendMessage = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!message.trim()) return;
-
-    const newMessage = {
-      id: Date.now().toString(),
-      sender: userType,
-      text: message,
-      timestamp: new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-    };
-
-    setMessages([...messages, newMessage]);
-    setMessage("");
-
-    // Simulate reply after a delay
-    setTimeout(() => {
-      const replyMessage = {
-        id: (Date.now() + 1).toString(),
-        sender: recipientType,
-        text:
-          recipientType === "udayee"
-            ? "Thanks for your question! Let me provide some more details..."
-            : "That's great to hear! I'd be interested in discussing potential investment opportunities.",
-        timestamp: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-      };
-
-      setMessages((prev) => [...prev, replyMessage]);
-    }, 2000);
+    if (message.trim() || image) {
+      onSendMessage(message, image || undefined);
+      setMessage("");
+      setImage(null);
+    }
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem)] overflow-hidden">
-      {/* Chat Header */}
-      <Card className="rounded-b-none border-b-0">
-        <CardHeader className="py-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <Avatar>
-                <AvatarImage
-                  src={recipient.avatar || "/placeholder.svg"}
-                  alt={recipient.name}
-                />
-                <AvatarFallback>
-                  {recipient.name
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <CardTitle className="text-base">{recipient.name}</CardTitle>
-                <p className="text-xs text-muted-foreground">
-                  {recipient.startup || recipient.company}
-                </p>
-              </div>
+    <form onSubmit={handleSubmit} className="p-3 border-t border-border">
+      {image && (
+        <div className="mb-2 relative">
+          <Image
+            src={URL.createObjectURL(image)}
+            alt="Image preview"
+            width={100}
+            height={100}
+            className="rounded-md"
+          />
+          <button
+            onClick={() => setImage(null)}
+            className="absolute top-1 right-1 bg-foreground rounded-full p-1 text-background text-xs"
+            type="button"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+      <div className="flex gap-2">
+        <label className="cursor-pointer text-muted-foreground hover:text-foreground">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="w-6 h-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"
+            />
+          </svg>
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => e.target.files && setImage(e.target.files[0])}
+          />
+        </label>
+        <input
+          type="text"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          className="flex-1 px-4 py-2 rounded-full border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+          placeholder="Type a message..."
+        />
+        <button
+          type="submit"
+          className="bg-primary text-primary-foreground rounded-full p-2 hover:opacity-90 disabled:opacity-50"
+          disabled={!message.trim() && !image}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="w-5 h-5"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"
+            />
+          </svg>
+        </button>
+      </div>
+    </form>
+  );
+};
+
+const ChatInterface = ({
+  recipientId,
+  recipientType,
+  userType,
+  currentUserId = "user-123",
+}: ChatInterfaceProps) => {
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [recipient, setRecipient] = useState<any>(null);
+  const messageEndRef = useRef<HTMLDivElement | null>(null);
+  const messageContainerRef = useRef<HTMLDivElement | null>(null);
+
+  // Fetch messages and recipient data
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        // Simulate API call - replace with actual API calls
+        setTimeout(() => {
+          setRecipient({
+            id: recipientId,
+            name: `User ${recipientId.substring(0, 5)}`,
+            status: "Online",
+          });
+
+          // Simulate message data
+          setMessages([
+            {
+              id: "msg1",
+              text: "Hello there!",
+              senderId: currentUserId,
+              recipientId: recipientId,
+              createdAt: new Date(Date.now() - 3600000).toISOString(),
+            },
+            {
+              id: "msg2",
+              text: "Hi! How can I help you today?",
+              senderId: recipientId,
+              recipientId: currentUserId,
+              createdAt: new Date(Date.now() - 3500000).toISOString(),
+            },
+            {
+              id: "msg3",
+              text: "I have a question about my account.",
+              senderId: currentUserId,
+              recipientId: recipientId,
+              createdAt: new Date(Date.now() - 3400000).toISOString(),
+            },
+          ]);
+          setIsLoading(false);
+        }, 1000);
+      } catch (error) {
+        console.error("Error fetching chat data:", error);
+        setIsLoading(false);
+      }
+    };
+
+    if (recipientId) {
+      fetchData();
+    }
+  }, [recipientId, currentUserId]);
+
+  // Modified auto-scroll to latest message
+  useEffect(() => {
+    if (messageContainerRef.current) {
+      const scrollContainer = messageContainerRef.current;
+      // Use a short timeout to ensure DOM updates are complete
+      setTimeout(() => {
+        scrollContainer.scrollTop = scrollContainer.scrollHeight;
+      }, 100);
+    }
+  }, [messages]);
+
+  const handleSendMessage = (text: string, image?: File) => {
+    const newMessage: Message = {
+      id: `msg-${Date.now()}`,
+      text: text,
+      senderId: currentUserId,
+      recipientId: recipientId,
+      createdAt: new Date().toISOString(),
+      image: image ? URL.createObjectURL(image) : undefined,
+    };
+
+    setMessages([...messages, newMessage]);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col h-[70vh] border border-border rounded-lg overflow-hidden">
+        <div className="animate-pulse">
+          <div className="p-4 border-b border-border flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-muted"></div>
+            <div className="space-y-2">
+              <div className="h-4 bg-muted rounded w-24"></div>
+              <div className="h-3 bg-muted rounded w-16"></div>
             </div>
-
-            {userType === "investor" && (
-              <Button
-                variant="outline"
-                className="text-emerald-600 border-emerald-600 hover:bg-emerald-50 flex items-center gap-2"
-                onClick={() => setIsOfferDialogOpen(true)}
-              >
-                <DollarSign className="h-4 w-4" />
-                Make an Offer
-              </Button>
-            )}
           </div>
-        </CardHeader>
-      </Card>
+        </div>
+        <div className="flex-1 p-4 space-y-4 overflow-y-auto">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className={`flex ${
+                i % 2 === 0 ? "justify-start" : "justify-end"
+              }`}
+            >
+              <div className="w-8 h-8 rounded-full bg-muted mr-2"></div>
+              <div
+                className={`h-16 rounded-lg bg-muted ${
+                  i % 2 === 0 ? "w-64" : "w-48"
+                }`}
+              ></div>
+            </div>
+          ))}
+        </div>
+        <div className="p-3 border-t border-border">
+          <div className="flex gap-2">
+            <div className="w-6 h-6 bg-muted rounded-full"></div>
+            <div className="flex-1 h-10 bg-muted rounded-full"></div>
+            <div className="w-10 h-10 bg-muted rounded-full"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-      {/* Chat Messages */}
-      <Card className="flex-1 rounded-none border-y-0 overflow-hidden">
-        <CardContent className="p-4 h-full overflow-hidden">
-          <div className="h-full overflow-y-auto pr-1">
-            <div className="space-y-4">
-              {messages.map((msg) => (
-                <div
-                  key={msg.id}
-                  className={`flex ${
-                    msg.sender === userType ? "justify-end" : "justify-start"
+  return (
+    <div className="flex flex-col h-[70vh] border border-border rounded-lg overflow-hidden shadow-md">
+      <ChatHeader recipient={recipient} />
+
+      <div
+        ref={messageContainerRef}
+        className="flex-1 p-4 space-y-4 overflow-y-auto"
+        style={{ scrollBehavior: "smooth" }}
+      >
+        {messages.map((message) => (
+          <div
+            key={message.id}
+            className={`flex ${
+              message.senderId === currentUserId
+                ? "justify-end"
+                : "justify-start"
+            }`}
+          >
+            {message.senderId !== currentUserId && (
+              <div className="w-8 h-8 rounded-full bg-muted mr-2 flex-shrink-0 overflow-hidden">
+                {recipient?.profilePicture ? (
+                  <Image
+                    src={recipient.profilePicture}
+                    alt="Profile"
+                    width={32}
+                    height={32}
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">
+                    {recipient?.name?.charAt(0) || "U"}
+                  </div>
+                )}
+              </div>
+            )}
+
+            <div
+              className={`max-w-[70%] ${
+                message.senderId === currentUserId
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-accent text-accent-foreground"
+              } rounded-lg p-3`}
+            >
+              {message.image && (
+                <div className="mb-2">
+                  <Image
+                    src={message.image}
+                    alt="Attachment"
+                    width={200}
+                    height={150}
+                    className="rounded-md"
+                  />
+                </div>
+              )}
+              <p>{message.text}</p>
+              <div className="text-right">
+                <span
+                  className={`text-xs ${
+                    message.senderId === currentUserId
+                      ? "opacity-75"
+                      : "opacity-75"
                   }`}
                 >
-                  <div
-                    className={`max-w-[70%] rounded-lg px-4 py-2 ${
-                      msg.sender === userType
-                        ? "bg-emerald-600 text-white"
-                        : "bg-gray-100 text-gray-800"
-                    }`}
-                  >
-                    <p className="text-sm">{msg.text}</p>
-                    <p
-                      className={`text-xs mt-1 ${
-                        msg.sender === userType
-                          ? "text-emerald-100"
-                          : "text-gray-500"
-                      }`}
-                    >
-                      {msg.timestamp}
-                    </p>
-                  </div>
-                </div>
-              ))}
-              <div ref={messagesEndRef} />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Chat Input */}
-      <Card className="rounded-t-none border-t-0">
-        <CardContent className="p-3">
-          <form
-            onSubmit={handleSendMessage}
-            className="flex items-center space-x-2"
-          >
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <Paperclip className="h-5 w-5" />
-            </Button>
-            <div className="relative flex-1">
-              <Input
-                placeholder="Type a message..."
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                className="pr-20"
-              />
-              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center space-x-1">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                >
-                  <ImageIcon className="h-4 w-4" />
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                >
-                  <FileText className="h-4 w-4" />
-                </Button>
+                  {formatDistanceToNow(new Date(message.createdAt), {
+                    addSuffix: true,
+                  })}
+                </span>
               </div>
             </div>
-            <Button
-              type="submit"
-              size="icon"
-              className="bg-emerald-600 hover:bg-emerald-700 text-white"
-              disabled={!message.trim()}
-            >
-              <Send className="h-4 w-4" />
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
 
-      {/* Make Offer Dialog */}
-      {userType === "investor" && (
-        <MakeOfferDialog
-          open={isOfferDialogOpen}
-          onOpenChange={setIsOfferDialogOpen}
-          startup={{
-            id: recipientId,
-            name: "EcoSolutions",
-            founder: "Rahul Ahmed",
-            milestones: [
-              {
-                id: "m3",
-                title: "Pilot Testing",
-                amount: "৳7,000",
-                status: "in_progress",
-              },
-              {
-                id: "m4",
-                title: "MVP Launch",
-                amount: "৳7,000",
-                status: "planned",
-              },
-            ],
-          }}
-        />
-      )}
+            {message.senderId === currentUserId && (
+              <div className="w-8 h-8 rounded-full bg-muted ml-2 flex-shrink-0">
+                {/* Current user avatar placeholder */}
+                <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">
+                  Me
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+        <div ref={messageEndRef} />
+      </div>
+
+      <MessageInput onSendMessage={handleSendMessage} />
     </div>
   );
-}
+};
+
+export default ChatInterface;

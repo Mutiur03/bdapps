@@ -18,7 +18,9 @@ export default withAuth(
 
     if (
       token &&
-      (pathname.endsWith("/login") || pathname.endsWith("/register"))
+      (pathname.startsWith("/signin") ||
+        pathname.startsWith("/signup") ||
+        pathname.endsWith("/onboarding"))
     ) {
       return NextResponse.redirect(new URL("/", req.url));
     }
@@ -29,20 +31,30 @@ export default withAuth(
     callbacks: {
       authorized: ({ token, req }) => {
         const { pathname } = req.nextUrl;
-        if (pathname === "/") {
+        if (
+          pathname === "/" ||
+          pathname === "/about" ||
+          pathname === "/contact"
+        ) {
           return true;
         }
         if (
           !token &&
-          (pathname.endsWith("/login") || pathname.endsWith("/register"))
+          (pathname.startsWith("/signin") ||
+            pathname.endsWith("/onboarding") ||
+            pathname.startsWith("/signup"))
         ) {
           return true;
         }
 
-        if (token && token.role === "user" && pathname.startsWith("/user")) {
+        if (token && token.role === "user" && pathname.startsWith("/udayee")) {
           return true;
         }
-        if (token && token.role === "admin" && pathname.startsWith("/admin")) {
+        if (
+          token &&
+          token.role === "investor" &&
+          pathname.startsWith("/investor")
+        ) {
           return true;
         }
         // return true;
@@ -51,9 +63,9 @@ export default withAuth(
     },
   }
 );
-// export const config = {
-//   matcher: ["/((?!api|_next|static|favicon.ico|.*\\.svg).*)"],
-// };
 export const config = {
-  matcher: [],
+  matcher: ["/((?!api|_next|static|favicon.ico|.*\\.svg).*)"],
 };
+// export const config = {
+//   matcher: [],
+// };

@@ -56,12 +56,12 @@ export function UdayeeLayout({ children }: UdayeeLayoutProps) {
       icon: FileText,
       active: pathname === "/udayee/profile",
     },
-    {
-      href: "/udayee/milestones",
-      label: "Milestones",
-      icon: Target,
-      active: pathname === "/udayee/milestones",
-    },
+    // {
+    //   href: "/udayee/milestones",
+    //   label: "Milestones",
+    //   icon: Target,
+    //   active: pathname === "/udayee/milestones",
+    // },
     {
       href: "/udayee/messages",
       label: "Messages",
