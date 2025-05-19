@@ -57,8 +57,8 @@ export function InvestorLayout({ children }: InvestorLayoutProps) {
         pathname.startsWith("/investor/chat/"),
     },
     {
-      href: "/investor/portfolio",
-      label: "My Portfolio",
+      href: "/investor/profile",
+      label: "My Profile",
       icon: Briefcase,
       active: pathname === "/investor/portfolio",
     },
@@ -184,7 +184,7 @@ export function InvestorLayout({ children }: InvestorLayoutProps) {
         <div className="flex flex-1">
           {/* Desktop Sidebar - Non-fixed */}
           <aside className="hidden md:block md:w-72 border-r border-border bg-card h-screen sticky top-0 left-0">
-            <div className="flex flex-col h-full">
+            <div className="h-full flex flex-col">
               {/* Logo and Header */}
               <div className="p-6 border-b border-border flex-shrink-0">
                 <div className="flex items-center gap-3">

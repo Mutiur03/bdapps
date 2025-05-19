@@ -1,5 +1,5 @@
 import { InvestorLayout } from "@/components/investor/investor-layout";
-import { ChatInterface } from "@/components/shared/chat-interface";
+import ChatInterface from "@/components/shared/chat-interface";
 
 export default async function InvestorChatPage({
   params,
