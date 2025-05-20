@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   Card,
   CardContent,
@@ -19,18 +19,17 @@ import {
   FileText,
   Users,
   ArrowRight,
-  Play,
-  Image as ImageIcon,
   ThumbsUp,
   Share2,
   Star,
-  BookOpen,
   Clock,
 } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { useProjectStore } from "@/store/useProjectStore";
+import { Milestone, useProjectStore } from "@/store/useProjectStore";
 import { safeUrl } from "../manage/page";
+import { format } from "date-fns";
+
 export default function ProjectPreviewPage({
   params,
 }: {
@@ -41,7 +40,7 @@ export default function ProjectPreviewPage({
   const id = unwrappedParams.id;
   const { projects, fetchProjects } = useProjectStore();
   const [isLoading, setIsLoading] = useState(!projects || projects.length === 0);
-
+  const videoref = useRef<HTMLIFrameElement>(null);
   useEffect(() => {
     // Fetch projects when the component mounts or when projects is empty
     if (!projects || projects.length === 0) {
@@ -60,8 +59,8 @@ export default function ProjectPreviewPage({
   // Calculate funding progress
   const fundingProgress = project
     ? (Number.parseInt(project.raised_amount?.toString().replace(/[^0-9]/g, "") || "0") /
-        Number.parseInt(project.budget?.toString().replace(/[^0-9]/g, "") || "1")) *
-      100
+      Number.parseInt(project.budget?.toString().replace(/[^0-9]/g, "") || "1")) *
+    100
     : 0;
 
   if (isLoading) {
@@ -81,7 +80,7 @@ export default function ProjectPreviewPage({
         <div className="text-center space-y-4">
           <h2 className="text-2xl font-bold">Project Not Found</h2>
           <p className="text-muted-foreground">
-            The project you're looking for doesn't exist or you don't have access to it.
+            The project you&apos;re looking for doesn&apos;t exist or you don&apos;t have access to it.
           </p>
           <Link href="/udayee/projects">
             <Button>Browse Projects</Button>
@@ -177,28 +176,17 @@ export default function ProjectPreviewPage({
         <div className="lg:col-span-2 space-y-6">
           {/* Pitch Video Card */}
           <Card className="overflow-hidden">
-            <CardImage
-              src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
-              alt="Video thumbnail"
-              aspectRatio="video"
-              fallback={
-                <div className="flex flex-col items-center justify-center h-full bg-gray-100 p-8">
-                  <ImageIcon className="h-12 w-12 text-gray-400 mb-4" />
-                  <p className="text-muted-foreground">
-                    Video preview not available
-                  </p>
-                </div>
-              }
-            />
-            <CardContent className="flex justify-center py-4">
-              <Button
-                variant="outline"
-                className="flex items-center gap-2 text-primary"
+            {project?.pitch_video && (
+              <iframe
+                className="w-full aspect-video"
+                src={safeUrl(project?.pitch_video)}
+                title="Project Pitch Video"
+                ref={videoref}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
               >
-                <Play className="h-4 w-4 text-primary fill-current" />
-                Play Project Video
-              </Button>
-            </CardContent>
+              </iframe>
+            )}
           </Card>
 
           {/* Tabs for Details, Milestones, Updates */}
@@ -242,7 +230,9 @@ export default function ProjectPreviewPage({
                       <p className="text-sm text-muted-foreground">Created</p>
                       <p className="font-medium flex items-center gap-2">
                         <Calendar className="h-4 w-4 text-amber-500" />
-                        {project?.createdAt}
+                        {format(
+                          new Date(project?.createdAt || ""),
+                          "MMMM dd, yyyy")}
                       </p>
                     </div>
                     <div className="space-y-1">
@@ -320,8 +310,8 @@ export default function ProjectPreviewPage({
                               {typeof milestone === "object"
                                 ? milestone.title
                                 : typeof milestone === "string"
-                                ? milestone
-                                : "Milestone"}
+                                  ? milestone
+                                  : "Milestone"}
 
                               {typeof milestone === "object" && milestone.status === "completed" && (
                                 <Badge
@@ -423,27 +413,21 @@ export default function ProjectPreviewPage({
               <CardTitle className="text-primary">Resources</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <Button
-                variant="ghost"
-                className="w-full justify-start text-muted-foreground hover:bg-primary/5 hover:text-primary"
-              >
-                <FileText className="h-4 w-4 mr-2" />
-                Project Proposal.pdf
-              </Button>
-              <Button
-                variant="ghost"
-                className="w-full justify-start text-muted-foreground hover:bg-primary/5 hover:text-primary"
-              >
-                <FileText className="h-4 w-4 mr-2" />
-                Research Summary.pdf
-              </Button>
-              <Button
-                variant="ghost"
-                className="w-full justify-start text-muted-foreground hover:bg-primary/5 hover:text-primary"
-              >
-                <FileText className="h-4 w-4 mr-2" />
-                Project Roadmap.pdf
-              </Button>
+              {project.documents && project.documents.length > 0 ? (
+                project.documents.map((doc, index) => (
+                  <Button
+                    key={index}
+                    variant="ghost"
+                    className="w-full justify-start text-muted-foreground hover:bg-primary/5 hover:text-primary"
+                    onClick={() => window.open(safeUrl(doc), '_blank')}
+                  >
+                    <FileText className="h-4 w-4 mr-2" />
+                    {doc.document.split('/').pop().split('-').pop()}
+                  </Button>
+                ))
+              ) : (
+                <p className="text-muted-foreground text-sm">No resources available for this project yet.</p>
+              )}
             </CardContent>
           </Card>
 
@@ -454,29 +438,48 @@ export default function ProjectPreviewPage({
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="space-y-3">
-                {[
-                  { event: "Project Created", date: "January 15, 2023" },
-                  {
-                    event: "First Milestone Completed",
-                    date: "March 22, 2023",
-                  },
-                  {
-                    event: "Second Milestone Completed",
-                    date: "July 10, 2023",
-                  },
-                  { event: "Current Phase", date: "In progress" },
-                ].map((item, index) => (
-                  <div
-                    key={index}
-                    className="flex justify-between items-center text-sm"
-                  >
-                    <div className="flex items-center gap-2">
-                      <Clock className="h-3 w-3 text-primary" />
-                      <span>{item.event}</span>
-                    </div>
-                    <span className="text-muted-foreground">{item.date}</span>
+                {/* Add Project Creation as first timeline event */}
+                <div className="flex justify-between items-center text-sm">
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-3 w-3 text-primary" />
+                    <span>Project Created</span>
                   </div>
-                ))}
+                  <span className="text-muted-foreground">{project?.createdAt ? new Date(project.createdAt).toLocaleDateString() : 'N/A'}</span>
+                </div>
+
+                {/* Display milestone timeline events */}
+                {project.milestones && project.milestones.length > 0 ? (
+                  project.milestones.map((milestone, index) => {
+                    const milestoneObj: Milestone = typeof milestone === 'object' ? milestone : { title: milestone, status: 'planned' };
+                    let dateValue = '';
+                    if (milestoneObj.status === 'completed' && milestoneObj.completedAt) {
+                      dateValue = new Date(milestoneObj.completedAt).toLocaleDateString();
+                    } else if (milestoneObj.status === 'in-progress') {
+                      dateValue = 'Current phase';
+                    } else if (milestoneObj.plannedAt) {
+                      console.log(milestoneObj.plannedAt);
+                      dateValue = new Date(milestoneObj.plannedAt).toLocaleDateString();
+                    }
+
+                    return (
+                      <div key={index} className="flex justify-between items-center text-sm">
+                        <div className="flex items-center gap-2">
+                          {milestoneObj.status === 'completed' ? (
+                            <Target className="h-3 w-3 text-primary" />
+                          ) : milestoneObj.status === 'in-progress' ? (
+                            <Clock className="h-3 w-3 text-amber-500" />
+                          ) : (
+                            <Clock className="h-3 w-3 text-muted-foreground" />
+                          )}
+                          <span>{milestoneObj.title || `Milestone ${index + 1}`}</span>
+                        </div>
+                        <span className="text-muted-foreground">{dateValue}</span>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div className="text-muted-foreground text-sm">No milestone data available</div>
+                )}
               </div>
             </CardContent>
           </Card>

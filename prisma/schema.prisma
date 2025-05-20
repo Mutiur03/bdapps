@@ -73,7 +73,6 @@ model Project {
   profile_picture String?
   cover_image     String?
   pitch_video     String?
-  documents       String[]
   tags            String?
   location        String?
   start_date      String?
@@ -85,6 +84,7 @@ model Project {
   projectInvestors ProjectInvestor[]
   investments      Investment[]
   milestones       Milestone[]
+  documents        Documents[]
 }
 
 model ProjectMember {
@@ -139,6 +139,17 @@ model Milestone {
   plannedAt     String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model Documents {
+  id        Int      @id @default(autoincrement())
+  projectId Int
+  document  String
+  size      Float?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }

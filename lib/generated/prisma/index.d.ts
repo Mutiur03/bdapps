@@ -48,6 +48,11 @@ export type Investment = $Result.DefaultSelection<Prisma.$InvestmentPayload>
  * 
  */
 export type Milestone = $Result.DefaultSelection<Prisma.$MilestonePayload>
+/**
+ * Model Documents
+ * 
+ */
+export type Documents = $Result.DefaultSelection<Prisma.$DocumentsPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -243,6 +248,16 @@ export class PrismaClient<
     * ```
     */
   get milestone(): Prisma.MilestoneDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.documents`: Exposes CRUD operations for the **Documents** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Documents
+    * const documents = await prisma.documents.findMany()
+    * ```
+    */
+  get documents(): Prisma.DocumentsDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -689,7 +704,8 @@ export namespace Prisma {
     ProjectMember: 'ProjectMember',
     ProjectInvestor: 'ProjectInvestor',
     Investment: 'Investment',
-    Milestone: 'Milestone'
+    Milestone: 'Milestone',
+    Documents: 'Documents'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -708,7 +724,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "investor" | "project" | "projectMember" | "projectInvestor" | "investment" | "milestone"
+      modelProps: "user" | "investor" | "project" | "projectMember" | "projectInvestor" | "investment" | "milestone" | "documents"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1230,6 +1246,80 @@ export namespace Prisma {
           }
         }
       }
+      Documents: {
+        payload: Prisma.$DocumentsPayload<ExtArgs>
+        fields: Prisma.DocumentsFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.DocumentsFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentsPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.DocumentsFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentsPayload>
+          }
+          findFirst: {
+            args: Prisma.DocumentsFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentsPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.DocumentsFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentsPayload>
+          }
+          findMany: {
+            args: Prisma.DocumentsFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentsPayload>[]
+          }
+          create: {
+            args: Prisma.DocumentsCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentsPayload>
+          }
+          createMany: {
+            args: Prisma.DocumentsCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.DocumentsCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentsPayload>[]
+          }
+          delete: {
+            args: Prisma.DocumentsDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentsPayload>
+          }
+          update: {
+            args: Prisma.DocumentsUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentsPayload>
+          }
+          deleteMany: {
+            args: Prisma.DocumentsDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.DocumentsUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.DocumentsUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentsPayload>[]
+          }
+          upsert: {
+            args: Prisma.DocumentsUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentsPayload>
+          }
+          aggregate: {
+            args: Prisma.DocumentsAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDocuments>
+          }
+          groupBy: {
+            args: Prisma.DocumentsGroupByArgs<ExtArgs>
+            result: $Utils.Optional<DocumentsGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.DocumentsCountArgs<ExtArgs>
+            result: $Utils.Optional<DocumentsCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1321,6 +1411,7 @@ export namespace Prisma {
     projectInvestor?: ProjectInvestorOmit
     investment?: InvestmentOmit
     milestone?: MilestoneOmit
+    documents?: DocumentsOmit
   }
 
   /* Types for Logging */
@@ -1499,6 +1590,7 @@ export namespace Prisma {
     projectInvestors: number
     investments: number
     milestones: number
+    documents: number
   }
 
   export type ProjectCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -1506,6 +1598,7 @@ export namespace Prisma {
     projectInvestors?: boolean | ProjectCountOutputTypeCountProjectInvestorsArgs
     investments?: boolean | ProjectCountOutputTypeCountInvestmentsArgs
     milestones?: boolean | ProjectCountOutputTypeCountMilestonesArgs
+    documents?: boolean | ProjectCountOutputTypeCountDocumentsArgs
   }
 
   // Custom InputTypes
@@ -1545,6 +1638,13 @@ export namespace Prisma {
    */
   export type ProjectCountOutputTypeCountMilestonesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: MilestoneWhereInput
+  }
+
+  /**
+   * ProjectCountOutputType without action
+   */
+  export type ProjectCountOutputTypeCountDocumentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DocumentsWhereInput
   }
 
 
@@ -4295,7 +4395,6 @@ export namespace Prisma {
     profile_picture: number
     cover_image: number
     pitch_video: number
-    documents: number
     tags: number
     location: number
     start_date: number
@@ -4369,7 +4468,6 @@ export namespace Prisma {
     profile_picture?: true
     cover_image?: true
     pitch_video?: true
-    documents?: true
     tags?: true
     location?: true
     start_date?: true
@@ -4476,7 +4574,6 @@ export namespace Prisma {
     profile_picture: string | null
     cover_image: string | null
     pitch_video: string | null
-    documents: string[]
     tags: string | null
     location: string | null
     start_date: string | null
@@ -4515,7 +4612,6 @@ export namespace Prisma {
     profile_picture?: boolean
     cover_image?: boolean
     pitch_video?: boolean
-    documents?: boolean
     tags?: boolean
     location?: boolean
     start_date?: boolean
@@ -4526,6 +4622,7 @@ export namespace Prisma {
     projectInvestors?: boolean | Project$projectInvestorsArgs<ExtArgs>
     investments?: boolean | Project$investmentsArgs<ExtArgs>
     milestones?: boolean | Project$milestonesArgs<ExtArgs>
+    documents?: boolean | Project$documentsArgs<ExtArgs>
     _count?: boolean | ProjectCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["project"]>
 
@@ -4541,7 +4638,6 @@ export namespace Prisma {
     profile_picture?: boolean
     cover_image?: boolean
     pitch_video?: boolean
-    documents?: boolean
     tags?: boolean
     location?: boolean
     start_date?: boolean
@@ -4562,7 +4658,6 @@ export namespace Prisma {
     profile_picture?: boolean
     cover_image?: boolean
     pitch_video?: boolean
-    documents?: boolean
     tags?: boolean
     location?: boolean
     start_date?: boolean
@@ -4583,7 +4678,6 @@ export namespace Prisma {
     profile_picture?: boolean
     cover_image?: boolean
     pitch_video?: boolean
-    documents?: boolean
     tags?: boolean
     location?: boolean
     start_date?: boolean
@@ -4591,13 +4685,14 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type ProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "title" | "description" | "category" | "budget" | "raised_amount" | "status" | "profile_picture" | "cover_image" | "pitch_video" | "documents" | "tags" | "location" | "start_date" | "createdAt" | "updatedAt", ExtArgs["result"]["project"]>
+  export type ProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "title" | "description" | "category" | "budget" | "raised_amount" | "status" | "profile_picture" | "cover_image" | "pitch_video" | "tags" | "location" | "start_date" | "createdAt" | "updatedAt", ExtArgs["result"]["project"]>
   export type ProjectInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     projectMembers?: boolean | Project$projectMembersArgs<ExtArgs>
     projectInvestors?: boolean | Project$projectInvestorsArgs<ExtArgs>
     investments?: boolean | Project$investmentsArgs<ExtArgs>
     milestones?: boolean | Project$milestonesArgs<ExtArgs>
+    documents?: boolean | Project$documentsArgs<ExtArgs>
     _count?: boolean | ProjectCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ProjectIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4615,6 +4710,7 @@ export namespace Prisma {
       projectInvestors: Prisma.$ProjectInvestorPayload<ExtArgs>[]
       investments: Prisma.$InvestmentPayload<ExtArgs>[]
       milestones: Prisma.$MilestonePayload<ExtArgs>[]
+      documents: Prisma.$DocumentsPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -4628,7 +4724,6 @@ export namespace Prisma {
       profile_picture: string | null
       cover_image: string | null
       pitch_video: string | null
-      documents: string[]
       tags: string | null
       location: string | null
       start_date: string | null
@@ -5033,6 +5128,7 @@ export namespace Prisma {
     projectInvestors<T extends Project$projectInvestorsArgs<ExtArgs> = {}>(args?: Subset<T, Project$projectInvestorsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectInvestorPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     investments<T extends Project$investmentsArgs<ExtArgs> = {}>(args?: Subset<T, Project$investmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InvestmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     milestones<T extends Project$milestonesArgs<ExtArgs> = {}>(args?: Subset<T, Project$milestonesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MilestonePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    documents<T extends Project$documentsArgs<ExtArgs> = {}>(args?: Subset<T, Project$documentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocumentsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5073,7 +5169,6 @@ export namespace Prisma {
     readonly profile_picture: FieldRef<"Project", 'String'>
     readonly cover_image: FieldRef<"Project", 'String'>
     readonly pitch_video: FieldRef<"Project", 'String'>
-    readonly documents: FieldRef<"Project", 'String[]'>
     readonly tags: FieldRef<"Project", 'String'>
     readonly location: FieldRef<"Project", 'String'>
     readonly start_date: FieldRef<"Project", 'String'>
@@ -5568,6 +5663,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: MilestoneScalarFieldEnum | MilestoneScalarFieldEnum[]
+  }
+
+  /**
+   * Project.documents
+   */
+  export type Project$documentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Documents
+     */
+    select?: DocumentsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Documents
+     */
+    omit?: DocumentsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentsInclude<ExtArgs> | null
+    where?: DocumentsWhereInput
+    orderBy?: DocumentsOrderByWithRelationInput | DocumentsOrderByWithRelationInput[]
+    cursor?: DocumentsWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DocumentsScalarFieldEnum | DocumentsScalarFieldEnum[]
   }
 
   /**
@@ -10143,6 +10262,1119 @@ export namespace Prisma {
 
 
   /**
+   * Model Documents
+   */
+
+  export type AggregateDocuments = {
+    _count: DocumentsCountAggregateOutputType | null
+    _avg: DocumentsAvgAggregateOutputType | null
+    _sum: DocumentsSumAggregateOutputType | null
+    _min: DocumentsMinAggregateOutputType | null
+    _max: DocumentsMaxAggregateOutputType | null
+  }
+
+  export type DocumentsAvgAggregateOutputType = {
+    id: number | null
+    projectId: number | null
+    size: number | null
+  }
+
+  export type DocumentsSumAggregateOutputType = {
+    id: number | null
+    projectId: number | null
+    size: number | null
+  }
+
+  export type DocumentsMinAggregateOutputType = {
+    id: number | null
+    projectId: number | null
+    document: string | null
+    size: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type DocumentsMaxAggregateOutputType = {
+    id: number | null
+    projectId: number | null
+    document: string | null
+    size: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type DocumentsCountAggregateOutputType = {
+    id: number
+    projectId: number
+    document: number
+    size: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type DocumentsAvgAggregateInputType = {
+    id?: true
+    projectId?: true
+    size?: true
+  }
+
+  export type DocumentsSumAggregateInputType = {
+    id?: true
+    projectId?: true
+    size?: true
+  }
+
+  export type DocumentsMinAggregateInputType = {
+    id?: true
+    projectId?: true
+    document?: true
+    size?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type DocumentsMaxAggregateInputType = {
+    id?: true
+    projectId?: true
+    document?: true
+    size?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type DocumentsCountAggregateInputType = {
+    id?: true
+    projectId?: true
+    document?: true
+    size?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type DocumentsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Documents to aggregate.
+     */
+    where?: DocumentsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Documents to fetch.
+     */
+    orderBy?: DocumentsOrderByWithRelationInput | DocumentsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DocumentsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Documents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Documents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Documents
+    **/
+    _count?: true | DocumentsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: DocumentsAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: DocumentsSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DocumentsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DocumentsMaxAggregateInputType
+  }
+
+  export type GetDocumentsAggregateType<T extends DocumentsAggregateArgs> = {
+        [P in keyof T & keyof AggregateDocuments]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDocuments[P]>
+      : GetScalarType<T[P], AggregateDocuments[P]>
+  }
+
+
+
+
+  export type DocumentsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DocumentsWhereInput
+    orderBy?: DocumentsOrderByWithAggregationInput | DocumentsOrderByWithAggregationInput[]
+    by: DocumentsScalarFieldEnum[] | DocumentsScalarFieldEnum
+    having?: DocumentsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DocumentsCountAggregateInputType | true
+    _avg?: DocumentsAvgAggregateInputType
+    _sum?: DocumentsSumAggregateInputType
+    _min?: DocumentsMinAggregateInputType
+    _max?: DocumentsMaxAggregateInputType
+  }
+
+  export type DocumentsGroupByOutputType = {
+    id: number
+    projectId: number
+    document: string
+    size: number | null
+    createdAt: Date
+    updatedAt: Date
+    _count: DocumentsCountAggregateOutputType | null
+    _avg: DocumentsAvgAggregateOutputType | null
+    _sum: DocumentsSumAggregateOutputType | null
+    _min: DocumentsMinAggregateOutputType | null
+    _max: DocumentsMaxAggregateOutputType | null
+  }
+
+  type GetDocumentsGroupByPayload<T extends DocumentsGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<DocumentsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DocumentsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DocumentsGroupByOutputType[P]>
+            : GetScalarType<T[P], DocumentsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DocumentsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    projectId?: boolean
+    document?: boolean
+    size?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["documents"]>
+
+  export type DocumentsSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    projectId?: boolean
+    document?: boolean
+    size?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["documents"]>
+
+  export type DocumentsSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    projectId?: boolean
+    document?: boolean
+    size?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["documents"]>
+
+  export type DocumentsSelectScalar = {
+    id?: boolean
+    projectId?: boolean
+    document?: boolean
+    size?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type DocumentsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "projectId" | "document" | "size" | "createdAt" | "updatedAt", ExtArgs["result"]["documents"]>
+  export type DocumentsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+  }
+  export type DocumentsIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+  }
+  export type DocumentsIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+  }
+
+  export type $DocumentsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Documents"
+    objects: {
+      project: Prisma.$ProjectPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      projectId: number
+      document: string
+      size: number | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["documents"]>
+    composites: {}
+  }
+
+  type DocumentsGetPayload<S extends boolean | null | undefined | DocumentsDefaultArgs> = $Result.GetResult<Prisma.$DocumentsPayload, S>
+
+  type DocumentsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<DocumentsFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: DocumentsCountAggregateInputType | true
+    }
+
+  export interface DocumentsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Documents'], meta: { name: 'Documents' } }
+    /**
+     * Find zero or one Documents that matches the filter.
+     * @param {DocumentsFindUniqueArgs} args - Arguments to find a Documents
+     * @example
+     * // Get one Documents
+     * const documents = await prisma.documents.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends DocumentsFindUniqueArgs>(args: SelectSubset<T, DocumentsFindUniqueArgs<ExtArgs>>): Prisma__DocumentsClient<$Result.GetResult<Prisma.$DocumentsPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Documents that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {DocumentsFindUniqueOrThrowArgs} args - Arguments to find a Documents
+     * @example
+     * // Get one Documents
+     * const documents = await prisma.documents.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends DocumentsFindUniqueOrThrowArgs>(args: SelectSubset<T, DocumentsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DocumentsClient<$Result.GetResult<Prisma.$DocumentsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Documents that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentsFindFirstArgs} args - Arguments to find a Documents
+     * @example
+     * // Get one Documents
+     * const documents = await prisma.documents.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends DocumentsFindFirstArgs>(args?: SelectSubset<T, DocumentsFindFirstArgs<ExtArgs>>): Prisma__DocumentsClient<$Result.GetResult<Prisma.$DocumentsPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Documents that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentsFindFirstOrThrowArgs} args - Arguments to find a Documents
+     * @example
+     * // Get one Documents
+     * const documents = await prisma.documents.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends DocumentsFindFirstOrThrowArgs>(args?: SelectSubset<T, DocumentsFindFirstOrThrowArgs<ExtArgs>>): Prisma__DocumentsClient<$Result.GetResult<Prisma.$DocumentsPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Documents that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentsFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Documents
+     * const documents = await prisma.documents.findMany()
+     * 
+     * // Get first 10 Documents
+     * const documents = await prisma.documents.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const documentsWithIdOnly = await prisma.documents.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends DocumentsFindManyArgs>(args?: SelectSubset<T, DocumentsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocumentsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Documents.
+     * @param {DocumentsCreateArgs} args - Arguments to create a Documents.
+     * @example
+     * // Create one Documents
+     * const Documents = await prisma.documents.create({
+     *   data: {
+     *     // ... data to create a Documents
+     *   }
+     * })
+     * 
+     */
+    create<T extends DocumentsCreateArgs>(args: SelectSubset<T, DocumentsCreateArgs<ExtArgs>>): Prisma__DocumentsClient<$Result.GetResult<Prisma.$DocumentsPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Documents.
+     * @param {DocumentsCreateManyArgs} args - Arguments to create many Documents.
+     * @example
+     * // Create many Documents
+     * const documents = await prisma.documents.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends DocumentsCreateManyArgs>(args?: SelectSubset<T, DocumentsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Documents and returns the data saved in the database.
+     * @param {DocumentsCreateManyAndReturnArgs} args - Arguments to create many Documents.
+     * @example
+     * // Create many Documents
+     * const documents = await prisma.documents.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Documents and only return the `id`
+     * const documentsWithIdOnly = await prisma.documents.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends DocumentsCreateManyAndReturnArgs>(args?: SelectSubset<T, DocumentsCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocumentsPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Documents.
+     * @param {DocumentsDeleteArgs} args - Arguments to delete one Documents.
+     * @example
+     * // Delete one Documents
+     * const Documents = await prisma.documents.delete({
+     *   where: {
+     *     // ... filter to delete one Documents
+     *   }
+     * })
+     * 
+     */
+    delete<T extends DocumentsDeleteArgs>(args: SelectSubset<T, DocumentsDeleteArgs<ExtArgs>>): Prisma__DocumentsClient<$Result.GetResult<Prisma.$DocumentsPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Documents.
+     * @param {DocumentsUpdateArgs} args - Arguments to update one Documents.
+     * @example
+     * // Update one Documents
+     * const documents = await prisma.documents.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends DocumentsUpdateArgs>(args: SelectSubset<T, DocumentsUpdateArgs<ExtArgs>>): Prisma__DocumentsClient<$Result.GetResult<Prisma.$DocumentsPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Documents.
+     * @param {DocumentsDeleteManyArgs} args - Arguments to filter Documents to delete.
+     * @example
+     * // Delete a few Documents
+     * const { count } = await prisma.documents.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends DocumentsDeleteManyArgs>(args?: SelectSubset<T, DocumentsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Documents.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Documents
+     * const documents = await prisma.documents.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends DocumentsUpdateManyArgs>(args: SelectSubset<T, DocumentsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Documents and returns the data updated in the database.
+     * @param {DocumentsUpdateManyAndReturnArgs} args - Arguments to update many Documents.
+     * @example
+     * // Update many Documents
+     * const documents = await prisma.documents.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Documents and only return the `id`
+     * const documentsWithIdOnly = await prisma.documents.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends DocumentsUpdateManyAndReturnArgs>(args: SelectSubset<T, DocumentsUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocumentsPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Documents.
+     * @param {DocumentsUpsertArgs} args - Arguments to update or create a Documents.
+     * @example
+     * // Update or create a Documents
+     * const documents = await prisma.documents.upsert({
+     *   create: {
+     *     // ... data to create a Documents
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Documents we want to update
+     *   }
+     * })
+     */
+    upsert<T extends DocumentsUpsertArgs>(args: SelectSubset<T, DocumentsUpsertArgs<ExtArgs>>): Prisma__DocumentsClient<$Result.GetResult<Prisma.$DocumentsPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Documents.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentsCountArgs} args - Arguments to filter Documents to count.
+     * @example
+     * // Count the number of Documents
+     * const count = await prisma.documents.count({
+     *   where: {
+     *     // ... the filter for the Documents we want to count
+     *   }
+     * })
+    **/
+    count<T extends DocumentsCountArgs>(
+      args?: Subset<T, DocumentsCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DocumentsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Documents.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DocumentsAggregateArgs>(args: Subset<T, DocumentsAggregateArgs>): Prisma.PrismaPromise<GetDocumentsAggregateType<T>>
+
+    /**
+     * Group by Documents.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DocumentsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DocumentsGroupByArgs['orderBy'] }
+        : { orderBy?: DocumentsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DocumentsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDocumentsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Documents model
+   */
+  readonly fields: DocumentsFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Documents.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__DocumentsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    project<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Documents model
+   */
+  interface DocumentsFieldRefs {
+    readonly id: FieldRef<"Documents", 'Int'>
+    readonly projectId: FieldRef<"Documents", 'Int'>
+    readonly document: FieldRef<"Documents", 'String'>
+    readonly size: FieldRef<"Documents", 'Float'>
+    readonly createdAt: FieldRef<"Documents", 'DateTime'>
+    readonly updatedAt: FieldRef<"Documents", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Documents findUnique
+   */
+  export type DocumentsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Documents
+     */
+    select?: DocumentsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Documents
+     */
+    omit?: DocumentsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentsInclude<ExtArgs> | null
+    /**
+     * Filter, which Documents to fetch.
+     */
+    where: DocumentsWhereUniqueInput
+  }
+
+  /**
+   * Documents findUniqueOrThrow
+   */
+  export type DocumentsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Documents
+     */
+    select?: DocumentsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Documents
+     */
+    omit?: DocumentsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentsInclude<ExtArgs> | null
+    /**
+     * Filter, which Documents to fetch.
+     */
+    where: DocumentsWhereUniqueInput
+  }
+
+  /**
+   * Documents findFirst
+   */
+  export type DocumentsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Documents
+     */
+    select?: DocumentsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Documents
+     */
+    omit?: DocumentsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentsInclude<ExtArgs> | null
+    /**
+     * Filter, which Documents to fetch.
+     */
+    where?: DocumentsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Documents to fetch.
+     */
+    orderBy?: DocumentsOrderByWithRelationInput | DocumentsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Documents.
+     */
+    cursor?: DocumentsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Documents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Documents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Documents.
+     */
+    distinct?: DocumentsScalarFieldEnum | DocumentsScalarFieldEnum[]
+  }
+
+  /**
+   * Documents findFirstOrThrow
+   */
+  export type DocumentsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Documents
+     */
+    select?: DocumentsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Documents
+     */
+    omit?: DocumentsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentsInclude<ExtArgs> | null
+    /**
+     * Filter, which Documents to fetch.
+     */
+    where?: DocumentsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Documents to fetch.
+     */
+    orderBy?: DocumentsOrderByWithRelationInput | DocumentsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Documents.
+     */
+    cursor?: DocumentsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Documents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Documents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Documents.
+     */
+    distinct?: DocumentsScalarFieldEnum | DocumentsScalarFieldEnum[]
+  }
+
+  /**
+   * Documents findMany
+   */
+  export type DocumentsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Documents
+     */
+    select?: DocumentsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Documents
+     */
+    omit?: DocumentsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentsInclude<ExtArgs> | null
+    /**
+     * Filter, which Documents to fetch.
+     */
+    where?: DocumentsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Documents to fetch.
+     */
+    orderBy?: DocumentsOrderByWithRelationInput | DocumentsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Documents.
+     */
+    cursor?: DocumentsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Documents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Documents.
+     */
+    skip?: number
+    distinct?: DocumentsScalarFieldEnum | DocumentsScalarFieldEnum[]
+  }
+
+  /**
+   * Documents create
+   */
+  export type DocumentsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Documents
+     */
+    select?: DocumentsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Documents
+     */
+    omit?: DocumentsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentsInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Documents.
+     */
+    data: XOR<DocumentsCreateInput, DocumentsUncheckedCreateInput>
+  }
+
+  /**
+   * Documents createMany
+   */
+  export type DocumentsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Documents.
+     */
+    data: DocumentsCreateManyInput | DocumentsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Documents createManyAndReturn
+   */
+  export type DocumentsCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Documents
+     */
+    select?: DocumentsSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Documents
+     */
+    omit?: DocumentsOmit<ExtArgs> | null
+    /**
+     * The data used to create many Documents.
+     */
+    data: DocumentsCreateManyInput | DocumentsCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentsIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Documents update
+   */
+  export type DocumentsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Documents
+     */
+    select?: DocumentsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Documents
+     */
+    omit?: DocumentsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentsInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Documents.
+     */
+    data: XOR<DocumentsUpdateInput, DocumentsUncheckedUpdateInput>
+    /**
+     * Choose, which Documents to update.
+     */
+    where: DocumentsWhereUniqueInput
+  }
+
+  /**
+   * Documents updateMany
+   */
+  export type DocumentsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Documents.
+     */
+    data: XOR<DocumentsUpdateManyMutationInput, DocumentsUncheckedUpdateManyInput>
+    /**
+     * Filter which Documents to update
+     */
+    where?: DocumentsWhereInput
+    /**
+     * Limit how many Documents to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Documents updateManyAndReturn
+   */
+  export type DocumentsUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Documents
+     */
+    select?: DocumentsSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Documents
+     */
+    omit?: DocumentsOmit<ExtArgs> | null
+    /**
+     * The data used to update Documents.
+     */
+    data: XOR<DocumentsUpdateManyMutationInput, DocumentsUncheckedUpdateManyInput>
+    /**
+     * Filter which Documents to update
+     */
+    where?: DocumentsWhereInput
+    /**
+     * Limit how many Documents to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentsIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Documents upsert
+   */
+  export type DocumentsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Documents
+     */
+    select?: DocumentsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Documents
+     */
+    omit?: DocumentsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentsInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Documents to update in case it exists.
+     */
+    where: DocumentsWhereUniqueInput
+    /**
+     * In case the Documents found by the `where` argument doesn't exist, create a new Documents with this data.
+     */
+    create: XOR<DocumentsCreateInput, DocumentsUncheckedCreateInput>
+    /**
+     * In case the Documents was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DocumentsUpdateInput, DocumentsUncheckedUpdateInput>
+  }
+
+  /**
+   * Documents delete
+   */
+  export type DocumentsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Documents
+     */
+    select?: DocumentsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Documents
+     */
+    omit?: DocumentsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentsInclude<ExtArgs> | null
+    /**
+     * Filter which Documents to delete.
+     */
+    where: DocumentsWhereUniqueInput
+  }
+
+  /**
+   * Documents deleteMany
+   */
+  export type DocumentsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Documents to delete
+     */
+    where?: DocumentsWhereInput
+    /**
+     * Limit how many Documents to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Documents without action
+   */
+  export type DocumentsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Documents
+     */
+    select?: DocumentsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Documents
+     */
+    omit?: DocumentsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentsInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -10221,7 +11453,6 @@ export namespace Prisma {
     profile_picture: 'profile_picture',
     cover_image: 'cover_image',
     pitch_video: 'pitch_video',
-    documents: 'documents',
     tags: 'tags',
     location: 'location',
     start_date: 'start_date',
@@ -10283,6 +11514,18 @@ export namespace Prisma {
   };
 
   export type MilestoneScalarFieldEnum = (typeof MilestoneScalarFieldEnum)[keyof typeof MilestoneScalarFieldEnum]
+
+
+  export const DocumentsScalarFieldEnum: {
+    id: 'id',
+    projectId: 'projectId',
+    document: 'document',
+    size: 'size',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type DocumentsScalarFieldEnum = (typeof DocumentsScalarFieldEnum)[keyof typeof DocumentsScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -10701,7 +11944,6 @@ export namespace Prisma {
     profile_picture?: StringNullableFilter<"Project"> | string | null
     cover_image?: StringNullableFilter<"Project"> | string | null
     pitch_video?: StringNullableFilter<"Project"> | string | null
-    documents?: StringNullableListFilter<"Project">
     tags?: StringNullableFilter<"Project"> | string | null
     location?: StringNullableFilter<"Project"> | string | null
     start_date?: StringNullableFilter<"Project"> | string | null
@@ -10712,6 +11954,7 @@ export namespace Prisma {
     projectInvestors?: ProjectInvestorListRelationFilter
     investments?: InvestmentListRelationFilter
     milestones?: MilestoneListRelationFilter
+    documents?: DocumentsListRelationFilter
   }
 
   export type ProjectOrderByWithRelationInput = {
@@ -10726,7 +11969,6 @@ export namespace Prisma {
     profile_picture?: SortOrderInput | SortOrder
     cover_image?: SortOrderInput | SortOrder
     pitch_video?: SortOrderInput | SortOrder
-    documents?: SortOrder
     tags?: SortOrderInput | SortOrder
     location?: SortOrderInput | SortOrder
     start_date?: SortOrderInput | SortOrder
@@ -10737,6 +11979,7 @@ export namespace Prisma {
     projectInvestors?: ProjectInvestorOrderByRelationAggregateInput
     investments?: InvestmentOrderByRelationAggregateInput
     milestones?: MilestoneOrderByRelationAggregateInput
+    documents?: DocumentsOrderByRelationAggregateInput
   }
 
   export type ProjectWhereUniqueInput = Prisma.AtLeast<{
@@ -10754,7 +11997,6 @@ export namespace Prisma {
     profile_picture?: StringNullableFilter<"Project"> | string | null
     cover_image?: StringNullableFilter<"Project"> | string | null
     pitch_video?: StringNullableFilter<"Project"> | string | null
-    documents?: StringNullableListFilter<"Project">
     tags?: StringNullableFilter<"Project"> | string | null
     location?: StringNullableFilter<"Project"> | string | null
     start_date?: StringNullableFilter<"Project"> | string | null
@@ -10765,6 +12007,7 @@ export namespace Prisma {
     projectInvestors?: ProjectInvestorListRelationFilter
     investments?: InvestmentListRelationFilter
     milestones?: MilestoneListRelationFilter
+    documents?: DocumentsListRelationFilter
   }, "id">
 
   export type ProjectOrderByWithAggregationInput = {
@@ -10779,7 +12022,6 @@ export namespace Prisma {
     profile_picture?: SortOrderInput | SortOrder
     cover_image?: SortOrderInput | SortOrder
     pitch_video?: SortOrderInput | SortOrder
-    documents?: SortOrder
     tags?: SortOrderInput | SortOrder
     location?: SortOrderInput | SortOrder
     start_date?: SortOrderInput | SortOrder
@@ -10807,7 +12049,6 @@ export namespace Prisma {
     profile_picture?: StringNullableWithAggregatesFilter<"Project"> | string | null
     cover_image?: StringNullableWithAggregatesFilter<"Project"> | string | null
     pitch_video?: StringNullableWithAggregatesFilter<"Project"> | string | null
-    documents?: StringNullableListFilter<"Project">
     tags?: StringNullableWithAggregatesFilter<"Project"> | string | null
     location?: StringNullableWithAggregatesFilter<"Project"> | string | null
     start_date?: StringNullableWithAggregatesFilter<"Project"> | string | null
@@ -11097,6 +12338,68 @@ export namespace Prisma {
     plannedAt?: StringNullableWithAggregatesFilter<"Milestone"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Milestone"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Milestone"> | Date | string
+  }
+
+  export type DocumentsWhereInput = {
+    AND?: DocumentsWhereInput | DocumentsWhereInput[]
+    OR?: DocumentsWhereInput[]
+    NOT?: DocumentsWhereInput | DocumentsWhereInput[]
+    id?: IntFilter<"Documents"> | number
+    projectId?: IntFilter<"Documents"> | number
+    document?: StringFilter<"Documents"> | string
+    size?: FloatNullableFilter<"Documents"> | number | null
+    createdAt?: DateTimeFilter<"Documents"> | Date | string
+    updatedAt?: DateTimeFilter<"Documents"> | Date | string
+    project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
+  }
+
+  export type DocumentsOrderByWithRelationInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    document?: SortOrder
+    size?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    project?: ProjectOrderByWithRelationInput
+  }
+
+  export type DocumentsWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: DocumentsWhereInput | DocumentsWhereInput[]
+    OR?: DocumentsWhereInput[]
+    NOT?: DocumentsWhereInput | DocumentsWhereInput[]
+    projectId?: IntFilter<"Documents"> | number
+    document?: StringFilter<"Documents"> | string
+    size?: FloatNullableFilter<"Documents"> | number | null
+    createdAt?: DateTimeFilter<"Documents"> | Date | string
+    updatedAt?: DateTimeFilter<"Documents"> | Date | string
+    project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
+  }, "id">
+
+  export type DocumentsOrderByWithAggregationInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    document?: SortOrder
+    size?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: DocumentsCountOrderByAggregateInput
+    _avg?: DocumentsAvgOrderByAggregateInput
+    _max?: DocumentsMaxOrderByAggregateInput
+    _min?: DocumentsMinOrderByAggregateInput
+    _sum?: DocumentsSumOrderByAggregateInput
+  }
+
+  export type DocumentsScalarWhereWithAggregatesInput = {
+    AND?: DocumentsScalarWhereWithAggregatesInput | DocumentsScalarWhereWithAggregatesInput[]
+    OR?: DocumentsScalarWhereWithAggregatesInput[]
+    NOT?: DocumentsScalarWhereWithAggregatesInput | DocumentsScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"Documents"> | number
+    projectId?: IntWithAggregatesFilter<"Documents"> | number
+    document?: StringWithAggregatesFilter<"Documents"> | string
+    size?: FloatNullableWithAggregatesFilter<"Documents"> | number | null
+    createdAt?: DateTimeWithAggregatesFilter<"Documents"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Documents"> | Date | string
   }
 
   export type UserCreateInput = {
@@ -11448,7 +12751,6 @@ export namespace Prisma {
     profile_picture?: string | null
     cover_image?: string | null
     pitch_video?: string | null
-    documents?: ProjectCreatedocumentsInput | string[]
     tags?: string | null
     location?: string | null
     start_date?: string | null
@@ -11459,6 +12761,7 @@ export namespace Prisma {
     projectInvestors?: ProjectInvestorCreateNestedManyWithoutProjectInput
     investments?: InvestmentCreateNestedManyWithoutProjectInput
     milestones?: MilestoneCreateNestedManyWithoutProjectInput
+    documents?: DocumentsCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateInput = {
@@ -11473,7 +12776,6 @@ export namespace Prisma {
     profile_picture?: string | null
     cover_image?: string | null
     pitch_video?: string | null
-    documents?: ProjectCreatedocumentsInput | string[]
     tags?: string | null
     location?: string | null
     start_date?: string | null
@@ -11483,6 +12785,7 @@ export namespace Prisma {
     projectInvestors?: ProjectInvestorUncheckedCreateNestedManyWithoutProjectInput
     investments?: InvestmentUncheckedCreateNestedManyWithoutProjectInput
     milestones?: MilestoneUncheckedCreateNestedManyWithoutProjectInput
+    documents?: DocumentsUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUpdateInput = {
@@ -11495,7 +12798,6 @@ export namespace Prisma {
     profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
     cover_image?: NullableStringFieldUpdateOperationsInput | string | null
     pitch_video?: NullableStringFieldUpdateOperationsInput | string | null
-    documents?: ProjectUpdatedocumentsInput | string[]
     tags?: NullableStringFieldUpdateOperationsInput | string | null
     location?: NullableStringFieldUpdateOperationsInput | string | null
     start_date?: NullableStringFieldUpdateOperationsInput | string | null
@@ -11506,6 +12808,7 @@ export namespace Prisma {
     projectInvestors?: ProjectInvestorUpdateManyWithoutProjectNestedInput
     investments?: InvestmentUpdateManyWithoutProjectNestedInput
     milestones?: MilestoneUpdateManyWithoutProjectNestedInput
+    documents?: DocumentsUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateInput = {
@@ -11520,7 +12823,6 @@ export namespace Prisma {
     profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
     cover_image?: NullableStringFieldUpdateOperationsInput | string | null
     pitch_video?: NullableStringFieldUpdateOperationsInput | string | null
-    documents?: ProjectUpdatedocumentsInput | string[]
     tags?: NullableStringFieldUpdateOperationsInput | string | null
     location?: NullableStringFieldUpdateOperationsInput | string | null
     start_date?: NullableStringFieldUpdateOperationsInput | string | null
@@ -11530,6 +12832,7 @@ export namespace Prisma {
     projectInvestors?: ProjectInvestorUncheckedUpdateManyWithoutProjectNestedInput
     investments?: InvestmentUncheckedUpdateManyWithoutProjectNestedInput
     milestones?: MilestoneUncheckedUpdateManyWithoutProjectNestedInput
+    documents?: DocumentsUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectCreateManyInput = {
@@ -11544,7 +12847,6 @@ export namespace Prisma {
     profile_picture?: string | null
     cover_image?: string | null
     pitch_video?: string | null
-    documents?: ProjectCreatedocumentsInput | string[]
     tags?: string | null
     location?: string | null
     start_date?: string | null
@@ -11562,7 +12864,6 @@ export namespace Prisma {
     profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
     cover_image?: NullableStringFieldUpdateOperationsInput | string | null
     pitch_video?: NullableStringFieldUpdateOperationsInput | string | null
-    documents?: ProjectUpdatedocumentsInput | string[]
     tags?: NullableStringFieldUpdateOperationsInput | string | null
     location?: NullableStringFieldUpdateOperationsInput | string | null
     start_date?: NullableStringFieldUpdateOperationsInput | string | null
@@ -11582,7 +12883,6 @@ export namespace Prisma {
     profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
     cover_image?: NullableStringFieldUpdateOperationsInput | string | null
     pitch_video?: NullableStringFieldUpdateOperationsInput | string | null
-    documents?: ProjectUpdatedocumentsInput | string[]
     tags?: NullableStringFieldUpdateOperationsInput | string | null
     location?: NullableStringFieldUpdateOperationsInput | string | null
     start_date?: NullableStringFieldUpdateOperationsInput | string | null
@@ -11854,6 +13154,65 @@ export namespace Prisma {
     progress?: NullableIntFieldUpdateOperationsInput | number | null
     raised_amount?: NullableFloatFieldUpdateOperationsInput | number | null
     plannedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DocumentsCreateInput = {
+    document: string
+    size?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    project: ProjectCreateNestedOneWithoutDocumentsInput
+  }
+
+  export type DocumentsUncheckedCreateInput = {
+    id?: number
+    projectId: number
+    document: string
+    size?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DocumentsUpdateInput = {
+    document?: StringFieldUpdateOperationsInput | string
+    size?: NullableFloatFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    project?: ProjectUpdateOneRequiredWithoutDocumentsNestedInput
+  }
+
+  export type DocumentsUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    projectId?: IntFieldUpdateOperationsInput | number
+    document?: StringFieldUpdateOperationsInput | string
+    size?: NullableFloatFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DocumentsCreateManyInput = {
+    id?: number
+    projectId: number
+    document: string
+    size?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DocumentsUpdateManyMutationInput = {
+    document?: StringFieldUpdateOperationsInput | string
+    size?: NullableFloatFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DocumentsUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    projectId?: IntFieldUpdateOperationsInput | number
+    document?: StringFieldUpdateOperationsInput | string
+    size?: NullableFloatFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -12278,14 +13637,6 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
-  export type StringNullableListFilter<$PrismaModel = never> = {
-    equals?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    has?: string | StringFieldRefInput<$PrismaModel> | null
-    hasEvery?: string[] | ListStringFieldRefInput<$PrismaModel>
-    hasSome?: string[] | ListStringFieldRefInput<$PrismaModel>
-    isEmpty?: boolean
-  }
-
   export type UserScalarRelationFilter = {
     is?: UserWhereInput
     isNot?: UserWhereInput
@@ -12297,7 +13648,17 @@ export namespace Prisma {
     none?: MilestoneWhereInput
   }
 
+  export type DocumentsListRelationFilter = {
+    every?: DocumentsWhereInput
+    some?: DocumentsWhereInput
+    none?: DocumentsWhereInput
+  }
+
   export type MilestoneOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type DocumentsOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -12313,7 +13674,6 @@ export namespace Prisma {
     profile_picture?: SortOrder
     cover_image?: SortOrder
     pitch_video?: SortOrder
-    documents?: SortOrder
     tags?: SortOrder
     location?: SortOrder
     start_date?: SortOrder
@@ -12613,6 +13973,45 @@ export namespace Prisma {
     _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
+  export type DocumentsCountOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    document?: SortOrder
+    size?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DocumentsAvgOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    size?: SortOrder
+  }
+
+  export type DocumentsMaxOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    document?: SortOrder
+    size?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DocumentsMinOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    document?: SortOrder
+    size?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DocumentsSumOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    size?: SortOrder
+  }
+
   export type ProjectMemberCreateNestedManyWithoutUserInput = {
     create?: XOR<ProjectMemberCreateWithoutUserInput, ProjectMemberUncheckedCreateWithoutUserInput> | ProjectMemberCreateWithoutUserInput[] | ProjectMemberUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ProjectMemberCreateOrConnectWithoutUserInput | ProjectMemberCreateOrConnectWithoutUserInput[]
@@ -12813,10 +14212,6 @@ export namespace Prisma {
     deleteMany?: InvestmentScalarWhereInput | InvestmentScalarWhereInput[]
   }
 
-  export type ProjectCreatedocumentsInput = {
-    set: string[]
-  }
-
   export type UserCreateNestedOneWithoutProjectInput = {
     create?: XOR<UserCreateWithoutProjectInput, UserUncheckedCreateWithoutProjectInput>
     connectOrCreate?: UserCreateOrConnectWithoutProjectInput
@@ -12851,6 +14246,13 @@ export namespace Prisma {
     connect?: MilestoneWhereUniqueInput | MilestoneWhereUniqueInput[]
   }
 
+  export type DocumentsCreateNestedManyWithoutProjectInput = {
+    create?: XOR<DocumentsCreateWithoutProjectInput, DocumentsUncheckedCreateWithoutProjectInput> | DocumentsCreateWithoutProjectInput[] | DocumentsUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: DocumentsCreateOrConnectWithoutProjectInput | DocumentsCreateOrConnectWithoutProjectInput[]
+    createMany?: DocumentsCreateManyProjectInputEnvelope
+    connect?: DocumentsWhereUniqueInput | DocumentsWhereUniqueInput[]
+  }
+
   export type ProjectMemberUncheckedCreateNestedManyWithoutProjectInput = {
     create?: XOR<ProjectMemberCreateWithoutProjectInput, ProjectMemberUncheckedCreateWithoutProjectInput> | ProjectMemberCreateWithoutProjectInput[] | ProjectMemberUncheckedCreateWithoutProjectInput[]
     connectOrCreate?: ProjectMemberCreateOrConnectWithoutProjectInput | ProjectMemberCreateOrConnectWithoutProjectInput[]
@@ -12879,17 +14281,19 @@ export namespace Prisma {
     connect?: MilestoneWhereUniqueInput | MilestoneWhereUniqueInput[]
   }
 
+  export type DocumentsUncheckedCreateNestedManyWithoutProjectInput = {
+    create?: XOR<DocumentsCreateWithoutProjectInput, DocumentsUncheckedCreateWithoutProjectInput> | DocumentsCreateWithoutProjectInput[] | DocumentsUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: DocumentsCreateOrConnectWithoutProjectInput | DocumentsCreateOrConnectWithoutProjectInput[]
+    createMany?: DocumentsCreateManyProjectInputEnvelope
+    connect?: DocumentsWhereUniqueInput | DocumentsWhereUniqueInput[]
+  }
+
   export type FloatFieldUpdateOperationsInput = {
     set?: number
     increment?: number
     decrement?: number
     multiply?: number
     divide?: number
-  }
-
-  export type ProjectUpdatedocumentsInput = {
-    set?: string[]
-    push?: string | string[]
   }
 
   export type UserUpdateOneRequiredWithoutProjectNestedInput = {
@@ -12956,6 +14360,20 @@ export namespace Prisma {
     deleteMany?: MilestoneScalarWhereInput | MilestoneScalarWhereInput[]
   }
 
+  export type DocumentsUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<DocumentsCreateWithoutProjectInput, DocumentsUncheckedCreateWithoutProjectInput> | DocumentsCreateWithoutProjectInput[] | DocumentsUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: DocumentsCreateOrConnectWithoutProjectInput | DocumentsCreateOrConnectWithoutProjectInput[]
+    upsert?: DocumentsUpsertWithWhereUniqueWithoutProjectInput | DocumentsUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: DocumentsCreateManyProjectInputEnvelope
+    set?: DocumentsWhereUniqueInput | DocumentsWhereUniqueInput[]
+    disconnect?: DocumentsWhereUniqueInput | DocumentsWhereUniqueInput[]
+    delete?: DocumentsWhereUniqueInput | DocumentsWhereUniqueInput[]
+    connect?: DocumentsWhereUniqueInput | DocumentsWhereUniqueInput[]
+    update?: DocumentsUpdateWithWhereUniqueWithoutProjectInput | DocumentsUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: DocumentsUpdateManyWithWhereWithoutProjectInput | DocumentsUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: DocumentsScalarWhereInput | DocumentsScalarWhereInput[]
+  }
+
   export type ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput = {
     create?: XOR<ProjectMemberCreateWithoutProjectInput, ProjectMemberUncheckedCreateWithoutProjectInput> | ProjectMemberCreateWithoutProjectInput[] | ProjectMemberUncheckedCreateWithoutProjectInput[]
     connectOrCreate?: ProjectMemberCreateOrConnectWithoutProjectInput | ProjectMemberCreateOrConnectWithoutProjectInput[]
@@ -13010,6 +14428,20 @@ export namespace Prisma {
     update?: MilestoneUpdateWithWhereUniqueWithoutProjectInput | MilestoneUpdateWithWhereUniqueWithoutProjectInput[]
     updateMany?: MilestoneUpdateManyWithWhereWithoutProjectInput | MilestoneUpdateManyWithWhereWithoutProjectInput[]
     deleteMany?: MilestoneScalarWhereInput | MilestoneScalarWhereInput[]
+  }
+
+  export type DocumentsUncheckedUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<DocumentsCreateWithoutProjectInput, DocumentsUncheckedCreateWithoutProjectInput> | DocumentsCreateWithoutProjectInput[] | DocumentsUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: DocumentsCreateOrConnectWithoutProjectInput | DocumentsCreateOrConnectWithoutProjectInput[]
+    upsert?: DocumentsUpsertWithWhereUniqueWithoutProjectInput | DocumentsUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: DocumentsCreateManyProjectInputEnvelope
+    set?: DocumentsWhereUniqueInput | DocumentsWhereUniqueInput[]
+    disconnect?: DocumentsWhereUniqueInput | DocumentsWhereUniqueInput[]
+    delete?: DocumentsWhereUniqueInput | DocumentsWhereUniqueInput[]
+    connect?: DocumentsWhereUniqueInput | DocumentsWhereUniqueInput[]
+    update?: DocumentsUpdateWithWhereUniqueWithoutProjectInput | DocumentsUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: DocumentsUpdateManyWithWhereWithoutProjectInput | DocumentsUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: DocumentsScalarWhereInput | DocumentsScalarWhereInput[]
   }
 
   export type ProjectCreateNestedOneWithoutProjectMembersInput = {
@@ -13116,6 +14548,20 @@ export namespace Prisma {
     upsert?: ProjectUpsertWithoutMilestonesInput
     connect?: ProjectWhereUniqueInput
     update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutMilestonesInput, ProjectUpdateWithoutMilestonesInput>, ProjectUncheckedUpdateWithoutMilestonesInput>
+  }
+
+  export type ProjectCreateNestedOneWithoutDocumentsInput = {
+    create?: XOR<ProjectCreateWithoutDocumentsInput, ProjectUncheckedCreateWithoutDocumentsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutDocumentsInput
+    connect?: ProjectWhereUniqueInput
+  }
+
+  export type ProjectUpdateOneRequiredWithoutDocumentsNestedInput = {
+    create?: XOR<ProjectCreateWithoutDocumentsInput, ProjectUncheckedCreateWithoutDocumentsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutDocumentsInput
+    upsert?: ProjectUpsertWithoutDocumentsInput
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutDocumentsInput, ProjectUpdateWithoutDocumentsInput>, ProjectUncheckedUpdateWithoutDocumentsInput>
   }
 
   export type NestedIntFilter<$PrismaModel = never> = {
@@ -13382,7 +14828,6 @@ export namespace Prisma {
     profile_picture?: string | null
     cover_image?: string | null
     pitch_video?: string | null
-    documents?: ProjectCreatedocumentsInput | string[]
     tags?: string | null
     location?: string | null
     start_date?: string | null
@@ -13392,6 +14837,7 @@ export namespace Prisma {
     projectInvestors?: ProjectInvestorCreateNestedManyWithoutProjectInput
     investments?: InvestmentCreateNestedManyWithoutProjectInput
     milestones?: MilestoneCreateNestedManyWithoutProjectInput
+    documents?: DocumentsCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutUserInput = {
@@ -13405,7 +14851,6 @@ export namespace Prisma {
     profile_picture?: string | null
     cover_image?: string | null
     pitch_video?: string | null
-    documents?: ProjectCreatedocumentsInput | string[]
     tags?: string | null
     location?: string | null
     start_date?: string | null
@@ -13415,6 +14860,7 @@ export namespace Prisma {
     projectInvestors?: ProjectInvestorUncheckedCreateNestedManyWithoutProjectInput
     investments?: InvestmentUncheckedCreateNestedManyWithoutProjectInput
     milestones?: MilestoneUncheckedCreateNestedManyWithoutProjectInput
+    documents?: DocumentsUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutUserInput = {
@@ -13485,7 +14931,6 @@ export namespace Prisma {
     profile_picture?: StringNullableFilter<"Project"> | string | null
     cover_image?: StringNullableFilter<"Project"> | string | null
     pitch_video?: StringNullableFilter<"Project"> | string | null
-    documents?: StringNullableListFilter<"Project">
     tags?: StringNullableFilter<"Project"> | string | null
     location?: StringNullableFilter<"Project"> | string | null
     start_date?: StringNullableFilter<"Project"> | string | null
@@ -13774,6 +15219,31 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type DocumentsCreateWithoutProjectInput = {
+    document: string
+    size?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DocumentsUncheckedCreateWithoutProjectInput = {
+    id?: number
+    document: string
+    size?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DocumentsCreateOrConnectWithoutProjectInput = {
+    where: DocumentsWhereUniqueInput
+    create: XOR<DocumentsCreateWithoutProjectInput, DocumentsUncheckedCreateWithoutProjectInput>
+  }
+
+  export type DocumentsCreateManyProjectInputEnvelope = {
+    data: DocumentsCreateManyProjectInput | DocumentsCreateManyProjectInput[]
+    skipDuplicates?: boolean
+  }
+
   export type UserUpsertWithoutProjectInput = {
     update: XOR<UserUpdateWithoutProjectInput, UserUncheckedUpdateWithoutProjectInput>
     create: XOR<UserCreateWithoutProjectInput, UserUncheckedCreateWithoutProjectInput>
@@ -13931,6 +15401,34 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Milestone"> | Date | string
   }
 
+  export type DocumentsUpsertWithWhereUniqueWithoutProjectInput = {
+    where: DocumentsWhereUniqueInput
+    update: XOR<DocumentsUpdateWithoutProjectInput, DocumentsUncheckedUpdateWithoutProjectInput>
+    create: XOR<DocumentsCreateWithoutProjectInput, DocumentsUncheckedCreateWithoutProjectInput>
+  }
+
+  export type DocumentsUpdateWithWhereUniqueWithoutProjectInput = {
+    where: DocumentsWhereUniqueInput
+    data: XOR<DocumentsUpdateWithoutProjectInput, DocumentsUncheckedUpdateWithoutProjectInput>
+  }
+
+  export type DocumentsUpdateManyWithWhereWithoutProjectInput = {
+    where: DocumentsScalarWhereInput
+    data: XOR<DocumentsUpdateManyMutationInput, DocumentsUncheckedUpdateManyWithoutProjectInput>
+  }
+
+  export type DocumentsScalarWhereInput = {
+    AND?: DocumentsScalarWhereInput | DocumentsScalarWhereInput[]
+    OR?: DocumentsScalarWhereInput[]
+    NOT?: DocumentsScalarWhereInput | DocumentsScalarWhereInput[]
+    id?: IntFilter<"Documents"> | number
+    projectId?: IntFilter<"Documents"> | number
+    document?: StringFilter<"Documents"> | string
+    size?: FloatNullableFilter<"Documents"> | number | null
+    createdAt?: DateTimeFilter<"Documents"> | Date | string
+    updatedAt?: DateTimeFilter<"Documents"> | Date | string
+  }
+
   export type ProjectCreateWithoutProjectMembersInput = {
     title: string
     description: string
@@ -13941,7 +15439,6 @@ export namespace Prisma {
     profile_picture?: string | null
     cover_image?: string | null
     pitch_video?: string | null
-    documents?: ProjectCreatedocumentsInput | string[]
     tags?: string | null
     location?: string | null
     start_date?: string | null
@@ -13951,6 +15448,7 @@ export namespace Prisma {
     projectInvestors?: ProjectInvestorCreateNestedManyWithoutProjectInput
     investments?: InvestmentCreateNestedManyWithoutProjectInput
     milestones?: MilestoneCreateNestedManyWithoutProjectInput
+    documents?: DocumentsCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutProjectMembersInput = {
@@ -13965,7 +15463,6 @@ export namespace Prisma {
     profile_picture?: string | null
     cover_image?: string | null
     pitch_video?: string | null
-    documents?: ProjectCreatedocumentsInput | string[]
     tags?: string | null
     location?: string | null
     start_date?: string | null
@@ -13974,6 +15471,7 @@ export namespace Prisma {
     projectInvestors?: ProjectInvestorUncheckedCreateNestedManyWithoutProjectInput
     investments?: InvestmentUncheckedCreateNestedManyWithoutProjectInput
     milestones?: MilestoneUncheckedCreateNestedManyWithoutProjectInput
+    documents?: DocumentsUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutProjectMembersInput = {
@@ -14070,7 +15568,6 @@ export namespace Prisma {
     profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
     cover_image?: NullableStringFieldUpdateOperationsInput | string | null
     pitch_video?: NullableStringFieldUpdateOperationsInput | string | null
-    documents?: ProjectUpdatedocumentsInput | string[]
     tags?: NullableStringFieldUpdateOperationsInput | string | null
     location?: NullableStringFieldUpdateOperationsInput | string | null
     start_date?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14080,6 +15577,7 @@ export namespace Prisma {
     projectInvestors?: ProjectInvestorUpdateManyWithoutProjectNestedInput
     investments?: InvestmentUpdateManyWithoutProjectNestedInput
     milestones?: MilestoneUpdateManyWithoutProjectNestedInput
+    documents?: DocumentsUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutProjectMembersInput = {
@@ -14094,7 +15592,6 @@ export namespace Prisma {
     profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
     cover_image?: NullableStringFieldUpdateOperationsInput | string | null
     pitch_video?: NullableStringFieldUpdateOperationsInput | string | null
-    documents?: ProjectUpdatedocumentsInput | string[]
     tags?: NullableStringFieldUpdateOperationsInput | string | null
     location?: NullableStringFieldUpdateOperationsInput | string | null
     start_date?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14103,6 +15600,7 @@ export namespace Prisma {
     projectInvestors?: ProjectInvestorUncheckedUpdateManyWithoutProjectNestedInput
     investments?: InvestmentUncheckedUpdateManyWithoutProjectNestedInput
     milestones?: MilestoneUncheckedUpdateManyWithoutProjectNestedInput
+    documents?: DocumentsUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type UserUpsertWithoutProjectMembersInput = {
@@ -14189,7 +15687,6 @@ export namespace Prisma {
     profile_picture?: string | null
     cover_image?: string | null
     pitch_video?: string | null
-    documents?: ProjectCreatedocumentsInput | string[]
     tags?: string | null
     location?: string | null
     start_date?: string | null
@@ -14199,6 +15696,7 @@ export namespace Prisma {
     projectMembers?: ProjectMemberCreateNestedManyWithoutProjectInput
     investments?: InvestmentCreateNestedManyWithoutProjectInput
     milestones?: MilestoneCreateNestedManyWithoutProjectInput
+    documents?: DocumentsCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutProjectInvestorsInput = {
@@ -14213,7 +15711,6 @@ export namespace Prisma {
     profile_picture?: string | null
     cover_image?: string | null
     pitch_video?: string | null
-    documents?: ProjectCreatedocumentsInput | string[]
     tags?: string | null
     location?: string | null
     start_date?: string | null
@@ -14222,6 +15719,7 @@ export namespace Prisma {
     projectMembers?: ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
     investments?: InvestmentUncheckedCreateNestedManyWithoutProjectInput
     milestones?: MilestoneUncheckedCreateNestedManyWithoutProjectInput
+    documents?: DocumentsUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutProjectInvestorsInput = {
@@ -14288,7 +15786,6 @@ export namespace Prisma {
     profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
     cover_image?: NullableStringFieldUpdateOperationsInput | string | null
     pitch_video?: NullableStringFieldUpdateOperationsInput | string | null
-    documents?: ProjectUpdatedocumentsInput | string[]
     tags?: NullableStringFieldUpdateOperationsInput | string | null
     location?: NullableStringFieldUpdateOperationsInput | string | null
     start_date?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14298,6 +15795,7 @@ export namespace Prisma {
     projectMembers?: ProjectMemberUpdateManyWithoutProjectNestedInput
     investments?: InvestmentUpdateManyWithoutProjectNestedInput
     milestones?: MilestoneUpdateManyWithoutProjectNestedInput
+    documents?: DocumentsUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutProjectInvestorsInput = {
@@ -14312,7 +15810,6 @@ export namespace Prisma {
     profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
     cover_image?: NullableStringFieldUpdateOperationsInput | string | null
     pitch_video?: NullableStringFieldUpdateOperationsInput | string | null
-    documents?: ProjectUpdatedocumentsInput | string[]
     tags?: NullableStringFieldUpdateOperationsInput | string | null
     location?: NullableStringFieldUpdateOperationsInput | string | null
     start_date?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14321,6 +15818,7 @@ export namespace Prisma {
     projectMembers?: ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
     investments?: InvestmentUncheckedUpdateManyWithoutProjectNestedInput
     milestones?: MilestoneUncheckedUpdateManyWithoutProjectNestedInput
+    documents?: DocumentsUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type InvestorUpsertWithoutProjectInvestorsInput = {
@@ -14377,7 +15875,6 @@ export namespace Prisma {
     profile_picture?: string | null
     cover_image?: string | null
     pitch_video?: string | null
-    documents?: ProjectCreatedocumentsInput | string[]
     tags?: string | null
     location?: string | null
     start_date?: string | null
@@ -14387,6 +15884,7 @@ export namespace Prisma {
     projectMembers?: ProjectMemberCreateNestedManyWithoutProjectInput
     projectInvestors?: ProjectInvestorCreateNestedManyWithoutProjectInput
     milestones?: MilestoneCreateNestedManyWithoutProjectInput
+    documents?: DocumentsCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutInvestmentsInput = {
@@ -14401,7 +15899,6 @@ export namespace Prisma {
     profile_picture?: string | null
     cover_image?: string | null
     pitch_video?: string | null
-    documents?: ProjectCreatedocumentsInput | string[]
     tags?: string | null
     location?: string | null
     start_date?: string | null
@@ -14410,6 +15907,7 @@ export namespace Prisma {
     projectMembers?: ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
     projectInvestors?: ProjectInvestorUncheckedCreateNestedManyWithoutProjectInput
     milestones?: MilestoneUncheckedCreateNestedManyWithoutProjectInput
+    documents?: DocumentsUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutInvestmentsInput = {
@@ -14476,7 +15974,6 @@ export namespace Prisma {
     profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
     cover_image?: NullableStringFieldUpdateOperationsInput | string | null
     pitch_video?: NullableStringFieldUpdateOperationsInput | string | null
-    documents?: ProjectUpdatedocumentsInput | string[]
     tags?: NullableStringFieldUpdateOperationsInput | string | null
     location?: NullableStringFieldUpdateOperationsInput | string | null
     start_date?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14486,6 +15983,7 @@ export namespace Prisma {
     projectMembers?: ProjectMemberUpdateManyWithoutProjectNestedInput
     projectInvestors?: ProjectInvestorUpdateManyWithoutProjectNestedInput
     milestones?: MilestoneUpdateManyWithoutProjectNestedInput
+    documents?: DocumentsUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutInvestmentsInput = {
@@ -14500,7 +15998,6 @@ export namespace Prisma {
     profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
     cover_image?: NullableStringFieldUpdateOperationsInput | string | null
     pitch_video?: NullableStringFieldUpdateOperationsInput | string | null
-    documents?: ProjectUpdatedocumentsInput | string[]
     tags?: NullableStringFieldUpdateOperationsInput | string | null
     location?: NullableStringFieldUpdateOperationsInput | string | null
     start_date?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14509,6 +16006,7 @@ export namespace Prisma {
     projectMembers?: ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
     projectInvestors?: ProjectInvestorUncheckedUpdateManyWithoutProjectNestedInput
     milestones?: MilestoneUncheckedUpdateManyWithoutProjectNestedInput
+    documents?: DocumentsUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type InvestorUpsertWithoutInvestmentsInput = {
@@ -14565,7 +16063,6 @@ export namespace Prisma {
     profile_picture?: string | null
     cover_image?: string | null
     pitch_video?: string | null
-    documents?: ProjectCreatedocumentsInput | string[]
     tags?: string | null
     location?: string | null
     start_date?: string | null
@@ -14575,6 +16072,7 @@ export namespace Prisma {
     projectMembers?: ProjectMemberCreateNestedManyWithoutProjectInput
     projectInvestors?: ProjectInvestorCreateNestedManyWithoutProjectInput
     investments?: InvestmentCreateNestedManyWithoutProjectInput
+    documents?: DocumentsCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutMilestonesInput = {
@@ -14589,7 +16087,6 @@ export namespace Prisma {
     profile_picture?: string | null
     cover_image?: string | null
     pitch_video?: string | null
-    documents?: ProjectCreatedocumentsInput | string[]
     tags?: string | null
     location?: string | null
     start_date?: string | null
@@ -14598,6 +16095,7 @@ export namespace Prisma {
     projectMembers?: ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
     projectInvestors?: ProjectInvestorUncheckedCreateNestedManyWithoutProjectInput
     investments?: InvestmentUncheckedCreateNestedManyWithoutProjectInput
+    documents?: DocumentsUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutMilestonesInput = {
@@ -14626,7 +16124,6 @@ export namespace Prisma {
     profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
     cover_image?: NullableStringFieldUpdateOperationsInput | string | null
     pitch_video?: NullableStringFieldUpdateOperationsInput | string | null
-    documents?: ProjectUpdatedocumentsInput | string[]
     tags?: NullableStringFieldUpdateOperationsInput | string | null
     location?: NullableStringFieldUpdateOperationsInput | string | null
     start_date?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14636,6 +16133,7 @@ export namespace Prisma {
     projectMembers?: ProjectMemberUpdateManyWithoutProjectNestedInput
     projectInvestors?: ProjectInvestorUpdateManyWithoutProjectNestedInput
     investments?: InvestmentUpdateManyWithoutProjectNestedInput
+    documents?: DocumentsUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutMilestonesInput = {
@@ -14650,7 +16148,6 @@ export namespace Prisma {
     profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
     cover_image?: NullableStringFieldUpdateOperationsInput | string | null
     pitch_video?: NullableStringFieldUpdateOperationsInput | string | null
-    documents?: ProjectUpdatedocumentsInput | string[]
     tags?: NullableStringFieldUpdateOperationsInput | string | null
     location?: NullableStringFieldUpdateOperationsInput | string | null
     start_date?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14659,6 +16156,113 @@ export namespace Prisma {
     projectMembers?: ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
     projectInvestors?: ProjectInvestorUncheckedUpdateManyWithoutProjectNestedInput
     investments?: InvestmentUncheckedUpdateManyWithoutProjectNestedInput
+    documents?: DocumentsUncheckedUpdateManyWithoutProjectNestedInput
+  }
+
+  export type ProjectCreateWithoutDocumentsInput = {
+    title: string
+    description: string
+    category: string
+    budget: number
+    raised_amount?: number | null
+    status?: string
+    profile_picture?: string | null
+    cover_image?: string | null
+    pitch_video?: string | null
+    tags?: string | null
+    location?: string | null
+    start_date?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutProjectInput
+    projectMembers?: ProjectMemberCreateNestedManyWithoutProjectInput
+    projectInvestors?: ProjectInvestorCreateNestedManyWithoutProjectInput
+    investments?: InvestmentCreateNestedManyWithoutProjectInput
+    milestones?: MilestoneCreateNestedManyWithoutProjectInput
+  }
+
+  export type ProjectUncheckedCreateWithoutDocumentsInput = {
+    id?: number
+    userId: number
+    title: string
+    description: string
+    category: string
+    budget: number
+    raised_amount?: number | null
+    status?: string
+    profile_picture?: string | null
+    cover_image?: string | null
+    pitch_video?: string | null
+    tags?: string | null
+    location?: string | null
+    start_date?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    projectMembers?: ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
+    projectInvestors?: ProjectInvestorUncheckedCreateNestedManyWithoutProjectInput
+    investments?: InvestmentUncheckedCreateNestedManyWithoutProjectInput
+    milestones?: MilestoneUncheckedCreateNestedManyWithoutProjectInput
+  }
+
+  export type ProjectCreateOrConnectWithoutDocumentsInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutDocumentsInput, ProjectUncheckedCreateWithoutDocumentsInput>
+  }
+
+  export type ProjectUpsertWithoutDocumentsInput = {
+    update: XOR<ProjectUpdateWithoutDocumentsInput, ProjectUncheckedUpdateWithoutDocumentsInput>
+    create: XOR<ProjectCreateWithoutDocumentsInput, ProjectUncheckedCreateWithoutDocumentsInput>
+    where?: ProjectWhereInput
+  }
+
+  export type ProjectUpdateToOneWithWhereWithoutDocumentsInput = {
+    where?: ProjectWhereInput
+    data: XOR<ProjectUpdateWithoutDocumentsInput, ProjectUncheckedUpdateWithoutDocumentsInput>
+  }
+
+  export type ProjectUpdateWithoutDocumentsInput = {
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    budget?: FloatFieldUpdateOperationsInput | number
+    raised_amount?: NullableFloatFieldUpdateOperationsInput | number | null
+    status?: StringFieldUpdateOperationsInput | string
+    profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
+    cover_image?: NullableStringFieldUpdateOperationsInput | string | null
+    pitch_video?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    start_date?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutProjectNestedInput
+    projectMembers?: ProjectMemberUpdateManyWithoutProjectNestedInput
+    projectInvestors?: ProjectInvestorUpdateManyWithoutProjectNestedInput
+    investments?: InvestmentUpdateManyWithoutProjectNestedInput
+    milestones?: MilestoneUpdateManyWithoutProjectNestedInput
+  }
+
+  export type ProjectUncheckedUpdateWithoutDocumentsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    budget?: FloatFieldUpdateOperationsInput | number
+    raised_amount?: NullableFloatFieldUpdateOperationsInput | number | null
+    status?: StringFieldUpdateOperationsInput | string
+    profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
+    cover_image?: NullableStringFieldUpdateOperationsInput | string | null
+    pitch_video?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    start_date?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    projectMembers?: ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
+    projectInvestors?: ProjectInvestorUncheckedUpdateManyWithoutProjectNestedInput
+    investments?: InvestmentUncheckedUpdateManyWithoutProjectNestedInput
+    milestones?: MilestoneUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectMemberCreateManyUserInput = {
@@ -14679,7 +16283,6 @@ export namespace Prisma {
     profile_picture?: string | null
     cover_image?: string | null
     pitch_video?: string | null
-    documents?: ProjectCreatedocumentsInput | string[]
     tags?: string | null
     location?: string | null
     start_date?: string | null
@@ -14717,7 +16320,6 @@ export namespace Prisma {
     profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
     cover_image?: NullableStringFieldUpdateOperationsInput | string | null
     pitch_video?: NullableStringFieldUpdateOperationsInput | string | null
-    documents?: ProjectUpdatedocumentsInput | string[]
     tags?: NullableStringFieldUpdateOperationsInput | string | null
     location?: NullableStringFieldUpdateOperationsInput | string | null
     start_date?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14727,6 +16329,7 @@ export namespace Prisma {
     projectInvestors?: ProjectInvestorUpdateManyWithoutProjectNestedInput
     investments?: InvestmentUpdateManyWithoutProjectNestedInput
     milestones?: MilestoneUpdateManyWithoutProjectNestedInput
+    documents?: DocumentsUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutUserInput = {
@@ -14740,7 +16343,6 @@ export namespace Prisma {
     profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
     cover_image?: NullableStringFieldUpdateOperationsInput | string | null
     pitch_video?: NullableStringFieldUpdateOperationsInput | string | null
-    documents?: ProjectUpdatedocumentsInput | string[]
     tags?: NullableStringFieldUpdateOperationsInput | string | null
     location?: NullableStringFieldUpdateOperationsInput | string | null
     start_date?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14750,6 +16352,7 @@ export namespace Prisma {
     projectInvestors?: ProjectInvestorUncheckedUpdateManyWithoutProjectNestedInput
     investments?: InvestmentUncheckedUpdateManyWithoutProjectNestedInput
     milestones?: MilestoneUncheckedUpdateManyWithoutProjectNestedInput
+    documents?: DocumentsUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateManyWithoutUserInput = {
@@ -14763,7 +16366,6 @@ export namespace Prisma {
     profile_picture?: NullableStringFieldUpdateOperationsInput | string | null
     cover_image?: NullableStringFieldUpdateOperationsInput | string | null
     pitch_video?: NullableStringFieldUpdateOperationsInput | string | null
-    documents?: ProjectUpdatedocumentsInput | string[]
     tags?: NullableStringFieldUpdateOperationsInput | string | null
     location?: NullableStringFieldUpdateOperationsInput | string | null
     start_date?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14862,6 +16464,14 @@ export namespace Prisma {
     progress?: number | null
     raised_amount?: number | null
     plannedAt?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DocumentsCreateManyProjectInput = {
+    id?: number
+    document: string
+    size?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -14969,6 +16579,29 @@ export namespace Prisma {
     progress?: NullableIntFieldUpdateOperationsInput | number | null
     raised_amount?: NullableFloatFieldUpdateOperationsInput | number | null
     plannedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DocumentsUpdateWithoutProjectInput = {
+    document?: StringFieldUpdateOperationsInput | string
+    size?: NullableFloatFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DocumentsUncheckedUpdateWithoutProjectInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    document?: StringFieldUpdateOperationsInput | string
+    size?: NullableFloatFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DocumentsUncheckedUpdateManyWithoutProjectInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    document?: StringFieldUpdateOperationsInput | string
+    size?: NullableFloatFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
