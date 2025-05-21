@@ -3097,10 +3097,14 @@ export namespace Prisma {
 
   export type InvestorAvgAggregateOutputType = {
     id: number | null
+    minInvestment: number | null
+    maxInvestment: number | null
   }
 
   export type InvestorSumAggregateOutputType = {
     id: number | null
+    minInvestment: number | null
+    maxInvestment: number | null
   }
 
   export type InvestorMinAggregateOutputType = {
@@ -3113,7 +3117,12 @@ export namespace Prisma {
     company_name: string | null
     company_website: string | null
     company_description: string | null
+    location: string | null
+    bio: string | null
     role: string | null
+    experienceYears: string | null
+    minInvestment: number | null
+    maxInvestment: number | null
     isActivated: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -3129,7 +3138,12 @@ export namespace Prisma {
     company_name: string | null
     company_website: string | null
     company_description: string | null
+    location: string | null
+    bio: string | null
     role: string | null
+    experienceYears: string | null
+    minInvestment: number | null
+    maxInvestment: number | null
     isActivated: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -3145,7 +3159,15 @@ export namespace Prisma {
     company_name: number
     company_website: number
     company_description: number
+    location: number
+    bio: number
     role: number
+    experienceYears: number
+    investmentFocus: number
+    minInvestment: number
+    maxInvestment: number
+    preferredStages: number
+    customSocials: number
     isActivated: number
     createdAt: number
     updatedAt: number
@@ -3155,10 +3177,14 @@ export namespace Prisma {
 
   export type InvestorAvgAggregateInputType = {
     id?: true
+    minInvestment?: true
+    maxInvestment?: true
   }
 
   export type InvestorSumAggregateInputType = {
     id?: true
+    minInvestment?: true
+    maxInvestment?: true
   }
 
   export type InvestorMinAggregateInputType = {
@@ -3171,7 +3197,12 @@ export namespace Prisma {
     company_name?: true
     company_website?: true
     company_description?: true
+    location?: true
+    bio?: true
     role?: true
+    experienceYears?: true
+    minInvestment?: true
+    maxInvestment?: true
     isActivated?: true
     createdAt?: true
     updatedAt?: true
@@ -3187,7 +3218,12 @@ export namespace Prisma {
     company_name?: true
     company_website?: true
     company_description?: true
+    location?: true
+    bio?: true
     role?: true
+    experienceYears?: true
+    minInvestment?: true
+    maxInvestment?: true
     isActivated?: true
     createdAt?: true
     updatedAt?: true
@@ -3203,7 +3239,15 @@ export namespace Prisma {
     company_name?: true
     company_website?: true
     company_description?: true
+    location?: true
+    bio?: true
     role?: true
+    experienceYears?: true
+    investmentFocus?: true
+    minInvestment?: true
+    maxInvestment?: true
+    preferredStages?: true
+    customSocials?: true
     isActivated?: true
     createdAt?: true
     updatedAt?: true
@@ -3306,7 +3350,15 @@ export namespace Prisma {
     company_name: string | null
     company_website: string | null
     company_description: string | null
+    location: string | null
+    bio: string | null
     role: string
+    experienceYears: string | null
+    investmentFocus: string[]
+    minInvestment: number | null
+    maxInvestment: number | null
+    preferredStages: string[]
+    customSocials: JsonValue | null
     isActivated: boolean
     createdAt: Date
     updatedAt: Date
@@ -3341,7 +3393,15 @@ export namespace Prisma {
     company_name?: boolean
     company_website?: boolean
     company_description?: boolean
+    location?: boolean
+    bio?: boolean
     role?: boolean
+    experienceYears?: boolean
+    investmentFocus?: boolean
+    minInvestment?: boolean
+    maxInvestment?: boolean
+    preferredStages?: boolean
+    customSocials?: boolean
     isActivated?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -3360,7 +3420,15 @@ export namespace Prisma {
     company_name?: boolean
     company_website?: boolean
     company_description?: boolean
+    location?: boolean
+    bio?: boolean
     role?: boolean
+    experienceYears?: boolean
+    investmentFocus?: boolean
+    minInvestment?: boolean
+    maxInvestment?: boolean
+    preferredStages?: boolean
+    customSocials?: boolean
     isActivated?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -3376,7 +3444,15 @@ export namespace Prisma {
     company_name?: boolean
     company_website?: boolean
     company_description?: boolean
+    location?: boolean
+    bio?: boolean
     role?: boolean
+    experienceYears?: boolean
+    investmentFocus?: boolean
+    minInvestment?: boolean
+    maxInvestment?: boolean
+    preferredStages?: boolean
+    customSocials?: boolean
     isActivated?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -3392,13 +3468,21 @@ export namespace Prisma {
     company_name?: boolean
     company_website?: boolean
     company_description?: boolean
+    location?: boolean
+    bio?: boolean
     role?: boolean
+    experienceYears?: boolean
+    investmentFocus?: boolean
+    minInvestment?: boolean
+    maxInvestment?: boolean
+    preferredStages?: boolean
+    customSocials?: boolean
     isActivated?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type InvestorOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "phone" | "password" | "name" | "profile_picture" | "company_name" | "company_website" | "company_description" | "role" | "isActivated" | "createdAt" | "updatedAt", ExtArgs["result"]["investor"]>
+  export type InvestorOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "phone" | "password" | "name" | "profile_picture" | "company_name" | "company_website" | "company_description" | "location" | "bio" | "role" | "experienceYears" | "investmentFocus" | "minInvestment" | "maxInvestment" | "preferredStages" | "customSocials" | "isActivated" | "createdAt" | "updatedAt", ExtArgs["result"]["investor"]>
   export type InvestorInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     projectInvestors?: boolean | Investor$projectInvestorsArgs<ExtArgs>
     investments?: boolean | Investor$investmentsArgs<ExtArgs>
@@ -3423,7 +3507,15 @@ export namespace Prisma {
       company_name: string | null
       company_website: string | null
       company_description: string | null
+      location: string | null
+      bio: string | null
       role: string
+      experienceYears: string | null
+      investmentFocus: string[]
+      minInvestment: number | null
+      maxInvestment: number | null
+      preferredStages: string[]
+      customSocials: Prisma.JsonValue | null
       isActivated: boolean
       createdAt: Date
       updatedAt: Date
@@ -3861,7 +3953,15 @@ export namespace Prisma {
     readonly company_name: FieldRef<"Investor", 'String'>
     readonly company_website: FieldRef<"Investor", 'String'>
     readonly company_description: FieldRef<"Investor", 'String'>
+    readonly location: FieldRef<"Investor", 'String'>
+    readonly bio: FieldRef<"Investor", 'String'>
     readonly role: FieldRef<"Investor", 'String'>
+    readonly experienceYears: FieldRef<"Investor", 'String'>
+    readonly investmentFocus: FieldRef<"Investor", 'String[]'>
+    readonly minInvestment: FieldRef<"Investor", 'Int'>
+    readonly maxInvestment: FieldRef<"Investor", 'Int'>
+    readonly preferredStages: FieldRef<"Investor", 'String[]'>
+    readonly customSocials: FieldRef<"Investor", 'Json'>
     readonly isActivated: FieldRef<"Investor", 'Boolean'>
     readonly createdAt: FieldRef<"Investor", 'DateTime'>
     readonly updatedAt: FieldRef<"Investor", 'DateTime'>
@@ -11432,7 +11532,15 @@ export namespace Prisma {
     company_name: 'company_name',
     company_website: 'company_website',
     company_description: 'company_description',
+    location: 'location',
+    bio: 'bio',
     role: 'role',
+    experienceYears: 'experienceYears',
+    investmentFocus: 'investmentFocus',
+    minInvestment: 'minInvestment',
+    maxInvestment: 'maxInvestment',
+    preferredStages: 'preferredStages',
+    customSocials: 'customSocials',
     isActivated: 'isActivated',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -11842,7 +11950,15 @@ export namespace Prisma {
     company_name?: StringNullableFilter<"Investor"> | string | null
     company_website?: StringNullableFilter<"Investor"> | string | null
     company_description?: StringNullableFilter<"Investor"> | string | null
+    location?: StringNullableFilter<"Investor"> | string | null
+    bio?: StringNullableFilter<"Investor"> | string | null
     role?: StringFilter<"Investor"> | string
+    experienceYears?: StringNullableFilter<"Investor"> | string | null
+    investmentFocus?: StringNullableListFilter<"Investor">
+    minInvestment?: IntNullableFilter<"Investor"> | number | null
+    maxInvestment?: IntNullableFilter<"Investor"> | number | null
+    preferredStages?: StringNullableListFilter<"Investor">
+    customSocials?: JsonNullableFilter<"Investor">
     isActivated?: BoolFilter<"Investor"> | boolean
     createdAt?: DateTimeFilter<"Investor"> | Date | string
     updatedAt?: DateTimeFilter<"Investor"> | Date | string
@@ -11860,7 +11976,15 @@ export namespace Prisma {
     company_name?: SortOrderInput | SortOrder
     company_website?: SortOrderInput | SortOrder
     company_description?: SortOrderInput | SortOrder
+    location?: SortOrderInput | SortOrder
+    bio?: SortOrderInput | SortOrder
     role?: SortOrder
+    experienceYears?: SortOrderInput | SortOrder
+    investmentFocus?: SortOrder
+    minInvestment?: SortOrderInput | SortOrder
+    maxInvestment?: SortOrderInput | SortOrder
+    preferredStages?: SortOrder
+    customSocials?: SortOrderInput | SortOrder
     isActivated?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -11881,7 +12005,15 @@ export namespace Prisma {
     company_name?: StringNullableFilter<"Investor"> | string | null
     company_website?: StringNullableFilter<"Investor"> | string | null
     company_description?: StringNullableFilter<"Investor"> | string | null
+    location?: StringNullableFilter<"Investor"> | string | null
+    bio?: StringNullableFilter<"Investor"> | string | null
     role?: StringFilter<"Investor"> | string
+    experienceYears?: StringNullableFilter<"Investor"> | string | null
+    investmentFocus?: StringNullableListFilter<"Investor">
+    minInvestment?: IntNullableFilter<"Investor"> | number | null
+    maxInvestment?: IntNullableFilter<"Investor"> | number | null
+    preferredStages?: StringNullableListFilter<"Investor">
+    customSocials?: JsonNullableFilter<"Investor">
     isActivated?: BoolFilter<"Investor"> | boolean
     createdAt?: DateTimeFilter<"Investor"> | Date | string
     updatedAt?: DateTimeFilter<"Investor"> | Date | string
@@ -11899,7 +12031,15 @@ export namespace Prisma {
     company_name?: SortOrderInput | SortOrder
     company_website?: SortOrderInput | SortOrder
     company_description?: SortOrderInput | SortOrder
+    location?: SortOrderInput | SortOrder
+    bio?: SortOrderInput | SortOrder
     role?: SortOrder
+    experienceYears?: SortOrderInput | SortOrder
+    investmentFocus?: SortOrder
+    minInvestment?: SortOrderInput | SortOrder
+    maxInvestment?: SortOrderInput | SortOrder
+    preferredStages?: SortOrder
+    customSocials?: SortOrderInput | SortOrder
     isActivated?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -11923,7 +12063,15 @@ export namespace Prisma {
     company_name?: StringNullableWithAggregatesFilter<"Investor"> | string | null
     company_website?: StringNullableWithAggregatesFilter<"Investor"> | string | null
     company_description?: StringNullableWithAggregatesFilter<"Investor"> | string | null
+    location?: StringNullableWithAggregatesFilter<"Investor"> | string | null
+    bio?: StringNullableWithAggregatesFilter<"Investor"> | string | null
     role?: StringWithAggregatesFilter<"Investor"> | string
+    experienceYears?: StringNullableWithAggregatesFilter<"Investor"> | string | null
+    investmentFocus?: StringNullableListFilter<"Investor">
+    minInvestment?: IntNullableWithAggregatesFilter<"Investor"> | number | null
+    maxInvestment?: IntNullableWithAggregatesFilter<"Investor"> | number | null
+    preferredStages?: StringNullableListFilter<"Investor">
+    customSocials?: JsonNullableWithAggregatesFilter<"Investor">
     isActivated?: BoolWithAggregatesFilter<"Investor"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"Investor"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Investor"> | Date | string
@@ -12633,7 +12781,15 @@ export namespace Prisma {
     company_name?: string | null
     company_website?: string | null
     company_description?: string | null
+    location?: string | null
+    bio?: string | null
     role?: string
+    experienceYears?: string | null
+    investmentFocus?: InvestorCreateinvestmentFocusInput | string[]
+    minInvestment?: number | null
+    maxInvestment?: number | null
+    preferredStages?: InvestorCreatepreferredStagesInput | string[]
+    customSocials?: NullableJsonNullValueInput | InputJsonValue
     isActivated?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -12651,7 +12807,15 @@ export namespace Prisma {
     company_name?: string | null
     company_website?: string | null
     company_description?: string | null
+    location?: string | null
+    bio?: string | null
     role?: string
+    experienceYears?: string | null
+    investmentFocus?: InvestorCreateinvestmentFocusInput | string[]
+    minInvestment?: number | null
+    maxInvestment?: number | null
+    preferredStages?: InvestorCreatepreferredStagesInput | string[]
+    customSocials?: NullableJsonNullValueInput | InputJsonValue
     isActivated?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -12668,7 +12832,15 @@ export namespace Prisma {
     company_name?: NullableStringFieldUpdateOperationsInput | string | null
     company_website?: NullableStringFieldUpdateOperationsInput | string | null
     company_description?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
     role?: StringFieldUpdateOperationsInput | string
+    experienceYears?: NullableStringFieldUpdateOperationsInput | string | null
+    investmentFocus?: InvestorUpdateinvestmentFocusInput | string[]
+    minInvestment?: NullableIntFieldUpdateOperationsInput | number | null
+    maxInvestment?: NullableIntFieldUpdateOperationsInput | number | null
+    preferredStages?: InvestorUpdatepreferredStagesInput | string[]
+    customSocials?: NullableJsonNullValueInput | InputJsonValue
     isActivated?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -12686,7 +12858,15 @@ export namespace Prisma {
     company_name?: NullableStringFieldUpdateOperationsInput | string | null
     company_website?: NullableStringFieldUpdateOperationsInput | string | null
     company_description?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
     role?: StringFieldUpdateOperationsInput | string
+    experienceYears?: NullableStringFieldUpdateOperationsInput | string | null
+    investmentFocus?: InvestorUpdateinvestmentFocusInput | string[]
+    minInvestment?: NullableIntFieldUpdateOperationsInput | number | null
+    maxInvestment?: NullableIntFieldUpdateOperationsInput | number | null
+    preferredStages?: InvestorUpdatepreferredStagesInput | string[]
+    customSocials?: NullableJsonNullValueInput | InputJsonValue
     isActivated?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -12704,7 +12884,15 @@ export namespace Prisma {
     company_name?: string | null
     company_website?: string | null
     company_description?: string | null
+    location?: string | null
+    bio?: string | null
     role?: string
+    experienceYears?: string | null
+    investmentFocus?: InvestorCreateinvestmentFocusInput | string[]
+    minInvestment?: number | null
+    maxInvestment?: number | null
+    preferredStages?: InvestorCreatepreferredStagesInput | string[]
+    customSocials?: NullableJsonNullValueInput | InputJsonValue
     isActivated?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -12719,7 +12907,15 @@ export namespace Prisma {
     company_name?: NullableStringFieldUpdateOperationsInput | string | null
     company_website?: NullableStringFieldUpdateOperationsInput | string | null
     company_description?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
     role?: StringFieldUpdateOperationsInput | string
+    experienceYears?: NullableStringFieldUpdateOperationsInput | string | null
+    investmentFocus?: InvestorUpdateinvestmentFocusInput | string[]
+    minInvestment?: NullableIntFieldUpdateOperationsInput | number | null
+    maxInvestment?: NullableIntFieldUpdateOperationsInput | number | null
+    preferredStages?: InvestorUpdatepreferredStagesInput | string[]
+    customSocials?: NullableJsonNullValueInput | InputJsonValue
     isActivated?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -12735,7 +12931,15 @@ export namespace Prisma {
     company_name?: NullableStringFieldUpdateOperationsInput | string | null
     company_website?: NullableStringFieldUpdateOperationsInput | string | null
     company_description?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
     role?: StringFieldUpdateOperationsInput | string
+    experienceYears?: NullableStringFieldUpdateOperationsInput | string | null
+    investmentFocus?: InvestorUpdateinvestmentFocusInput | string[]
+    minInvestment?: NullableIntFieldUpdateOperationsInput | number | null
+    maxInvestment?: NullableIntFieldUpdateOperationsInput | number | null
+    preferredStages?: InvestorUpdatepreferredStagesInput | string[]
+    customSocials?: NullableJsonNullValueInput | InputJsonValue
     isActivated?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13550,6 +13754,25 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type StringNullableListFilter<$PrismaModel = never> = {
+    equals?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    has?: string | StringFieldRefInput<$PrismaModel> | null
+    hasEvery?: string[] | ListStringFieldRefInput<$PrismaModel>
+    hasSome?: string[] | ListStringFieldRefInput<$PrismaModel>
+    isEmpty?: boolean
+  }
+
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
   export type ProjectInvestorListRelationFilter = {
     every?: ProjectInvestorWhereInput
     some?: ProjectInvestorWhereInput
@@ -13580,7 +13803,15 @@ export namespace Prisma {
     company_name?: SortOrder
     company_website?: SortOrder
     company_description?: SortOrder
+    location?: SortOrder
+    bio?: SortOrder
     role?: SortOrder
+    experienceYears?: SortOrder
+    investmentFocus?: SortOrder
+    minInvestment?: SortOrder
+    maxInvestment?: SortOrder
+    preferredStages?: SortOrder
+    customSocials?: SortOrder
     isActivated?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -13588,6 +13819,8 @@ export namespace Prisma {
 
   export type InvestorAvgOrderByAggregateInput = {
     id?: SortOrder
+    minInvestment?: SortOrder
+    maxInvestment?: SortOrder
   }
 
   export type InvestorMaxOrderByAggregateInput = {
@@ -13600,7 +13833,12 @@ export namespace Prisma {
     company_name?: SortOrder
     company_website?: SortOrder
     company_description?: SortOrder
+    location?: SortOrder
+    bio?: SortOrder
     role?: SortOrder
+    experienceYears?: SortOrder
+    minInvestment?: SortOrder
+    maxInvestment?: SortOrder
     isActivated?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -13616,7 +13854,12 @@ export namespace Prisma {
     company_name?: SortOrder
     company_website?: SortOrder
     company_description?: SortOrder
+    location?: SortOrder
+    bio?: SortOrder
     role?: SortOrder
+    experienceYears?: SortOrder
+    minInvestment?: SortOrder
+    maxInvestment?: SortOrder
     isActivated?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -13624,6 +13867,24 @@ export namespace Prisma {
 
   export type InvestorSumOrderByAggregateInput = {
     id?: SortOrder
+    minInvestment?: SortOrder
+    maxInvestment?: SortOrder
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type FloatFilter<$PrismaModel = never> = {
@@ -13882,17 +14143,6 @@ export namespace Prisma {
     investorId?: SortOrder
   }
 
-  export type IntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
-  }
-
   export type MilestoneCountOrderByAggregateInput = {
     id?: SortOrder
     title?: SortOrder
@@ -13955,22 +14205,6 @@ export namespace Prisma {
     projectId?: SortOrder
     progress?: SortOrder
     raised_amount?: SortOrder
-  }
-
-  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedIntNullableFilter<$PrismaModel>
-    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type DocumentsCountOrderByAggregateInput = {
@@ -14128,6 +14362,14 @@ export namespace Prisma {
     deleteMany?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
   }
 
+  export type InvestorCreateinvestmentFocusInput = {
+    set: string[]
+  }
+
+  export type InvestorCreatepreferredStagesInput = {
+    set: string[]
+  }
+
   export type ProjectInvestorCreateNestedManyWithoutInvestorInput = {
     create?: XOR<ProjectInvestorCreateWithoutInvestorInput, ProjectInvestorUncheckedCreateWithoutInvestorInput> | ProjectInvestorCreateWithoutInvestorInput[] | ProjectInvestorUncheckedCreateWithoutInvestorInput[]
     connectOrCreate?: ProjectInvestorCreateOrConnectWithoutInvestorInput | ProjectInvestorCreateOrConnectWithoutInvestorInput[]
@@ -14154,6 +14396,24 @@ export namespace Prisma {
     connectOrCreate?: InvestmentCreateOrConnectWithoutInvestorInput | InvestmentCreateOrConnectWithoutInvestorInput[]
     createMany?: InvestmentCreateManyInvestorInputEnvelope
     connect?: InvestmentWhereUniqueInput | InvestmentWhereUniqueInput[]
+  }
+
+  export type InvestorUpdateinvestmentFocusInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type InvestorUpdatepreferredStagesInput = {
+    set?: string[]
+    push?: string | string[]
   }
 
   export type ProjectInvestorUpdateManyWithoutInvestorNestedInput = {
@@ -14534,14 +14794,6 @@ export namespace Prisma {
     connect?: ProjectWhereUniqueInput
   }
 
-  export type NullableIntFieldUpdateOperationsInput = {
-    set?: number | null
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
-  }
-
   export type ProjectUpdateOneRequiredWithoutMilestonesNestedInput = {
     create?: XOR<ProjectCreateWithoutMilestonesInput, ProjectUncheckedCreateWithoutMilestonesInput>
     connectOrCreate?: ProjectCreateOrConnectWithoutMilestonesInput
@@ -14763,22 +15015,6 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
-  export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedFloatFilter<$PrismaModel>
-    _min?: NestedFloatFilter<$PrismaModel>
-    _max?: NestedFloatFilter<$PrismaModel>
-  }
-
   export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
     in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
@@ -14793,6 +15029,22 @@ export namespace Prisma {
     _sum?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedIntNullableFilter<$PrismaModel>
     _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedFloatFilter<$PrismaModel>
+    _min?: NestedFloatFilter<$PrismaModel>
+    _max?: NestedFloatFilter<$PrismaModel>
   }
 
   export type ProjectMemberCreateWithoutUserInput = {
@@ -15736,7 +15988,15 @@ export namespace Prisma {
     company_name?: string | null
     company_website?: string | null
     company_description?: string | null
+    location?: string | null
+    bio?: string | null
     role?: string
+    experienceYears?: string | null
+    investmentFocus?: InvestorCreateinvestmentFocusInput | string[]
+    minInvestment?: number | null
+    maxInvestment?: number | null
+    preferredStages?: InvestorCreatepreferredStagesInput | string[]
+    customSocials?: NullableJsonNullValueInput | InputJsonValue
     isActivated?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -15753,7 +16013,15 @@ export namespace Prisma {
     company_name?: string | null
     company_website?: string | null
     company_description?: string | null
+    location?: string | null
+    bio?: string | null
     role?: string
+    experienceYears?: string | null
+    investmentFocus?: InvestorCreateinvestmentFocusInput | string[]
+    minInvestment?: number | null
+    maxInvestment?: number | null
+    preferredStages?: InvestorCreatepreferredStagesInput | string[]
+    customSocials?: NullableJsonNullValueInput | InputJsonValue
     isActivated?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -15841,7 +16109,15 @@ export namespace Prisma {
     company_name?: NullableStringFieldUpdateOperationsInput | string | null
     company_website?: NullableStringFieldUpdateOperationsInput | string | null
     company_description?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
     role?: StringFieldUpdateOperationsInput | string
+    experienceYears?: NullableStringFieldUpdateOperationsInput | string | null
+    investmentFocus?: InvestorUpdateinvestmentFocusInput | string[]
+    minInvestment?: NullableIntFieldUpdateOperationsInput | number | null
+    maxInvestment?: NullableIntFieldUpdateOperationsInput | number | null
+    preferredStages?: InvestorUpdatepreferredStagesInput | string[]
+    customSocials?: NullableJsonNullValueInput | InputJsonValue
     isActivated?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -15858,7 +16134,15 @@ export namespace Prisma {
     company_name?: NullableStringFieldUpdateOperationsInput | string | null
     company_website?: NullableStringFieldUpdateOperationsInput | string | null
     company_description?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
     role?: StringFieldUpdateOperationsInput | string
+    experienceYears?: NullableStringFieldUpdateOperationsInput | string | null
+    investmentFocus?: InvestorUpdateinvestmentFocusInput | string[]
+    minInvestment?: NullableIntFieldUpdateOperationsInput | number | null
+    maxInvestment?: NullableIntFieldUpdateOperationsInput | number | null
+    preferredStages?: InvestorUpdatepreferredStagesInput | string[]
+    customSocials?: NullableJsonNullValueInput | InputJsonValue
     isActivated?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -15924,7 +16208,15 @@ export namespace Prisma {
     company_name?: string | null
     company_website?: string | null
     company_description?: string | null
+    location?: string | null
+    bio?: string | null
     role?: string
+    experienceYears?: string | null
+    investmentFocus?: InvestorCreateinvestmentFocusInput | string[]
+    minInvestment?: number | null
+    maxInvestment?: number | null
+    preferredStages?: InvestorCreatepreferredStagesInput | string[]
+    customSocials?: NullableJsonNullValueInput | InputJsonValue
     isActivated?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -15941,7 +16233,15 @@ export namespace Prisma {
     company_name?: string | null
     company_website?: string | null
     company_description?: string | null
+    location?: string | null
+    bio?: string | null
     role?: string
+    experienceYears?: string | null
+    investmentFocus?: InvestorCreateinvestmentFocusInput | string[]
+    minInvestment?: number | null
+    maxInvestment?: number | null
+    preferredStages?: InvestorCreatepreferredStagesInput | string[]
+    customSocials?: NullableJsonNullValueInput | InputJsonValue
     isActivated?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -16029,7 +16329,15 @@ export namespace Prisma {
     company_name?: NullableStringFieldUpdateOperationsInput | string | null
     company_website?: NullableStringFieldUpdateOperationsInput | string | null
     company_description?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
     role?: StringFieldUpdateOperationsInput | string
+    experienceYears?: NullableStringFieldUpdateOperationsInput | string | null
+    investmentFocus?: InvestorUpdateinvestmentFocusInput | string[]
+    minInvestment?: NullableIntFieldUpdateOperationsInput | number | null
+    maxInvestment?: NullableIntFieldUpdateOperationsInput | number | null
+    preferredStages?: InvestorUpdatepreferredStagesInput | string[]
+    customSocials?: NullableJsonNullValueInput | InputJsonValue
     isActivated?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -16046,7 +16354,15 @@ export namespace Prisma {
     company_name?: NullableStringFieldUpdateOperationsInput | string | null
     company_website?: NullableStringFieldUpdateOperationsInput | string | null
     company_description?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
     role?: StringFieldUpdateOperationsInput | string
+    experienceYears?: NullableStringFieldUpdateOperationsInput | string | null
+    investmentFocus?: InvestorUpdateinvestmentFocusInput | string[]
+    minInvestment?: NullableIntFieldUpdateOperationsInput | number | null
+    maxInvestment?: NullableIntFieldUpdateOperationsInput | number | null
+    preferredStages?: InvestorUpdatepreferredStagesInput | string[]
+    customSocials?: NullableJsonNullValueInput | InputJsonValue
     isActivated?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

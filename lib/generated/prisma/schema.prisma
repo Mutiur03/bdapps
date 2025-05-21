@@ -53,7 +53,15 @@ model Investor {
   company_name        String?
   company_website     String?
   company_description String?
+  location            String?
+  bio                 String?
   role                String            @default("investor")
+  experienceYears     String?
+  investmentFocus     String[]          @default([])
+  minInvestment       Int?
+  maxInvestment       Int?
+  preferredStages     String[]          @default([])
+  customSocials       Json?             @default("{\"links\":[]}")
   isActivated         Boolean           @default(true)
   projectInvestors    ProjectInvestor[]
   investments         Investment[]

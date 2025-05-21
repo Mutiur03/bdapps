@@ -103,7 +103,7 @@ export default function SigninPage() {
                   variant="link"
                   className="text-muted-foreground hover:text-foreground"
                 >
-                  Don't have an account? Sign up
+                  Don&apos;t have an account? Sign up
                 </Button>
               </Link>
             </div>
@@ -177,7 +177,7 @@ function RoleCard({
 
         <CardContent className="p-0 mt-6">
           <h4 className="text-sm font-medium text-foreground mb-3">
-            What you'll access:
+            What you&apos;ll access:
           </h4>
           <ul className="space-y-2">
             {benefits.map((benefit, index) => (

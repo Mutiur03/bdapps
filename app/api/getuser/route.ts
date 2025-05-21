@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import prisma from "@/lib/prisma";
-import { se } from "date-fns/locale";
 
 export const GET = async () => {
   try {
@@ -18,11 +17,7 @@ export const GET = async () => {
 
     const role = (session.user as { role?: string })?.role;
 
-    if (role !== "user") {
-      user = await prisma.investor.findUnique({
-        where: { id: Number(session.user.id) },
-      });
-    } else {
+    if (role === "user") {
       user = await prisma.user.findUnique({
         where: { id: Number(session.user.id) },
         include: {

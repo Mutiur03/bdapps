@@ -7,15 +7,6 @@ export default withAuth(
     const token = await getToken({ req });
     const { pathname } = req.nextUrl;
 
-    // if (
-    //   token &&
-    //   token.role === "user" &&
-    //   token.isActivated === false &&
-    //   pathname !== "/user/account-verify"
-    // ) {
-    //   return NextResponse.redirect(new URL("/user/account-verify", req.url));
-    // }
-
     if (
       token &&
       (pathname.startsWith("/signin") ||
@@ -24,7 +15,22 @@ export default withAuth(
     ) {
       return NextResponse.redirect(new URL("/", req.url));
     }
-
+    if (
+      !token &&
+      (pathname.startsWith("/udayee") || pathname.startsWith("/investor"))
+    ) {
+      return NextResponse.redirect(new URL("/signin", req.url));
+    }
+    if (token && token?.role === "user" && !pathname.startsWith("/udayee")) {
+      return NextResponse.redirect(new URL("/udayee/dashboard", req.url));
+    }
+    if (
+      token &&
+      token?.role === "investor" &&
+      !pathname.startsWith("/investor")
+    ) {
+      return NextResponse.redirect(new URL("/investor/dashboard", req.url));
+    }
     return NextResponse.next();
   },
   {
@@ -57,7 +63,6 @@ export default withAuth(
         ) {
           return true;
         }
-        // return true;
         return !!token;
       },
     },
@@ -66,6 +71,3 @@ export default withAuth(
 export const config = {
   matcher: ["/((?!api|_next|static|favicon.ico|.*\\.svg).*)"],
 };
-// export const config = {
-//   matcher: [],
-// };

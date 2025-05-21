@@ -1,11 +1,8 @@
 import React from "react";
-import { cn } from "@/lib/utils";
 import "@/app/globals.css";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import LoadUserClient from "@/components/LoadUserClient";
 import { Toaster } from 'react-hot-toast';
-const inter = Inter({ subsets: ["latin"] });
+import LoadUserClient from "@/components/LoadUserClient";
 export const metadata: Metadata = {
   title: "UdayeeConnect - Connecting Student Founders with Investors",
   description:

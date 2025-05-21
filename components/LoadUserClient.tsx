@@ -8,22 +8,22 @@ import LoadingScreen from './LoadingScreen';
 export default function LoadUserClient() {
     const { setIsLoading, getUser, isLoading } = useUserStore();
 
-    useEffect(() => {
-        const fetchUser = async () => {
-            setIsLoading(true);
-            try {
-                const session = await getSession();
-                if (session) {
-                    await getUser(); // Make sure this is awaited
-                }
-            } catch (err) {
-                location.href="/";
-                console.error('Failed to load user:', err);
-                
-            } finally {
-                setIsLoading(false); 
+    const fetchUser = async () => {
+        setIsLoading(true);
+        try {
+            const session = await getSession();
+            if (session) {
+                await getUser(); // Make sure this is awaited
             }
-        };
+        } catch (err) {
+            location.href = "/";
+            console.error('Failed to load user:', err);
+
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    useEffect(() => {
 
         fetchUser();
     }, []);
