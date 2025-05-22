@@ -23,6 +23,7 @@ import {
   Share2,
   Star,
   Clock,
+  Tag,
 } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -254,13 +255,14 @@ export default function ProjectPreviewPage({
                   </div>
 
                   <div className="flex flex-wrap gap-2 mt-6">
-                    {project?.tags?.split(",").map((tag) => (
+                    {(project?.tags?.split(',') || []).map((tag) => (
                       <Badge
                         key={tag}
                         variant="outline"
-                        className="bg-primary/10 text-primary hover:bg-primary/20 border-primary/20"
+                        className="bg-primary/5 text-primary border-primary/20 flex items-center gap-1"
                       >
-                        #{tag}
+                        <Tag className="h-3 w-3" />
+                        {tag}
                       </Badge>
                     ))}
                   </div>

@@ -6,9 +6,65 @@ export interface SocialLink {
   title: string;
   url: string;
 }
-
+export interface Startup {
+  id: string;
+  title: string;
+  profile_picture: string;
+  cover_image: string;
+  university: string;
+  description: string;
+  budget: string;
+  pitch_video: string;
+  raised_amount: string;
+  category: string;
+  tags: string;
+  trending?: boolean;
+  image?: string;
+  logo?: string;
+  createdAt: string;
+  user: {
+    id: string;
+    name: string;
+    department: string;
+    university: string;
+    university_email: string;
+    profile_picture: string;
+  };
+  projectMembers: {
+    id: string;
+    user: {
+      id: string;
+      name: string;
+      university: string;
+      university_email: string;
+      profile_picture: string;
+    };
+  }[];
+  milestones: {
+    id: string;
+    title: string;
+    description: string;
+    status: string;
+    amount: number;
+    raised_amount: number;
+    deadlineAt: string;
+    createdAt: string;
+    updatedAt: string;
+    projectId: string;
+    completedAt: string;
+    plannedAt: string;
+    progress: number;
+  }[];
+  documents: {
+    id: string;
+    projectId: string;
+    document: string;
+    size: number;
+    createdAt: string;
+    updatedAt: string;
+  }[];
+}
 export interface InvestorData {
-  // Personal information
   name: string;
   email: string;
   phone: string;
@@ -16,12 +72,10 @@ export interface InvestorData {
   profile_picture: File | string;
   bio: string;
 
-  // Professional information
   company: string;
   role: string;
   experienceYears: string;
 
-  // Investment preferences
   investmentFocus: string[];
   minInvestment: number;
   maxInvestment: number;
@@ -31,12 +85,11 @@ export interface InvestorData {
 }
 
 interface InvestorStore {
-  // State
   investor: InvestorData | null;
   loading: boolean;
   error: string | null;
+  startups: Startup[] | null;
 
-  // Actions
   fetchInvestor: () => Promise<void>;
   updateInvestor: (data: Partial<InvestorData>) => Promise<void>;
   updateInvestorField: <K extends keyof InvestorData>(
@@ -54,14 +107,24 @@ interface InvestorStore {
   addSocialLink: (title: string, url: string) => void;
   removeSocialLink: (id: string) => void;
   clearError: () => void;
+  fetchStartups: () => Promise<void>;
 }
 
 const useInvestorStore = create<InvestorStore>((set, get) => ({
-  investor: null, // Start with null, will fetch from API
+  investor: null,
   loading: false,
   error: null,
+  startups: null,
+  fetchStartups: async () => {
+    try {
+      const response = await axios.get("/api/projects");
+      console.log("Fetched projects:", response.data);
+      set({ startups: response.data });
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+    }
+  },
 
-  // Fetch investor profile from backend
   fetchInvestor: async () => {
     set({ loading: true, error: null });
     try {
@@ -71,7 +134,7 @@ const useInvestorStore = create<InvestorStore>((set, get) => ({
       }
       const data = await response.json();
       console.log("Fetched investor profile:", data);
-      
+
       set({ investor: data, loading: false });
     } catch (error) {
       console.error("Error fetching investor profile:", error);
@@ -83,7 +146,6 @@ const useInvestorStore = create<InvestorStore>((set, get) => ({
     }
   },
 
-  // Update investor profile in backend
   updateInvestor: async (data) => {
     set({ loading: true, error: null });
     try {
@@ -95,23 +157,18 @@ const useInvestorStore = create<InvestorStore>((set, get) => ({
 
       const updatedInvestor = { ...currentInvestor, ...data };
 
-      // Create FormData for file upload
       const formData = new FormData();
 
-      // Add all investor data to FormData
       Object.entries(updatedInvestor).forEach(([key, value]) => {
-        // Handle arrays specially
         if (Array.isArray(value)) {
           console.log("Appending array:", key, value);
-          
+
           formData.append(key, JSON.stringify(value));
         }
-        // Handle file objects
-         if (key === "profile_picture" && value instanceof File) {
+
+        if (key === "profile_picture" && value instanceof File) {
           formData.append("profile_picture", value);
-        }
-        // Handle other fields
-        else if (
+        } else if (
           value !== null &&
           value !== undefined &&
           typeof value !== "object"
@@ -120,7 +177,6 @@ const useInvestorStore = create<InvestorStore>((set, get) => ({
         }
       });
 
-      // Add custom socials as JSON
       formData.append(
         "customSocials",
         JSON.stringify(updatedInvestor.customSocials)

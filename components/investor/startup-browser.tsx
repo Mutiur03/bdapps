@@ -24,48 +24,19 @@ import {
 import { safeUrl } from "@/app/udayee/projects/[id]/manage/page";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import axios from "axios";
+import useInvestorStore from "@/store/useInvestorStore";
 
-interface Startup {
-  id: string;
-  title: string;
-  user: any;
-  profile_picture: string;
-  cover_image: string;
-  university: string;
-  description: string;
-  budget: string;
-  raised_amount: string;
-  category: string;
-  tags: string;
-  trending?: boolean;
-  image?: string;
-  logo?: string;
-  createdAt: string;
-}
 
 export function StartupBrowser() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [startups, setStartups] = useState<Startup[]>([]);
-
+  const { startups, fetchStartups } = useInvestorStore()
   useEffect(() => {
-    const fetchStartups = async () => {
-      try {
-        const response = await axios.get("/api/projects");
-        const data = response.data;
-        console.log("Fetched startups:", data);
-
-        setStartups(data);
-      } catch (error) {
-        console.error("Error fetching startups:", error);
-      }
-    };
 
     fetchStartups();
   }, []);
 
   // Filter startups based on search query
-  const filteredStartups = startups.filter(
+  const filteredStartups = startups?.filter(
     (startup) =>
       startup?.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       startup?.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -75,11 +46,11 @@ export function StartupBrowser() {
   );
 
   // Get trending startups
-  const trendingStartups = startups.filter((startup) => startup?.trending);
-  const addedRecentlyStartups = startups.filter(
+  const trendingStartups = startups?.filter((startup) => startup?.trending);
+  const addedRecentlyStartups = startups?.filter(
     (startup) => new Date(startup.createdAt) >= new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
   );
-  const universityStartups = startups.filter(
+  const universityStartups = startups?.filter(
     (startup) => startup?.user?.university === "Some University"
   );
   return (
@@ -146,17 +117,17 @@ export function StartupBrowser() {
         <TabsContent value="all" className="space-y-4">
           {searchQuery && (
             <p className="text-sm text-muted-foreground">
-              Showing {filteredStartups.length} results for &ldquo;{searchQuery}&rdquo;
+              Showing {filteredStartups?.length} results for &ldquo;{searchQuery}&rdquo;
             </p>
           )}
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {filteredStartups.map((startup) => (
+            {filteredStartups?.map((startup) => (
               <StartupCard key={startup.id} startup={startup} />
             ))}
           </div>
 
-          {filteredStartups.length === 0 && (
+          {filteredStartups?.length === 0 && (
             <div className="text-center py-12">
               <p className="text-muted-foreground">
                 No startups found matching your search criteria.
@@ -168,12 +139,12 @@ export function StartupBrowser() {
         {/* Trending Tab */}
         <TabsContent value="trending" className="space-y-4">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {trendingStartups.map((startup) => (
+            {trendingStartups?.map((startup) => (
               <StartupCard key={startup.id} startup={startup} />
             ))}
           </div>
 
-          {trendingStartups.length === 0 && (
+          {trendingStartups?.length === 0 && (
             <div className="text-center py-12">
               <p className="text-muted-foreground">
                 No trending startups at the moment.
@@ -185,34 +156,39 @@ export function StartupBrowser() {
         {/* Other tabs would be implemented similarly */}
         <TabsContent value="recent">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {addedRecentlyStartups.map((startup) => (
+            {addedRecentlyStartups?.map((startup) => (
               <StartupCard key={startup.id} startup={startup} />
             ))}
           </div>
-          {addedRecentlyStartups.length === 0 && (
+          {addedRecentlyStartups?.length === 0 && (
             <div className="text-center py-12">
               <p className="text-muted-foreground">
-                No trending startups at the moment.
+                No recent startups at the moment.
               </p>
             </div>
           )}
         </TabsContent>
 
         <TabsContent value="university">
-          <div className="text-center py-12">
-            <p className="text-muted-foreground">
-              University filter will be implemented here.
-            </p>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {addedRecentlyStartups?.map((startup) => (
+              <StartupCard key={startup.id} startup={startup} />
+            ))}
           </div>
+          {addedRecentlyStartups?.length === 0 && (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">
+                Not Found any startups at the moment.
+              </p>
+            </div>
+          )}
         </TabsContent>
       </Tabs>
     </div>
   );
 }
-
-// Enhanced Startup Card Component with Image
+import { Startup } from "@/store/useInvestorStore";
 function StartupCard({ startup }: { startup: Startup }) {
-  // Add default values and safeguards
   const raised_amount = startup?.raised_amount || "0";
   const budget = startup?.budget || "1";
 
@@ -223,7 +199,6 @@ function StartupCard({ startup }: { startup: Startup }) {
 
   return (
     <Card className="overflow-hidden hover:shadow-md transition-shadow">
-      {/* Add Image to Card */}
       <CardImage
         src={
           safeUrl(startup?.cover_image) ||

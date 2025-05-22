@@ -163,7 +163,7 @@ export const useProjectStore = create<ProjectStore>()(
         currentProjectId: null,
         isLoading: false,
         formErrors: {},
-
+        
         updateState: <T extends keyof ProjectStore>(
           key: T,
           value: ProjectStore[T] | ((prev: ProjectStore[T]) => ProjectStore[T])
