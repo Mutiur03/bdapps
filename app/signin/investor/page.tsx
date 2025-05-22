@@ -10,6 +10,7 @@ import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { HomeNavbar } from "@/components/home/home-navbar";
 import { HomeFooter } from "@/components/home/home-footer";
+import { signIn } from "next-auth/react";
 
 export default function InvestorSignin() {
   const [isClient, setIsClient] = useState(false);
@@ -41,16 +42,30 @@ export default function InvestorSignin() {
     e.preventDefault();
     setIsLoading(true);
     setError("");
-
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      router.push("/investor/dashboard");
-    } catch (err) {
-      setError("Invalid credentials. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
+    signIn("credentials", {
+      email: formData.emailOrMobile,
+      password: formData.password,
+      role: "investor",
+      remember: formData.rememberMe,
+      redirect: false,
+    })
+      .then((res) => {
+        if (res?.error) {
+          setError("Invalid credentials. Please try again.");
+        } else {
+          router.push("/investor/dashboard");
+        }
+      })
+      .catch((err) => {
+        console.log("Error during sign-in:", err);
+        
+        setError("An error occurred. Please try again.");
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
+
 
   return (
     <div className="min-h-screen flex flex-col bg-background">

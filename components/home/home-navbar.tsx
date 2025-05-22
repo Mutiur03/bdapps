@@ -1,13 +1,37 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
-
+import { getSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 export function HomeNavbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+  const router = useRouter();
+  // const fetchUser = async () => {
+  //   try {
+  //     const session = await getSession();
+  //     if (session) {
+  //       console.log("Session:", session);
+  //       // Fix role extraction - check multiple possible locations
+  //       const role = session.user?.role;
+  //       console.log("Extracted role:", role);
+  //       if (role === "user") {
+  //         router.push("/udayee/dashboard");
+  //       }
+  //       else if (role === "investor") {
+  //         router.push("/investor/dashboard");
+  //       }
+  //     }
+  //   } catch (err) {
+  //     location.href = "/";
+  //     console.error("Failed to load user:", err);
+  //   }
+  // };
+  // useEffect(() => {
+  //   fetchUser();
+  // }, []);
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-[var(--background)] shadow-sm">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6">

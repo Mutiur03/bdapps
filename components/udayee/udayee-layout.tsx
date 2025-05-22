@@ -8,7 +8,6 @@ import {
   LayoutDashboard,
   MessageSquare,
   FileText,
-  Target,
   Settings,
   LogOut,
   Menu,
@@ -21,18 +20,39 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { HomeFooter } from "../home/home-footer";
-
+import { signOut } from "next-auth/react";
+import useUserStore from "@/store/useUserStore";
 interface UdayeeLayoutProps {
   children: React.ReactNode;
 }
+import { safeUrl } from "@/app/udayee/projects/[id]/manage/page";
 
 export function UdayeeLayout({ children }: UdayeeLayoutProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-
+  const { user } = useUserStore();
+  const { isLoading, setIsLoading, getUser } = useUserStore();
   useEffect(() => {
     setMounted(true);
+
+  }, []);
+  const fetchUser = async () => {
+    setIsLoading(true);
+    try {
+      await getUser(); // Make sure this is awaited
+
+    } catch (err) {
+      location.href = "/";
+      console.error('Failed to load user:', err);
+
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  useEffect(() => {
+
+    fetchUser();
   }, []);
 
   const routes = [
@@ -168,21 +188,27 @@ export function UdayeeLayout({ children }: UdayeeLayoutProps) {
               <div className="sticky bottom-0 left-0 right-0 p-4 border-t border-border bg-card shadow-sm">
                 <div className="flex items-center gap-3 mb-4">
                   <Avatar className="h-9 w-9">
-                    <AvatarImage src="/placeholder-avatar.png" alt="User" />
+                    <AvatarImage src={safeUrl(user?.profile_picture)} alt="User" />
                     <AvatarFallback className="bg-primary/10 text-primary">
                       UD
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-foreground truncate">
-                      John Smith
+                      {user?.name}
                     </p>
                     <p className="text-xs text-muted-foreground truncate">
-                      udayee@example.com
+                      {user?.university_email}
                     </p>
                   </div>
                 </div>
                 <Button
+                  onClick={() => {
+                    signOut({
+                      callbackUrl: "/",
+                    });
+                  }
+                  }
                   variant="ghost"
                   className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
                 >
@@ -228,23 +254,29 @@ export function UdayeeLayout({ children }: UdayeeLayoutProps) {
               <div className="flex-shrink-0 p-4 border-t border-border bg-card">
                 <div className="flex items-center gap-3 mb-4">
                   <Avatar className="h-9 w-9">
-                    <AvatarImage src="/placeholder-avatar.png" alt="User" />
+                    <AvatarImage src={safeUrl(user?.profile_picture)} alt="User" />
                     <AvatarFallback className="bg-primary/10 text-primary">
                       UD
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-foreground truncate">
-                      John Smith
+                      {user?.name}
                     </p>
                     <p className="text-xs text-muted-foreground truncate">
-                      udayee@example.com
+                      {user?.university_email}
                     </p>
                   </div>
                 </div>
                 <Button
                   variant="ghost"
                   className="w-full justify-start text-destructive/90 hover:text-destructive hover:bg-destructive/10"
+                  onClick={() => {
+                    signOut({
+                      callbackUrl: "/",
+                    });
+                  }
+                  }
                 >
                   <LogOut className="h-4 w-4 mr-2" />
                   Logout

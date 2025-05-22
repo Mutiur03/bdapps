@@ -88,7 +88,9 @@ export function MakeOfferDialog({
             Make an Investment Offer
           </DialogTitle>
           <DialogDescription>
-            Send an investment offer to {startup.founder} for {startup.name}.
+            {console.log(startup)};
+
+            Send an investment offer to {startup?.user.name} for {startup?.title}.
           </DialogDescription>
         </DialogHeader>
 
@@ -104,7 +106,7 @@ export function MakeOfferDialog({
                   id="amount"
                   type="number"
                   placeholder="Enter amount in BDT"
-                  value={amount}
+                  value={startup?.amount}
                   onChange={(e) => setAmount(e.target.value)}
                   className="pl-10"
                   required
@@ -124,7 +126,7 @@ export function MakeOfferDialog({
                   <SelectValue placeholder="Select a milestone" />
                 </SelectTrigger>
                 <SelectContent>
-                  {startup.milestones
+                  {startup?.milestones
                     .filter((m: any) => m.status !== "completed")
                     .map((m: any) => (
                       <SelectItem key={m.id} value={m.id}>

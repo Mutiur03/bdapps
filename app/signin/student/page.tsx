@@ -12,7 +12,7 @@ import { HomeNavbar } from "@/components/home/home-navbar";
 import { HomeFooter } from "@/components/home/home-footer";
 import { signIn } from "next-auth/react";
 import useUserStore from "@/store/useUserStore";
-
+import { useRouter } from "next/navigation";
 export default function StudentSignin() {
   const [isClient, setIsClient] = useState(false);
   const searchParams = useSearchParams();
@@ -25,11 +25,11 @@ export default function StudentSignin() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-
+  const router = useRouter();
   useEffect(() => {
     setIsClient(true);
   }, []);
-  const callbackUrl = searchParams.get('callbackUrl') || '/'; // fallback if not present
+  const callbackUrl = searchParams.get('callbackUrl') || '/udayee/dashboard'; // fallback if not present
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -57,8 +57,9 @@ export default function StudentSignin() {
       if (res?.error) {
         setError(res.error);
       }
-      else{
+      else {
         getUser();
+        router.push(callbackUrl);
       }
     } catch (err) {
       console.error(err);

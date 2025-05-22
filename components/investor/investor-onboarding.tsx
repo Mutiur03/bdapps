@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowRight, Check, Eye, EyeOff, Mail, Lock } from "lucide-react";
 import Link from "next/link";
+import axios from "axios";
 
 export function InvestorOnboarding() {
   const router = useRouter();
@@ -102,11 +103,31 @@ export function InvestorOnboarding() {
 
     setLoading(true);
 
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      const response = await axios.post("/api/investor/register", {
+        email: formData.email,
+        password: formData.password,
+      });
+
+      if (response.status === 201) {
+        router.push("/signin/investor");
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 409) {
+          setErrors((prev) => ({
+            ...prev,
+            email: "User already exists",
+          }));
+        } else {
+          console.error("Error creating account:", error);
+        }
+      } else {
+        console.error("Unexpected error:", error);
+      }
+    } finally {
       setLoading(false);
-      router.push("/investor/dashboard");
-    }, 1500);
+    }
   };
 
   return (
@@ -207,11 +228,10 @@ export function InvestorOnboarding() {
                     name="email"
                     type="email"
                     placeholder="you@example.com"
-                    className={`pl-10 ${
-                      errors.email
-                        ? "border-destructive focus:ring-destructive"
-                        : ""
-                    }`}
+                    className={`pl-10 ${errors.email
+                      ? "border-destructive focus:ring-destructive"
+                      : ""
+                      }`}
                     value={formData.email}
                     onChange={handleChange}
                     required
@@ -233,11 +253,10 @@ export function InvestorOnboarding() {
                     name="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="Create a secure password"
-                    className={`pl-10 ${
-                      errors.password
-                        ? "border-destructive focus:ring-destructive"
-                        : ""
-                    }`}
+                    className={`pl-10 ${errors.password
+                      ? "border-destructive focus:ring-destructive"
+                      : ""
+                      }`}
                     value={formData.password}
                     onChange={handleChange}
                     required
@@ -273,11 +292,10 @@ export function InvestorOnboarding() {
                     name="confirmPassword"
                     type={showConfirmPassword ? "text" : "password"}
                     placeholder="Confirm your password"
-                    className={`pl-10 ${
-                      errors.confirmPassword
-                        ? "border-destructive focus:ring-destructive"
-                        : ""
-                    }`}
+                    className={`pl-10 ${errors.confirmPassword
+                      ? "border-destructive focus:ring-destructive"
+                      : ""
+                      }`}
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     required

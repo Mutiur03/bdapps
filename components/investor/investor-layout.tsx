@@ -19,6 +19,8 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { HomeFooter } from "../home/home-footer";
+import useInvestorStore from "@/store/useInvestorStore";
+import { signOut } from "next-auth/react";
 
 interface InvestorLayoutProps {
   children: React.ReactNode;
@@ -28,10 +30,23 @@ export function InvestorLayout({ children }: InvestorLayoutProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-
+  const { investor, fetchInvestor } = useInvestorStore()
   useEffect(() => {
     setMounted(true);
+
   }, []);
+  useEffect(() => {
+    async function loadInvestorData() {
+      try {
+        await fetchInvestor();
+      } catch (err) {
+        console.error("Failed to fetch investor data:", err);
+
+      }
+    }
+
+    loadInvestorData();
+  }, [fetchInvestor]);
 
   const routes = [
     {
@@ -104,7 +119,7 @@ export function InvestorLayout({ children }: InvestorLayoutProps) {
     </ul>
   );
 
-  if (!mounted) return null; // Prevent hydration issues
+  if (!mounted) return null;
 
   return (
     <>
@@ -156,19 +171,28 @@ export function InvestorLayout({ children }: InvestorLayoutProps) {
                   <Avatar className="h-9 w-9">
                     <AvatarImage src="/placeholder-avatar.png" alt="User" />
                     <AvatarFallback className="bg-primary/10 text-primary">
-                      IN
+                      {investor?.name
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-foreground truncate">
-                      Ahmed Rahman
+                      {investor?.name}
                     </p>
                     <p className="text-xs text-muted-foreground truncate">
-                      investor@example.com
+                      {investor?.email}
                     </p>
                   </div>
                 </div>
                 <Button
+                  onClick={() => {
+                    signOut({
+                      callbackUrl: "/",
+                    });
+                  }
+                  }
                   variant="ghost"
                   className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
                 >
@@ -214,21 +238,33 @@ export function InvestorLayout({ children }: InvestorLayoutProps) {
               <div className="flex-shrink-0 p-4 border-t border-border bg-card">
                 <div className="flex items-center gap-3 mb-4">
                   <Avatar className="h-9 w-9">
-                    <AvatarImage src="/placeholder-avatar.png" alt="User" />
+                    <AvatarImage
+                      src={(investor?.profile_picture instanceof File ? URL.createObjectURL(investor.profile_picture) : investor?.profile_picture as string)}
+                      alt={investor?.name}
+                    />
                     <AvatarFallback className="bg-primary/10 text-primary">
-                      IN
+                      {investor?.name
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-foreground truncate">
-                      Ahmed Rahman
+                      {investor?.name}
                     </p>
                     <p className="text-xs text-muted-foreground truncate">
-                      investor@example.com
+                      {investor?.email}
                     </p>
                   </div>
                 </div>
                 <Button
+                  onClick={() => {
+                    signOut({
+                      callbackUrl: "/",
+                    });
+                  }
+                  }
                   variant="ghost"
                   className="w-full justify-start text-destructive/90 hover:text-destructive hover:bg-destructive/10"
                 >

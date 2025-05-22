@@ -63,6 +63,7 @@ export interface Project {
   milestones?: Milestone[] | string[];
   cover_image?: File | string;
   documents?: any[];
+  documentsToDelete?: string; // Add this new property
   location?: string | null;
   pitch_video?: string;
   profile_picture?: File | string;
@@ -162,7 +163,7 @@ export const useProjectStore = create<ProjectStore>()(
         currentProjectId: null,
         isLoading: false,
         formErrors: {},
-
+        
         updateState: <T extends keyof ProjectStore>(
           key: T,
           value: ProjectStore[T] | ((prev: ProjectStore[T]) => ProjectStore[T])
@@ -186,8 +187,15 @@ export const useProjectStore = create<ProjectStore>()(
             Object.keys(updatedData).forEach((key) => {
               if (key === "documents") {
                 updatedData.documents?.forEach((file) => {
-                  formData.append("documents", file);
+                  if (file instanceof File) {
+                    formData.append("documents", file);
+                  }
                 });
+              } else if (key === "documentsToDelete") {
+                formData.append(
+                  "documentsToDelete",
+                  updatedData.documentsToDelete as string
+                );
               } else if (key === "cover_image" || key === "profile_picture") {
                 if (updatedData[key]) {
                   formData.append(key, updatedData[key]);
@@ -211,6 +219,7 @@ export const useProjectStore = create<ProjectStore>()(
                 );
               }
             });
+
             await axios.put("/api/user/project", formData, {
               params: { id },
               headers: {
@@ -397,11 +406,6 @@ export const useProjectStore = create<ProjectStore>()(
           );
           if (state.currentProjectId) {
             set((state) => ({
-              // projects: state.projects.map((project) =>
-              //   project.id === state.currentProjectId
-              //     ? { ...project, raised_amount: totalRaised }
-              //     : project
-              // ),
               formState: { ...state.formState, raised_amount: totalRaised },
             }));
           } else {

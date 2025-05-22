@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Card,
   CardContent,
@@ -131,6 +131,10 @@ export default function ManageProjectPage({
     setRaisedAmount,
   } = useProjectStore();
 
+  const [documentsToUpload, setDocumentsToUpload] = useState<File[]>([]);
+  const [documentsToDelete, setDocumentsToDelete] = useState<number[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     setCurrentProjectId(projectId);
 
@@ -145,7 +149,7 @@ export default function ManageProjectPage({
       formatProjectData(currentProject);
       initializeFormState(currentProject);
     }
-  }, [projects, projectId, formatProjectData, initializeFormState,fetchProjects]);
+  }, [projects, projectId, formatProjectData, initializeFormState, fetchProjects]);
 
   const currentProject = useMemo(() => {
     return projects.find((p) => String(p.id) === projectId) || {
@@ -260,12 +264,26 @@ export default function ManageProjectPage({
         progress: Number(milestone.progress)
       }));
 
+      // Add documents to upload
+      if (documentsToUpload.length > 0) {
+        updatedProject.documents = documentsToUpload;
+      }
+
+      // Add document IDs to delete
+      if (documentsToDelete.length > 0) {
+        updatedProject.documentsToDelete = JSON.stringify(documentsToDelete);
+      }
+
       console.log("Saving project data:", updatedProject);
       await saveProject(projectId, updatedProject);
 
-      // Force a refetch after saving to ensure we have the latest data
+      // Reset document states after successful save
       console.log("Refetching projects after save");
       await fetchProjects();
+      setDocumentsToUpload([]);
+      setDocumentsToDelete([]);
+
+      // Force a refetch after saving to ensure we have the latest data
 
       setMediaChanged(false);
       alert("Project saved successfully!");
@@ -275,6 +293,46 @@ export default function ManageProjectPage({
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleDocumentUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    const newFiles = Array.from(e.target.files);
+    setDocumentsToUpload([...documentsToUpload, ...newFiles]);
+
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleDocumentDelete = (id: number) => {
+    setDocumentsToDelete([...documentsToDelete, id]);
+  };
+
+  const removeUploadedDocument = (index: number) => {
+    setDocumentsToUpload(documentsToUpload.filter((_, i) => i !== index));
+  };
+
+  // Helper to get file extension
+  const getFileExtension = (filename: string) => {
+    return filename.split('.').pop()?.toLowerCase() || '';
+  };
+
+  // Helper to format file size
+  const formatFileSize = (bytes: number | undefined | null) => {
+    if (bytes === undefined || bytes === null) return 'Unknown size';
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
+  // Helper to format date
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   };
 
   return (
@@ -312,7 +370,7 @@ export default function ManageProjectPage({
           <div className="flex items-center gap-3">
             <div className="h-14 w-14 rounded-lg overflow-hidden">
               <Image
-                src={currentProject.profile_picture ? safeUrl(currentProject.profile_picture) : placeholders.logo}
+                src={safeUrl(currentProject.profile_picture)}
                 alt={currentProject.title || "Project"}
                 width={56}
                 height={56}
@@ -1155,89 +1213,110 @@ export default function ManageProjectPage({
                   Upload important documents for your project
                 </CardDescription>
               </div>
-              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
+              <Button
+                className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                onClick={() => fileInputRef.current?.click()}
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 Add Document
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  className="hidden"
+                  multiple
+                  onChange={handleDocumentUpload}
+                />
               </Button>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="border rounded-lg p-4 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <FileText className="h-8 w-8 text-primary/70" />
-                    <div>
-                      <h3 className="font-medium">Business Plan.pdf</h3>
-                      <p className="text-xs text-muted-foreground">
-                        Added on April 12, 2023 • 2.4 MB
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="sm">
-                      <FileCheck className="h-4 w-4 mr-1" />
-                      View
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-destructive hover:text-destructive"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
+                {currentProject.documents && currentProject.documents.length > 0 && (
+                  <>
+                    {currentProject.documents
+                      .filter(doc => !documentsToDelete.includes(doc.id))
+                      .map((doc) => (
+                        <div key={doc.id} className="border rounded-lg p-4 flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <FileText className="h-8 w-8 text-primary/70" />
+                            <div>
+                              <h3 className="font-medium">{doc.document.split('/').pop().split('-').pop()}</h3>
+                              <p className="text-xs text-muted-foreground">
+                                Added on {formatDate(doc.createdAt)} • {formatFileSize(doc.size)}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <a
+                              href={`/${doc.document}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <Button variant="ghost" size="sm">
+                                <FileCheck className="h-4 w-4 mr-1" />
+                                View
+                              </Button>
+                            </a>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-destructive hover:text-destructive"
+                              onClick={() => handleDocumentDelete(doc.id)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                  </>
+                )}
 
-                <div className="border rounded-lg p-4 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <FileText className="h-8 w-8 text-primary/70" />
-                    <div>
-                      <h3 className="font-medium">Market Research.pdf</h3>
-                      <p className="text-xs text-muted-foreground">
-                        Added on April 15, 2023 • 1.8 MB
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="sm">
-                      <FileCheck className="h-4 w-4 mr-1" />
-                      View
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-destructive hover:text-destructive"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
+                {/* Documents to be uploaded */}
+                {documentsToUpload.length > 0 && (
+                  <>
+                    {documentsToUpload.map((file, index) => (
+                      <div key={index} className="border rounded-lg p-4 flex items-center justify-between bg-muted/30">
+                        <div className="flex items-center gap-3">
+                          <FileText className="h-8 w-8 text-primary/70" />
+                          <div>
+                            <h3 className="font-medium">{file.name}</h3>
+                            <p className="text-xs text-muted-foreground">
+                              New upload • {formatFileSize(file.size)}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-destructive hover:text-destructive"
+                            onClick={() => removeUploadedDocument(index)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </>
+                )}
 
-                <div className="border rounded-lg p-4 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <FileText className="h-8 w-8 text-primary/70" />
-                    <div>
-                      <h3 className="font-medium">
-                        Financial Projections.xlsx
-                      </h3>
-                      <p className="text-xs text-muted-foreground">
-                        Added on April 20, 2023 • 1.2 MB
+                {/* Empty state */}
+                {(!currentProject.documents || currentProject.documents.length === 0) &&
+                  documentsToUpload.length === 0 && (
+                    <div className="text-center py-8">
+                      <FileText className="h-12 w-12 mx-auto text-muted-foreground/30 mb-3" />
+                      <h3 className="text-lg font-medium text-muted-foreground">No Documents Yet</h3>
+                      <p className="text-sm text-muted-foreground mt-1 mb-4">
+                        Upload important documents related to your project
                       </p>
+                      <Button
+                        onClick={() => fileInputRef.current?.click()}
+                        className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Upload Document
+                      </Button>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="sm">
-                      <FileCheck className="h-4 w-4 mr-1" />
-                      View
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-destructive hover:text-destructive"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
+                  )}
               </div>
             </CardContent>
           </Card>
