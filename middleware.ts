@@ -68,6 +68,9 @@ export default withAuth(
     },
   }
 );
+// export const config = {
+//   matcher: ["/((?!api|_next|static|favicon.ico|.*\\.svg).*)"],
+// };
 export const config = {
-  matcher: ["/((?!api|_next|static|favicon.ico|.*\\.svg).*)"],
+  matcher: [],
 };
