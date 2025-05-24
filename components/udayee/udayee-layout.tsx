@@ -35,6 +35,7 @@ export function UdayeeLayout({ children }: UdayeeLayoutProps) {
   const { isLoading, setIsLoading, getUser } = useUserStore();
   useEffect(() => {
     setMounted(true);
+    fetchUser();
 
   }, []);
   const fetchUser = async () => {
@@ -50,10 +51,7 @@ export function UdayeeLayout({ children }: UdayeeLayoutProps) {
       setIsLoading(false);
     }
   };
-  useEffect(() => {
 
-    fetchUser();
-  }, []);
 
   const routes = [
     {

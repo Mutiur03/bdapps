@@ -1,5 +1,4 @@
 import prisma from "@/lib/prisma";
-
 import { NextResponse } from "next/server";
 
 export async function GET() {
@@ -59,6 +58,7 @@ export async function GET() {
         },
       },
     });
+    console.log("Projects retrieved successfully:", projects);
 
     return NextResponse.json(projects);
   } catch (error) {

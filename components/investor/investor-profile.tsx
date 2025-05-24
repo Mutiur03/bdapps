@@ -188,6 +188,7 @@ export function InvestorProfile() {
                       investor.profile_picture
                     )}
                     alt={investor.name}
+                    className="object-cover"
                   />
                   <AvatarFallback className="bg-primary/10 text-primary text-2xl">
                     {investor.name

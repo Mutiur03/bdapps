@@ -2,31 +2,46 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
+import { io, Socket } from "socket.io-client";
+import axios from "axios";
+import { safeUrl } from "@/app/udayee/projects/[id]/manage/page";
+// Use a ref to store the socket instance to prevent recreating it on rerenders
+let socketInstance: Socket | null = null;
+
+// Initialize the socket only on the client side
+if (typeof window !== "undefined" && !socketInstance) {
+  socketInstance = io({
+    reconnection: true,
+    reconnectionAttempts: 5,
+    reconnectionDelay: 1000,
+    reconnectionDelayMax: 5000,
+    timeout: 20000,
+  });
+}
 
 interface Message {
   id: string;
-  text: string;
-  senderId: string;
-  recipientId: string;
+  content: string;
+  sender: string;
+  receiver: string;
   createdAt: string;
   image?: string;
 }
 
 interface ChatInterfaceProps {
+  project: string;
   recipientId: string;
   recipientType: string;
   userType: string;
   currentUserId?: string;
 }
-
-// Chat Header Component
 const ChatHeader = ({ recipient }: { recipient: any }) => {
   return (
     <div className="p-4 border-b border-border flex items-center gap-3">
-      <div className="w-10 h-10 rounded-full overflow-hidden bg-muted">
-        {recipient?.profilePicture ? (
+      <div className="w-10 h-10 rounded-full overflow-hidden bg-muted relative">
+        {recipient?.profile_picture ? (
           <Image
-            src={recipient.profilePicture}
+            src={safeUrl(recipient.profile_picture)}
             alt={recipient.name || "User"}
             width={40}
             height={40}
@@ -34,21 +49,23 @@ const ChatHeader = ({ recipient }: { recipient: any }) => {
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-            {(recipient?.name?.charAt(0) || "U").toUpperCase()}
+            {(recipient?.name?.charAt(0) || "U").toUpperCase()
+            }
           </div>
+        )}
+        {recipient?.status && (
+          <div className={`absolute bottom-0 right-0 w-3 h-3 rounded-full ${recipient.status === 'online' ? 'bg-green-500' : 'bg-gray-400'}`}></div>
         )}
       </div>
       <div>
         <h3 className="font-medium">{recipient?.name || "User"}</h3>
         <p className="text-xs text-muted-foreground">
-          {recipient?.status || "Offline"}
+          {recipient?.status === 'online' ? "Online" : "Offline"}
         </p>
       </div>
     </div>
   );
 };
-
-// Message Input Component
 const MessageInput = ({
   onSendMessage,
 }: {
@@ -142,58 +159,172 @@ const MessageInput = ({
 };
 
 const ChatInterface = ({
+  project,
   recipientId,
   recipientType,
   userType,
-  currentUserId = "user-123",
+  currentUserId,
 }: ChatInterfaceProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [recipient, setRecipient] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [recipient, setRecipient] = useState<any>({
+    status: 'offline',
+    name: "Loading...",
+    profile_picture: null
+  });
+  const [socketConnected, setSocketConnected] = useState(false);
+  const [connectionAttempted, setConnectionAttempted] = useState(false);
   const messageEndRef = useRef<HTMLDivElement | null>(null);
   const messageContainerRef = useRef<HTMLDivElement | null>(null);
 
-  // Fetch messages and recipient data
+  // Connect to socket and join appropriate room
+  useEffect(() => {
+    if (!socketInstance) return;
+
+    // Handle socket connection events
+    const handleConnect = () => {
+      console.log("Socket connected with ID:", socketInstance?.id);
+      setSocketConnected(true);
+
+      // Join appropriate room based on user type
+      if (currentUserId) {
+        const joinData =
+          userType === "user"
+            ? { userId: currentUserId }
+            : { investorId: currentUserId };
+
+        console.log("Joining room with data:", joinData);
+        socketInstance.emit("join", joinData);
+
+        // Check recipient status
+        socketInstance.emit("checkUserStatus", {
+          userType: recipientType,
+          userId: recipientId
+        });
+      }
+    };
+
+    const handleDisconnect = (reason: string) => {
+      console.log("Socket disconnected:", reason);
+      setSocketConnected(false);
+    };
+
+    const handleConnectError = (error: Error) => {
+      console.error("Connection error:", error);
+      setSocketConnected(false);
+    };
+
+    // Set up connection event listeners
+    socketInstance.on("connect", handleConnect);
+    socketInstance.on("disconnect", handleDisconnect);
+    socketInstance.on("connect_error", handleConnectError);
+
+    // Check if socket is already connected
+    if (socketInstance.connected) {
+      console.log("Socket already connected");
+      setSocketConnected(true);
+
+      // Join room if already connected
+      if (currentUserId) {
+        const joinData =
+          userType === "user"
+            ? { userId: currentUserId }
+            : { investorId: currentUserId };
+
+        console.log("Joining room with existing connection:", joinData);
+        socketInstance.emit("join", joinData);
+      }
+    } else {
+      console.log("Attempting to connect socket...");
+      setConnectionAttempted(true);
+      socketInstance.connect();
+    }
+
+    // Cleanup event listeners on unmount
+    return () => {
+      socketInstance?.off("connect", handleConnect);
+      socketInstance?.off("disconnect", handleDisconnect);
+      socketInstance?.off("connect_error", handleConnectError);
+    };
+  }, [currentUserId, userType, recipientId, recipientType]);
+
+  useEffect(() => {
+    if (!socketInstance) return;
+
+    // Handle user status updates
+    const handleUserStatus = (statusData: { type: string, id: string, status: 'online' | 'offline' }) => {
+      console.log("User status update:", statusData);
+
+      // Check if update is for our recipient
+      if (statusData.type === recipientType && statusData.id === recipientId) {
+        setRecipient(prev => ({
+          ...prev,
+          status: statusData.status
+        }));
+      }
+    };
+
+    // Handle response to our status check
+    const handleStatusResponse = (statusData: { type: string, id: string, status: 'online' | 'offline' }) => {
+      console.log("Status response:", statusData);
+
+      if (statusData.type === recipientType && statusData.id === recipientId) {
+        setRecipient(prev => ({
+          ...prev,
+          status: statusData.status
+        }));
+      }
+    };
+
+    socketInstance.on("userStatus", handleUserStatus);
+    socketInstance.on("userStatusResponse", handleStatusResponse);
+
+    return () => {
+      socketInstance?.off("userStatus", handleUserStatus);
+      socketInstance?.off("userStatusResponse", handleStatusResponse);
+    };
+  }, [recipientId, recipientType]);
+
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        // Simulate API call - replace with actual API calls
-        setTimeout(() => {
-          setRecipient({
-            id: recipientId,
-            name: `User ${recipientId.substring(0, 5)}`,
-            status: "Online",
-          });
+        // Get messages
+        const res = await axios.get("/api/messages", {
+          params: {
+            projectId: project,
+          },
+        });
+        setMessages(res.data);
 
-          // Simulate message data
-          setMessages([
-            {
-              id: "msg1",
-              text: "Hello there!",
-              senderId: currentUserId,
-              recipientId: recipientId,
-              createdAt: new Date(Date.now() - 3600000).toISOString(),
-            },
-            {
-              id: "msg2",
-              text: "Hi! How can I help you today?",
-              senderId: recipientId,
-              recipientId: currentUserId,
-              createdAt: new Date(Date.now() - 3500000).toISOString(),
-            },
-            {
-              id: "msg3",
-              text: "I have a question about my account.",
-              senderId: currentUserId,
-              recipientId: recipientId,
-              createdAt: new Date(Date.now() - 3400000).toISOString(),
-            },
-          ]);
-          setIsLoading(false);
-        }, 1000);
+        // Fetch recipient details - with debug logging
+        if (recipientId) {
+          console.log(`Fetching ${recipientType} details with ID: ${recipientId}`);
+          try {
+            const recipientRes = await axios.get(`/api/${recipientType}/${recipientId}`);
+            console.log("Recipient data received:", recipientRes.data);
+
+            if (recipientRes.data) {
+              setRecipient(prev => ({
+                ...prev,
+                ...recipientRes.data,
+                // Handle both camelCase and snake_case property names
+                name: recipientRes.data.name || "Unknown",
+                profile_picture: recipientRes.data.profile_picture || recipientRes.data.profile_picture,
+              }));
+            }
+          } catch (e) {
+            console.error(`Could not fetch ${recipientType} details:`, e);
+            // Set a fallback name based on recipient type
+            setRecipient(prev => ({
+              ...prev,
+              name: recipientType === 'user' ? 'User' : 'Investor'
+            }));
+          }
+        }
       } catch (error) {
         console.error("Error fetching chat data:", error);
+      } finally {
         setIsLoading(false);
       }
     };
@@ -201,30 +332,138 @@ const ChatInterface = ({
     if (recipientId) {
       fetchData();
     }
-  }, [recipientId, currentUserId]);
+  }, [recipientId, recipientType, currentUserId, project]);
 
-  // Modified auto-scroll to latest message
+  // Debugging effect to monitor recipient state changes
   useEffect(() => {
-    if (messageContainerRef.current) {
+    console.log("Recipient state updated:", recipient);
+  }, [recipient]);
+
+  useEffect(() => {
+    if (messageContainerRef.current && messages.length > 0) {
       const scrollContainer = messageContainerRef.current;
-      // Use a short timeout to ensure DOM updates are complete
-      setTimeout(() => {
-        scrollContainer.scrollTop = scrollContainer.scrollHeight;
-      }, 100);
+
+      // Use requestAnimationFrame for smoother scrolling after DOM updates
+      requestAnimationFrame(() => {
+        // Add a small delay to ensure all content is rendered
+        setTimeout(() => {
+          scrollContainer.scrollTop = scrollContainer.scrollHeight;
+        }, 200);
+      });
     }
   }, [messages]);
 
-  const handleSendMessage = (text: string, image?: File) => {
-    const newMessage: Message = {
-      id: `msg-${Date.now()}`,
-      text: text,
-      senderId: currentUserId,
-      recipientId: recipientId,
+  // Add a new effect specifically for handling initial load and refreshes
+  useEffect(() => {
+    if (!isLoading && messageContainerRef.current && messages.length > 0) {
+      const scrollContainer = messageContainerRef.current;
+
+      // Ensure scroll happens after loading is complete and DOM is updated
+      const scrollToBottom = () => {
+        scrollContainer.scrollTop = scrollContainer.scrollHeight;
+      };
+
+      // Try multiple times with increasing delays to handle different rendering scenarios
+      setTimeout(scrollToBottom, 100);
+      setTimeout(scrollToBottom, 300);
+      setTimeout(scrollToBottom, 500);
+    }
+  }, [isLoading, messages.length]);
+
+  useEffect(() => {
+    if (!socketInstance) return;
+
+    const handleNewMessage = (newMessage: Message) => {
+      console.log("Received new message:", newMessage);
+
+      // Check if this message is relevant to the current chat
+      const isRelevantMessage =
+        (newMessage.sender === userType && newMessage.receiver === recipientType) ||
+        (newMessage.sender === recipientType && newMessage.receiver === userType);
+
+      if (isRelevantMessage) {
+        setMessages((prev) => {
+          // Check if message is already in the array (prevent duplicates)
+          if (prev.some((msg) => msg.id === newMessage.id)) {
+            return prev;
+          }
+          return [...prev, newMessage];
+        });
+      }
+    };
+
+    socketInstance.on("newMessage", handleNewMessage);
+
+    return () => {
+      socketInstance?.off("newMessage", handleNewMessage);
+    };
+  }, [userType, recipientType]);
+
+  const handleSendMessage = async (text: string, image?: File) => {
+    // Changed the connection check to be more permissive while still showing an error
+    if (!socketInstance) {
+      console.error("Socket instance not available");
+      alert("Connection to chat server not available. Please refresh the page.");
+      return;
+    }
+
+    // if (!socketConnected && connectionAttempted) {
+    //   console.warn("Socket attempting to reconnect. Proceeding with sending message...");
+    //   // We'll still try to send the message even if the socket isn't connected yet
+    // }
+
+    const messageData = {
+      content: text,
+      projectId: project,
+      senderType: userType,
+      receiverType: recipientType,
+      senderUserId: userType === "user" ? Number(currentUserId) : null,
+      senderInvestorId: userType === "investor" ? Number(currentUserId) : null,
+      receiverUserId: recipientType === "user" ? Number(recipientId) : null,
+      receiverInvestorId: recipientType === "investor" ? Number(recipientId) : null,
+    };
+    console.log("Sending message data:", messageData);
+
+    // Add temporary message to the UI immediately
+    const tempMessage: Message = {
+      id: `temp-${Date.now()}`,
+      content: text,
+      sender: userType,
+      receiver: recipientType,
       createdAt: new Date().toISOString(),
       image: image ? URL.createObjectURL(image) : undefined,
     };
 
-    setMessages([...messages, newMessage]);
+    // Add temp message to UI
+    setMessages(prev => [...prev, tempMessage]);
+
+    // Emit message via socket
+    socketInstance?.emit("message", messageData);
+
+    // Listen for error response
+    socketInstance?.once("messageError", (error) => {
+      console.error("Failed to send message:", error);
+      // Remove the temporary message if there was an error
+      setMessages((prev) => prev.filter((msg) => msg.id !== tempMessage.id));
+      alert("Failed to send message. Please try again.");
+    });
+
+    // Handle image upload if needed (you might need to implement this)
+    // if (image) {
+    //   // Example: Upload image to server
+    //   try {
+    //     const formData = new FormData();
+    //     formData.append("image", image);
+    //     formData.append("messageId", tempMessage.id);
+
+    //     // You would need to implement this API endpoint
+    //     // await axios.post('/api/upload-image', formData);
+
+    //     console.log("Would upload image:", image.name);
+    //   } catch (error) {
+    //     console.error("Failed to upload image:", error);
+    //   }
+    // }
   };
 
   if (isLoading) {
@@ -243,15 +482,13 @@ const ChatInterface = ({
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className={`flex ${
-                i % 2 === 0 ? "justify-start" : "justify-end"
-              }`}
+              className={`flex ${i % 2 === 0 ? "justify-start" : "justify-end"
+                }`}
             >
               <div className="w-8 h-8 rounded-full bg-muted mr-2"></div>
               <div
-                className={`h-16 rounded-lg bg-muted ${
-                  i % 2 === 0 ? "w-64" : "w-48"
-                }`}
+                className={`h-16 rounded-lg bg-muted ${i % 2 === 0 ? "w-64" : "w-48"
+                  }`}
               ></div>
             </div>
           ))}
@@ -270,7 +507,6 @@ const ChatInterface = ({
   return (
     <div className="flex flex-col h-[70vh] border border-border rounded-lg overflow-hidden shadow-md">
       <ChatHeader recipient={recipient} />
-
       <div
         ref={messageContainerRef}
         className="flex-1 p-4 space-y-4 overflow-y-auto"
@@ -279,22 +515,21 @@ const ChatInterface = ({
         {messages.map((message) => (
           <div
             key={message.id}
-            className={`flex ${
-              message.senderId === currentUserId
-                ? "justify-end"
-                : "justify-start"
-            }`}
+            className={`flex ${message.sender === userType
+              ? "justify-end"
+              : "justify-start"
+              }`}
           >
-            {message.senderId !== currentUserId && (
+            {message.sender !== userType && (
               <div className="w-8 h-8 rounded-full bg-muted mr-2 flex-shrink-0 overflow-hidden">
-                {recipient?.profilePicture ? (
+                {recipient?.profile_picture  ? (
                   <Image
-                    src={recipient.profilePicture}
-                    alt="Profile"
-                    width={32}
-                    height={32}
-                    className="object-cover"
-                  />
+                  src={safeUrl(recipient.profile_picture)}
+                  alt={recipient.name || "User"}
+                  width={40}
+                  height={40}
+                  className="object-cover"
+                />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">
                     {recipient?.name?.charAt(0) || "U"}
@@ -304,11 +539,10 @@ const ChatInterface = ({
             )}
 
             <div
-              className={`max-w-[70%] ${
-                message.senderId === currentUserId
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-accent text-accent-foreground"
-              } rounded-lg p-3`}
+              className={`max-w-[70%] ${message.sender === userType
+                ? "bg-primary text-primary-foreground"
+                : "bg-accent text-accent-foreground"
+                } rounded-lg p-3`}
             >
               {message.image && (
                 <div className="mb-2">
@@ -321,14 +555,13 @@ const ChatInterface = ({
                   />
                 </div>
               )}
-              <p>{message.text}</p>
+              <p>{message.content}</p>
               <div className="text-right">
                 <span
-                  className={`text-xs ${
-                    message.senderId === currentUserId
-                      ? "opacity-75"
-                      : "opacity-75"
-                  }`}
+                  className={`text-xs ${message.sender === userType
+                    ? "opacity-75"
+                    : "opacity-75"
+                    }`}
                 >
                   {formatDistanceToNow(new Date(message.createdAt), {
                     addSuffix: true,
@@ -337,9 +570,8 @@ const ChatInterface = ({
               </div>
             </div>
 
-            {message.senderId === currentUserId && (
+            {message.sender === userType && (
               <div className="w-8 h-8 rounded-full bg-muted ml-2 flex-shrink-0">
-                {/* Current user avatar placeholder */}
                 <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">
                   Me
                 </div>

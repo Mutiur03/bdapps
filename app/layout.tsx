@@ -2,7 +2,6 @@ import React from "react";
 import "@/app/globals.css";
 import type { Metadata } from "next";
 import { Toaster } from 'react-hot-toast';
-import LoadUserClient from "@/components/LoadUserClient";
 export const metadata: Metadata = {
   title: "UdayeeConnect - Connecting Student Founders with Investors",
   description:
@@ -25,7 +24,6 @@ export default function RootLayout({
         //   inter.className
         // )}
       >
-        <LoadUserClient />
         <Toaster />
 
         {children}

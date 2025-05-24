@@ -1,79 +1,52 @@
+"use client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { MessageSquare, Search, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
-
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { safeUrl } from "@/app/udayee/projects/[id]/manage/page";
 export function UdayeeMessages() {
-  // Mock data - in a real app, this would come from an API
-  const conversations = [
-    {
-      id: "1",
-      investor: {
-        id: "inv1",
-        name: "Ayesha Khan",
-        company: "Green Ventures",
-        avatar: "/placeholder.svg?height=40&width=40",
-      },
-      lastMessage: {
-        text: "I'm impressed with your progress on the pilot testing. Looking forward to seeing the results!",
-        timestamp: "2 hours ago",
-        isRead: true,
-        sentByMe: false,
-      },
-      hasUnread: false,
-    },
-    {
-      id: "2",
-      investor: {
-        id: "inv2",
-        name: "Karim Rahman",
-        company: "Tech Angels",
-        avatar: "/placeholder.svg?height=40&width=40",
-      },
-      lastMessage: {
-        text: "Can you share more details about your technology? I'd like to understand how the IoT sensors work.",
-        timestamp: "Yesterday",
-        isRead: false,
-        sentByMe: false,
-      },
-      hasUnread: true,
-      unreadCount: 2,
-    },
-    {
-      id: "3",
-      investor: {
-        id: "inv3",
-        name: "Sadia Ahmed",
-        company: "Impact Investors",
-        avatar: "/placeholder.svg?height=40&width=40",
-      },
-      lastMessage: {
-        text: "Thanks for sharing the market research report. It's very comprehensive!",
-        timestamp: "3 days ago",
-        isRead: true,
-        sentByMe: true,
-      },
-      hasUnread: false,
-    },
-    {
-      id: "4",
-      investor: {
-        id: "inv4",
-        name: "Rahim Chowdhury",
-        company: "BD Ventures",
-        avatar: "/placeholder.svg?height=40&width=40",
-      },
-      lastMessage: {
-        text: "I'm considering investing in your next milestone. Let's discuss the details.",
-        timestamp: "1 week ago",
-        isRead: true,
-        sentByMe: false,
-      },
-      hasUnread: false,
-    },
-  ];
+
+  interface Conversation {
+    id: string;
+    investor: {
+      id: string;
+      name: string;
+      profile_picture: string;
+      company_name: string;
+    };
+    lastMessage: {
+      text: string;
+      timestamp: string;
+      isRead: boolean;
+      sentByMe: boolean;
+    };
+    hasUnread: boolean;
+    unreadCount?: number;
+  }
+
+  const [conversations, setConversations] = useState<Conversation[]>([])
+  const [loading, setLoading] = useState<boolean>(true)
+
+  useEffect(() => {
+    const fetchConversations = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get("/api/user/project/msg");
+        console.log(response.data);
+        setConversations(response.data)
+      } catch (error) {
+        console.error("Error fetching conversations:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchConversations();
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -95,15 +68,14 @@ export function UdayeeMessages() {
       </div>
 
       <div className="space-y-4">
-        {conversations.map((conversation) => (
+        {conversations?.map((conversation) => (
           <Link
             key={conversation.id}
-            href={`/udayee/chat/${conversation.investor.id}`}
+            href={`/udayee/chat/${conversation.id}/${conversation.investor?.id || 'unknown'}`}
           >
             <Card
-              className={`hover:shadow-md transition-shadow ${
-                conversation.hasUnread ? "" : ""
-              }`}
+              className={`hover:shadow-md transition-shadow ${conversation.hasUnread ? "" : ""
+                }`}
               style={
                 conversation.hasUnread
                   ? { borderLeft: "4px solid var(--primary)" }
@@ -114,30 +86,34 @@ export function UdayeeMessages() {
                 <div className="flex items-start gap-4">
                   <Avatar className="h-12 w-12">
                     <AvatarImage
-                      src={conversation.investor.avatar || "/placeholder.svg"}
+                      src={safeUrl(conversation.investor.profile_picture)}
                       alt={conversation.investor.name}
+                      className="object-cover"
                     />
                     <AvatarFallback>
                       {conversation.investor.name
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")}
+                        ? conversation.investor.name
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")
+                        : "UN"}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 space-y-1">
+
                     <div className="flex justify-between items-start">
                       <div>
                         <h3 className="font-medium">
                           {conversation.investor.name}
                         </h3>
                         <p className="text-xs text-muted-foreground">
-                          {conversation.investor.company}
+                          {conversation.investor.company_name}
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground">
+                        {/* <span className="text-xs text-muted-foreground">
                           {conversation.lastMessage.timestamp}
-                        </span>
+                        </span> */}
                         {conversation.hasUnread && (
                           <span
                             className="text-xs w-5 h-5 rounded-full flex items-center justify-center"
@@ -151,10 +127,10 @@ export function UdayeeMessages() {
                         )}
                       </div>
                     </div>
-                    <p className="text-sm text-muted-foreground line-clamp-1">
+                    {/* <p className="text-sm text-muted-foreground line-clamp-1">
                       {conversation.lastMessage.sentByMe && "You: "}
                       {conversation.lastMessage.text}
-                    </p>
+                    </p> */}
                     <div className="pt-1 flex justify-end">
                       <Button
                         variant="ghost"
@@ -174,7 +150,13 @@ export function UdayeeMessages() {
         ))}
       </div>
 
-      {conversations.length === 0 && (
+      {loading ? (
+        <Card className="py-8">
+          <CardContent className="flex justify-center">
+            <p>Loading messages...</p>
+          </CardContent>
+        </Card>
+      ) : conversations.length === 0 ? (
         <Card className="py-12">
           <CardContent className="flex flex-col items-center justify-center text-center p-6">
             <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center mb-4">
@@ -187,7 +169,7 @@ export function UdayeeMessages() {
             </p>
           </CardContent>
         </Card>
-      )}
+      ) : null}
     </div>
   );
 }

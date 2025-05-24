@@ -1,7 +1,5 @@
 "use client";
-
 import type React from "react";
-
 import { useState } from "react";
 import {
   Card,
@@ -22,32 +20,33 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useToast } from "@/hooks/use-toast";
 import {
   Camera,
   Mail,
   Phone,
   BookOpen,
   Award,
+  Loader2,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import useUserStore from "@/store/useUserStore";
+import { safeUrl } from "@/app/udayee/projects/[id]/manage/page";
+import Image from "next/image";
 
 export function UdayeeProfileEditor() {
-  const { toast } = useToast();
   const [saving, setSaving] = useState(false);
-  const { user, updateUser, pushUser } = useUserStore();
+  const { user, updateUser, pushUser, isLoading } = useUserStore();
   const [profilePicturePreview, setProfilePicturePreview] = useState<File | null>(null);
 
-  const handleChange = (
+  const handleChange = async (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    updateUser({ [name]: value });
+    await updateUser({ [name]: value });
   };
 
-  const handleSelectChange = (name: string, value: string) => {
-    updateUser({ [name]: value });
+  const handleSelectChange = async (name: string, value: string) => {
+    await updateUser({ [name]: value });
   };
 
   const handleProfilePictureChange = (
@@ -68,21 +67,21 @@ export function UdayeeProfileEditor() {
         await updateUser({ profile_picture: profilePicturePreview });
       }
       await pushUser();
-      toast({
-        title: "Profile Updated",
-        description: "Your student profile has been successfully updated.",
-      });
     } catch (error) {
       console.error("Error updating profile:", error);
-      toast({
-        title: "Update Failed",
-        description: "There was an error updating your profile.",
-        variant: "destructive",
-      });
     } finally {
       setSaving(false);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+        <p className="text-lg text-muted-foreground">Loading profile data...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -121,8 +120,9 @@ export function UdayeeProfileEditor() {
                   <div className="relative">
                     <Avatar className="w-32 h-32 border-2 border-primary">
                       <AvatarImage
-                        src={profilePicturePreview ? URL.createObjectURL(profilePicturePreview) : user?.profile_picture || undefined}
+                        src={safeUrl(profilePicturePreview ? profilePicturePreview : user?.profile_picture)}
                         alt={user?.name || "User Avatar"}
+                        className="object-cover"
                       />
                       <AvatarFallback className="text-4xl">
                         {user?.name
@@ -133,6 +133,7 @@ export function UdayeeProfileEditor() {
                           : "U"}
                       </AvatarFallback>
                     </Avatar>
+                    {/* <Image src={safeUrl(user?.profile_picture)} alt="shdfdg" width={40} height={40}></Image> */}
                     <label
                       htmlFor="profile_picture"
                       className="absolute bottom-0 right-0 bg-primary text-primary-foreground p-2 rounded-full cursor-pointer shadow-md hover:bg-primary/90 transition-colors"
@@ -147,6 +148,7 @@ export function UdayeeProfileEditor() {
                       className="hidden"
                       onChange={handleProfilePictureChange}
                     />
+                    {/* <Image width={880} height={880} src="/uploads/profile_pictures/1748043539356-Mutiur Rahman 2207097.jpg" alt="" /> */}
                   </div>
                   <h2 className="text-xl font-semibold">{user?.name}</h2>
                 </div>
