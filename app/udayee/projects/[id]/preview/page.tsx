@@ -284,68 +284,75 @@ export default function ProjectPreviewPage({
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {project.milestones && project.milestones.length > 0 ? (
-                    project.milestones.map((milestone, index) => (
-                      <div
-                        key={typeof milestone === "object" ? milestone.id : `milestone-${index}`}
-                        className="relative pl-8 pb-6 border-l border-gray-200 last:border-0 last:pb-0"
-                      >
-                        {/* Milestone Status Indicator */}
-                        <div className="absolute left-0 -translate-x-1/2 w-6 h-6 rounded-full flex items-center justify-center">
-                          {typeof milestone === "object" && milestone.status === "completed" ? (
-                            <div className="w-6 h-6 rounded-full flex items-center justify-center bg-primary text-primary-foreground">
-                              <Target className="h-3 w-3" />
-                            </div>
-                          ) : typeof milestone === "object" && milestone.status === "in-progress" ? (
-                            <div className="bg-amber-500/20 text-amber-500 w-6 h-6 rounded-full flex items-center justify-center">
-                              <Target className="h-3 w-3" />
-                            </div>
-                          ) : (
-                            <div className="bg-gray-100 text-gray-500 w-6 h-6 rounded-full flex items-center justify-center">
-                              <Target className="h-3 w-3" />
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-                          <div>
-                            <h3 className="font-medium text-base flex items-center gap-2">
-                              {typeof milestone === "object"
-                                ? milestone.title
-                                : typeof milestone === "string"
-                                  ? milestone
-                                  : "Milestone"}
-
-                              {typeof milestone === "object" && milestone.status === "completed" && (
-                                <Badge
-                                  variant="outline"
-                                  className="bg-primary/10 text-primary border-primary/20"
-                                >
-                                  Completed
-                                </Badge>
-                              )}
-                              {typeof milestone === "object" && milestone.status === "in-progress" && (
-                                <Badge
-                                  variant="outline"
-                                  className="bg-amber-500/10 text-amber-500 border-amber-500/20"
-                                >
-                                  In Progress
-                                </Badge>
-                              )}
-                            </h3>
-                            <p className="text-sm text-muted-foreground mt-1">
-                              {typeof milestone === "object" ? milestone.description : ""}
-                            </p>
+                    [...project.milestones]
+                      .sort((a, b) => {
+                        const statusOrder = { "completed": 0, "in-progress": 1, "planned": 2 };
+                        const aStatus = typeof a === "object" && a.status ? a.status : "planned";
+                        const bStatus = typeof b === "object" && b.status ? b.status : "planned";
+                        return statusOrder[aStatus as keyof typeof statusOrder] - statusOrder[bStatus as keyof typeof statusOrder];
+                      })
+                      .map((milestone, index) => (
+                        <div
+                          key={typeof milestone === "object" ? milestone.id : `milestone-${index}`}
+                          className="relative pl-8 pb-6 border-l border-gray-200 last:border-0 last:pb-0"
+                        >
+                          {/* Milestone Status Indicator */}
+                          <div className="absolute left-0 -translate-x-1/2 w-6 h-6 rounded-full flex items-center justify-center">
+                            {typeof milestone === "object" && milestone.status === "completed" ? (
+                              <div className="w-6 h-6 rounded-full flex items-center justify-center bg-primary text-primary-foreground">
+                                <Target className="h-3 w-3" />
+                              </div>
+                            ) : typeof milestone === "object" && milestone.status === "in-progress" ? (
+                              <div className="bg-amber-500/20 text-amber-500 w-6 h-6 rounded-full flex items-center justify-center">
+                                <Target className="h-3 w-3" />
+                              </div>
+                            ) : (
+                              <div className="bg-gray-100 text-gray-500 w-6 h-6 rounded-full flex items-center justify-center">
+                                <Target className="h-3 w-3" />
+                              </div>
+                            )}
                           </div>
-                          <div className="text-right flex-shrink-0">
-                            <p className="font-medium">
-                              {typeof milestone === "object" && milestone.amount
-                                ? `$${milestone.amount}`
-                                : ""}
-                            </p>
+
+                          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                            <div>
+                              <h3 className="font-medium text-base flex items-center gap-2">
+                                {typeof milestone === "object"
+                                  ? milestone.title
+                                  : typeof milestone === "string"
+                                    ? milestone
+                                    : "Milestone"}
+
+                                {typeof milestone === "object" && milestone.status === "completed" && (
+                                  <Badge
+                                    variant="outline"
+                                    className="bg-primary/10 text-primary border-primary/20"
+                                  >
+                                    Completed
+                                  </Badge>
+                                )}
+                                {typeof milestone === "object" && milestone.status === "in-progress" && (
+                                  <Badge
+                                    variant="outline"
+                                    className="bg-amber-500/10 text-amber-500 border-amber-500/20"
+                                  >
+                                    In Progress
+                                  </Badge>
+                                )}
+                              </h3>
+                              <p className="text-sm text-muted-foreground mt-1">
+                                {typeof milestone === "object" ? milestone.description : ""}
+                              </p>
+                            </div>
+                            <div className="text-right flex-shrink-0">
+                              <p className="font-medium">
+                                {typeof milestone === "object" && milestone.amount
+                                  ? `$${milestone.amount}`
+                                  : ""}
+                              </p>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))
+                      ))
                   ) : (
                     <p className="text-muted-foreground">No milestones available for this project yet.</p>
                   )}

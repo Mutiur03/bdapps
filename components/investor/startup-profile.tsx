@@ -104,7 +104,7 @@ export function StartupProfile({ id }: { id: string }) {
           </div> */}
         </div>
         <div className="flex gap-3">
-          <Link href={`/investor/chat/${startup?.id}`}>
+          <Link href={`/investor/chat/${startup?.id}/${startup?.user?.id}`} className="flex-1">
             <Button
               variant="outline"
               className="flex items-center gap-2 text-foreground hover:bg-muted"

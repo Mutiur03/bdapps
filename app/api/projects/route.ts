@@ -4,6 +4,9 @@ import { NextResponse } from "next/server";
 export async function GET() {
   try {
     const projects = await prisma.project.findMany({
+      where: {
+        status: "pending",
+      },
       include: {
         user: {
           select: {

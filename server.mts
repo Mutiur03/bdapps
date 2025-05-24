@@ -10,7 +10,7 @@ const port = parseInt(process.env.PORT || "3000", 10);
 const app = next({ dev, hostname: host, port });
 const handle = app.getRequestHandler();
 
-// Track online users 
+// Track online users
 const onlineUsers = new Map(); // userId/investorId -> socket.id
 const userTypes = new Map(); // socket.id -> { type: 'user'/'investor', id: userId/investorId }
 
@@ -69,6 +69,14 @@ app
           if (isNaN(projectId)) {
             throw new Error("Invalid project ID");
           }
+          await prisma.project.update({
+            where: { id: projectId },
+            data: {
+              invesrorId: msg.senderInvestorId
+                ? Number(msg.senderInvestorId)
+                : undefined,
+            },
+          });
 
           const messageData = {
             content: msg.content,

@@ -58,7 +58,7 @@ export interface Project {
   category?: string;
   budget?: number;
   raised_amount?: number;
-  status: "active" | "draft";
+  status: "active" | "draft" | "pending" | "completed";
   createdAt?: string;
   milestones?: Milestone[] | string[];
   cover_image?: File | string;
@@ -123,7 +123,7 @@ export interface ProjectStore {
     value: any
   ) => void;
   deleteItem: (type: "milestone" | "teamMember" | "update", id: string) => void;
-
+  // addProject: (project: Project) => void;
   setFormState: (updates: Partial<FormState>) => void;
   setMediaFormState: (updates: Partial<MediaFormState>) => void;
   setMediaChanged: (changed: boolean) => void;
@@ -163,7 +163,7 @@ export const useProjectStore = create<ProjectStore>()(
         currentProjectId: null,
         isLoading: false,
         formErrors: {},
-        
+
         updateState: <T extends keyof ProjectStore>(
           key: T,
           value: ProjectStore[T] | ((prev: ProjectStore[T]) => ProjectStore[T])

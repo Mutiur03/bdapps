@@ -381,14 +381,18 @@ export default function ManageProjectPage({
               <h2 className="text-xl font-semibold">{currentProject.title}</h2>
               <div className="flex items-center gap-2">
                 <Badge
-                  variant={currentProject.status === "active" ? "default" : "outline"}
-                  className={
-                    currentProject.status === "active"
-                      ? "bg-primary text-primary-foreground"
-                      : ""
-                  }
+                  className={`${currentProject.status === "active"
+                    ? "bg-muted text-primary"
+                    : currentProject.status === "pending"
+                      ? "bg-amber-100 text-amber-700"
+                      : currentProject.status === "completed"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-card text-muted-foreground"
+                    }`}
                 >
-                  {currentProject.status === "active" ? "Active" : "Draft"}
+                  {currentProject.status === "active" ? "Active" :
+                    currentProject.status === "pending" ? "Pending" :
+                      currentProject.status === "completed" ? "Completed" : "Draft"}
                 </Badge>
                 <span className="text-sm text-muted-foreground">
                   Created on{" "}
@@ -452,13 +456,13 @@ export default function ManageProjectPage({
             <Users className="h-4 w-4 mr-2" />
             Team
           </TabsTrigger>
-          <TabsTrigger
+          {/* <TabsTrigger
             value="updates"
             className="rounded-md data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 font-medium"
           >
             <MessageSquare className="h-4 w-4 mr-2" />
             Updates
-          </TabsTrigger>
+          </TabsTrigger> */}
           <TabsTrigger
             value="documents"
             className="rounded-md data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 font-medium"
@@ -628,20 +632,25 @@ export default function ManageProjectPage({
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
                 <CardTitle>Funding Milestones</CardTitle>
-                <CardDescription>
+                {/* <CardDescription>
                   Define clear milestones for your project funding
-                </CardDescription>
+                </CardDescription> */}
               </div>
-              <Button
+              {/* <Button
                 onClick={() => addItem('milestone')}
                 className="bg-primary hover:bg-primary/90 text-primary-foreground"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Add Milestone
-              </Button>
+              </Button> */}
             </CardHeader>
             <CardContent className="space-y-6">
-              {milestones.map((milestone, index) => (
+                {[...milestones]
+                .sort((a, b) => {
+                  const statusOrder = { "completed": 0, "in-progress": 1, "planned": 2 };
+                  return statusOrder[a.status as keyof typeof statusOrder] - statusOrder[b.status as keyof typeof statusOrder];
+                })
+                .map((milestone, index) => (
                 <Card
                   key={milestone.id}
                   className="overflow-hidden border-l-4 border-l-primary/40"
@@ -653,42 +662,48 @@ export default function ManageProjectPage({
                           {index + 1}
                         </div>
                         <Input
+                          readOnly={milestone.status !== "planned"}
                           value={milestone.title}
                           onChange={(e) => updateItem('milestone', milestone.id!, 'title', e.target.value)}
                           className="border-0 bg-transparent px-2 text-base font-medium focus-visible:ring-0 focus-visible:ring-offset-0"
                         />
                       </div>
                       <div className="flex items-center gap-2">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 px-2">
-                              <Badge
-                                variant={milestone.status === "completed"
-                                  ? "default"
-                                  : "outline"}
-                                className={`${milestone.status === "completed"
-                                  ? "bg-primary/10 text-primary border-primary/20"
-                                  : milestone.status === "in-progress"
-                                    ? "bg-amber-500/10 text-amber-500 border-amber-500/20"
-                                    : "bg-muted text-muted-foreground"
-                                  }`}
-                              >
-                                {milestone.status === "completed"
-                                  ? "Completed"
-                                  : milestone.status === "in-progress"
-                                    ? "In Progress"
-                                    : "Planned"}
-                              </Badge>
-                              <ChevronDown className="h-4 w-4 ml-1" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
+                        {/* <DropdownMenu> */}
+                        {/* <DropdownMenuTrigger asChild> */}
+                        <Button variant="ghost" className="h-8 px-2">
+                          <Badge
+                            variant={milestone.status === "completed"
+                              ? "default"
+                              : "outline"}
+                            className={`${milestone.status === "completed"
+                              ? "bg-primary/10 text-primary border-primary/20"
+                              : milestone.status === "in-progress"
+                                ? "bg-amber-500/10 text-amber-500 border-amber-500/20"
+                                : "bg-muted text-muted-foreground"
+                              }`}
+                          >
+                            {milestone.status === "completed"
+                              ? "Completed"
+                              : milestone.status === "in-progress"
+                                ? "In Progress"
+                                : "Planned"}
+                          </Badge>
+                          {/* <ChevronDown className="h-4 w-4 ml-1" /> */}
+                        </Button>
+                        {/* </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" >
+                            <DropdownMenuItem
+                              onClick={() => {
+                              updateItem('milestone', milestone.id!, 'status', 'planned'); updateItem('milestone', milestone.id!, 'plannedAt', new Date().toLocaleDateString());
+                              }}
+                              disabled={true}
+                            ></DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() => {
                                 updateItem('milestone', milestone.id!, 'status', 'planned'); updateItem('milestone', milestone.id!, 'plannedAt', new Date().toLocaleDateString());
 
                               }}
-
                             >
                               Planned
                             </DropdownMenuItem>
@@ -714,11 +729,12 @@ export default function ManageProjectPage({
                             >
                               Completed
                             </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                          </DropdownMenuContent> */}
+                        {/* </DropdownMenu> */}
                         <Button
                           variant="destructive"
                           size="icon"
+                          hidden={milestone.status !== "planned"}
                           className="h-8 w-8"
                           onClick={() => deleteItem('milestone', milestone.id!)}
                         >
@@ -733,6 +749,7 @@ export default function ManageProjectPage({
                         <p className="text-sm font-medium">Description</p>
                         <Textarea
                           value={milestone.description}
+                          readOnly={milestone.status !== "planned"}
                           onChange={(e) => updateItem('milestone', milestone.id!, 'description', e.target.value)}
                           placeholder="Describe what you'll achieve in this milestone"
                           className="resize-none h-24"
@@ -747,10 +764,10 @@ export default function ManageProjectPage({
                             </p>
                             <Input
                               value={milestone.amount}
+                              readOnly={milestone.status !== "planned"}
                               onChange={(e) => {
                                 const newAmount = e.target.value;
                                 updateItem('milestone', milestone.id!, 'amount', newAmount);
-
                                 // If milestone is completed, also update the raised_amount to match
                                 if (milestone.status === "completed") {
                                   updateItem('milestone', milestone.id!, 'raised_amount', newAmount);
@@ -771,9 +788,10 @@ export default function ManageProjectPage({
 
                           {milestone.status === "planned" && (
                             <div className="space-y-2">
-                              <p className="text-sm font-medium">Deadline</p>
+                              <p className="text-sm font-medium">Planned</p>
                               <Input
                                 value={milestone.plannedAt}
+                                readOnly
                                 onChange={(e) => updateItem('milestone', milestone.id!, 'plannedAt', e.target.value)}
                                 placeholder="Month Year"
                               />
@@ -786,11 +804,12 @@ export default function ManageProjectPage({
                                 <p className="text-sm font-medium">Deadline</p>
                                 <Input
                                   value={milestone.deadlineAt}
+                                  readOnly
                                   onChange={(e) => updateItem('milestone', milestone.id!, 'deadlineAt', e.target.value)}
                                   placeholder="Month Year"
                                 />
                               </div>
-                              <div className="space-y-2">
+                              {/* <div className="space-y-2">
                                 <p className="text-sm font-medium">Raised Amount</p>
                                 <Input
                                   value={milestone.raised_amount}
@@ -813,7 +832,7 @@ export default function ManageProjectPage({
                                     {milestone.progress}% of ৳{milestone.amount || 0}
                                   </span>
                                 </div>
-                              </div>
+                              </div> */}
                             </>
                           )}
 
@@ -824,6 +843,7 @@ export default function ManageProjectPage({
                               </p>
                               <Input
                                 value={milestone.completedAt}
+                                readOnly
                                 onChange={(e) => updateItem('milestone', milestone.id!, 'completedAt', e.target.value)}
                                 placeholder="Month Year"
                               />
@@ -831,7 +851,7 @@ export default function ManageProjectPage({
                           )}
                         </div>
 
-                        {milestone.status === "in-progress" &&
+                        {/* {milestone.status === "in-progress" &&
                           milestone.progress !== undefined && (
                             <div>
                               <Progress
@@ -839,7 +859,7 @@ export default function ManageProjectPage({
                                 className="h-2 bg-primary/10"
                               />
                             </div>
-                          )}
+                          )} */}
                       </div>
                     </div>
                   </CardContent>

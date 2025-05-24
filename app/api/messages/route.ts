@@ -136,8 +136,8 @@ export async function GET(req: NextRequest) {
 
     if (!messages || messages.length === 0) {
       return NextResponse.json(
-        { message: "No messages found for this project" },
-        { status: 404 }
+        [],
+        { status: 200 }
       );
     }
 

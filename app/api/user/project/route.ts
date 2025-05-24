@@ -294,21 +294,21 @@ export async function PUT(request: Request) {
             milestone?.status === "in-progress"
               ? milestone.deadlineAt?.toString()
               : null,
-          progress:
-            milestone?.status === "in-progress" && milestone?.progress
-              ? Number(milestone.progress)
-              : 0,
-          raised_amount:
-            milestone?.status !== "planned" && milestone?.raised_amount
-              ? Number(milestone.raised_amount)
-              : null,
+          // progress:
+          //   milestone?.status === "in-progress" && milestone?.progress
+          //     ? Number(milestone.progress)
+          //     : 0,
+          // raised_amount:
+          //   milestone?.status !== "planned" && milestone?.raised_amount
+          //     ? Number(milestone.raised_amount)
+          //     : null,
           projectId: Number(projectId),
         })),
       });
     }
     const raised_amount = parsedMilestones.reduce((acc, milestone) => {
-      if (milestone.status !== "planned" && milestone.raised_amount) {
-        return acc + Number(milestone.raised_amount);
+      if (milestone.status !== "planned" && milestone.amount) {
+        return acc + Number(milestone.amount);
       }
       return acc;
     }, 0);
@@ -402,7 +402,11 @@ export async function PUT(request: Request) {
         });
       }
     }
-
+    if (parsedMilestones.length > 0) {
+      updateData.status = "active";
+    } else {
+      updateData.status = "pending";
+    }
     const updatedProject = await prisma.project.update({
       where: {
         id: Number(projectId),

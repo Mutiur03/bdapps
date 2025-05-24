@@ -179,7 +179,7 @@ export function StartupBrowser() {
             <div className="text-center py-12">
               <p className="text-muted-foreground">
                 Not Found any startups at the moment.
-              </p>
+              </p> 
             </div>
           )}
         </TabsContent>
@@ -253,7 +253,7 @@ function StartupCard({ startup }: { startup: Startup }) {
         </p>
 
         <div className="flex flex-wrap gap-2">
-          {(startup?.tags.split(',') || []).map((tag: string) => (
+          {(startup?.tags?.split(',') || []).map((tag: string) => (
             <Badge
               key={tag}
               variant="outline"

@@ -425,28 +425,28 @@ const ChatInterface = ({
     console.log("Sending message data:", messageData);
 
     // Add temporary message to the UI immediately
-    const tempMessage: Message = {
-      id: `temp-${Date.now()}`,
-      content: text,
-      sender: userType,
-      receiver: recipientType,
-      createdAt: new Date().toISOString(),
-      image: image ? URL.createObjectURL(image) : undefined,
-    };
+    // const tempMessage: Message = {
+    //   id: `temp-${Date.now()}`,
+    //   content: text,
+    //   sender: userType,
+    //   receiver: recipientType,
+    //   createdAt: new Date().toISOString(),
+    //   image: image ? URL.createObjectURL(image) : undefined,
+    // };
 
     // Add temp message to UI
-    setMessages(prev => [...prev, tempMessage]);
+    // setMessages(prev => [...prev, tempMessage]);
 
     // Emit message via socket
     socketInstance?.emit("message", messageData);
 
     // Listen for error response
-    socketInstance?.once("messageError", (error) => {
-      console.error("Failed to send message:", error);
-      // Remove the temporary message if there was an error
-      setMessages((prev) => prev.filter((msg) => msg.id !== tempMessage.id));
-      alert("Failed to send message. Please try again.");
-    });
+    // socketInstance?.once("messageError", (error) => {
+    //   console.error("Failed to send message:", error);
+    //   // Remove the temporary message if there was an error
+    //   setMessages((prev) => prev.filter((msg) => msg.id !== tempMessage.id));
+    //   alert("Failed to send message. Please try again.");
+    // });
 
     // Handle image upload if needed (you might need to implement this)
     // if (image) {

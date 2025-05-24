@@ -23,7 +23,7 @@ interface UdayeeCreateProjectDialogProps {
 export function UdayeeCreateProjectDialog({ open, onOpenChange }: UdayeeCreateProjectDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formRef, setFormRef] = useState<HTMLFormElement | null>(null)
-  const { addProject } = useProjectStore()
+  const { fetchProjects } = useProjectStore()
   const handleSubmit = async (e: React.FormEvent, isDraft: boolean = false) => {
     e.preventDefault()
     setIsSubmitting(true)
@@ -39,13 +39,13 @@ export function UdayeeCreateProjectDialog({ open, onOpenChange }: UdayeeCreatePr
       }
 
       const formDataToSubmit = new FormData(form);
-      formDataToSubmit.append("status", isDraft ? "draft" : "active");
+      formDataToSubmit.append("status", isDraft ? "draft" : "pending");
 
       console.log(...formDataToSubmit.entries());
       const res = await axios.post("/api/user/project", formDataToSubmit);
       console.log("Project created:", res.data);
 
-      addProject(res.data);
+      await fetchProjects();
     } catch (error) {
       console.error("Error submitting form:", error);
     } finally {

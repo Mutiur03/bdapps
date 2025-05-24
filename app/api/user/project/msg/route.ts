@@ -13,9 +13,17 @@ export async function GET() {
     }
     const userId = (session.user as { id?: string })?.id;
 
-    const projects = await prisma.project.findMany({
+    // Find all projects where the user has sent or received messages
+    const projectsWithMessages = await prisma.project.findMany({
       where: {
-        userId: Number(userId),
+        message: {
+          some: {
+            OR: [
+              { senderType: "user", senderUserId: Number(userId) },
+              { receiverType: "user", receiverUserId: Number(userId) },
+            ],
+          },
+        },
       },
       include: {
         user: {
@@ -37,6 +45,12 @@ export async function GET() {
           },
         },
         message: {
+          where: {
+            OR: [
+              { senderType: "user", senderUserId: Number(userId) },
+              { receiverType: "user", receiverUserId: Number(userId) },
+            ],
+          },
           include: {
             senderUser: {
               select: {
@@ -75,9 +89,10 @@ export async function GET() {
         },
       },
     });
-
+    console.log();
+    
     // Transform the messages to a more usable format
-    const transformedProjects = projects.map((project) => {
+    const transformedProjects = projectsWithMessages.map((project) => {
       return {
         ...project,
         message: project.message.map((msg) => {
@@ -115,15 +130,7 @@ export async function GET() {
       };
     });
 
-    const projectsWithUserMessages = transformedProjects.filter((project) => {
-      return project.message.some(
-        (msg) =>
-          (msg.senderType === "user" && msg.sender.id === Number(userId)) ||
-          (msg.receiverType === "user" && msg.receiver.id === Number(userId))
-      );
-    });
-
-    return NextResponse.json(projectsWithUserMessages, { status: 200 });
+    return NextResponse.json(transformedProjects, { status: 200 });
   } catch (error) {
     console.error("Error fetching projects:", error);
     return NextResponse.json(

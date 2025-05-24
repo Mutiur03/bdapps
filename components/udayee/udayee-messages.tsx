@@ -86,13 +86,13 @@ export function UdayeeMessages() {
                 <div className="flex items-start gap-4">
                   <Avatar className="h-12 w-12">
                     <AvatarImage
-                      src={safeUrl(conversation.investor.profile_picture)}
-                      alt={conversation.investor.name}
+                      src={safeUrl(conversation?.investor?.profile_picture)}
+                      alt={conversation?.investor?.name}
                       className="object-cover"
                     />
                     <AvatarFallback>
-                      {conversation.investor.name
-                        ? conversation.investor.name
+                      {conversation?.investor?.name
+                        ? conversation?.investor?.name
                           .split(" ")
                           .map((n) => n[0])
                           .join("")
@@ -104,10 +104,10 @@ export function UdayeeMessages() {
                     <div className="flex justify-between items-start">
                       <div>
                         <h3 className="font-medium">
-                          {conversation.investor.name}
+                          {conversation.investor?.name}
                         </h3>
                         <p className="text-xs text-muted-foreground">
-                          {conversation.investor.company_name}
+                          {conversation.investor?.company_name}
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
