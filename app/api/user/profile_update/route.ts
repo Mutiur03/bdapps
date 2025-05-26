@@ -55,24 +55,13 @@ export async function POST(request: NextRequest) {
     } catch (error) {
       console.warn("Failed to parse social_links:", error);
     }
-    let profilePicturePath = "";
-    const updatedData: any = {
-      name: name.toString(),
-      date_of_birth: date_of_birth?.toString(),
-      address: address?.toString(),
-      bio: bio?.toString(),
-      department: department?.toString(),
-      year_of_study: year_of_study?.toString(),
-      graduation_year: graduation_year?.toString(),
-      cgpa: parseFloat(cgpa?.toString()),
-      skills: skills?.toString(),
-      interests: interests?.toString(),
-      career_goals: career_goals?.toString(),
-      social_links: parsedSocialLinks,
-    };
+    // const updatedData: any = {
+
+    // };
 
     // Only process profile picture if it exists and is a File
-    if (profile_picture && profile_picture instanceof File) {
+    let avatar = "";
+    if (profile_picture instanceof File) {
       const uploadDir = path.join(
         process.cwd(),
         "public/uploads/profile_pictures"
@@ -80,19 +69,12 @@ export async function POST(request: NextRequest) {
       if (!fs.existsSync(uploadDir)) {
         fs.mkdirSync(uploadDir, { recursive: true });
       }
-      const profilePictureFile = profile_picture as File;
-      const uniqueFilename = `${Date.now()}-${profilePictureFile.name}`;
-      const filePath = `public/uploads/profile_pictures/${uniqueFilename}`;
-      const fileBuffer = Buffer.from(await profilePictureFile.arrayBuffer());
-      fs.writeFileSync(filePath, fileBuffer);
-      profilePicturePath = `/uploads/profile_pictures/${uniqueFilename}`;
-
-      // Only add profile_picture to updatedData if a new image was uploaded
-      updatedData.profile_picture = profilePicturePath;
-      console.log("Profile picture path:", profilePicturePath);
+      const profile_picture_name = `${Date.now()}-${profile_picture.name}`;
+      const profile_picture_path = `public/uploads/profile_pictures/${profile_picture_name}`;
+      const fileBuffer = Buffer.from(await profile_picture.arrayBuffer());
+      fs.writeFileSync(profile_picture_path, fileBuffer);
+      avatar = `/uploads/profile_pictures/${profile_picture_name}`;
     }
-
-    console.log("Updated data:", updatedData);
 
     // Update user data with proper ID validation
     const parsedUserId = parseInt(userId.toString());
@@ -104,7 +86,21 @@ export async function POST(request: NextRequest) {
       where: {
         id: parsedUserId,
       },
-      data: updatedData,
+      data: {
+        name: name.toString(),
+        date_of_birth: date_of_birth?.toString(),
+        address: address?.toString(),
+        bio: bio?.toString(),
+        department: department?.toString(),
+        year_of_study: year_of_study?.toString(),
+        graduation_year: graduation_year?.toString(),
+        cgpa: parseFloat(cgpa?.toString()),
+        skills: skills?.toString(),
+        interests: interests?.toString(),
+        career_goals: career_goals?.toString(),
+        social_links: parsedSocialLinks,
+        ...(avatar && { profile_picture: avatar }),
+      },
     });
 
     return new Response("Profile updated successfully");

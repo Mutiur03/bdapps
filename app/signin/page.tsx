@@ -9,7 +9,7 @@ import {
   CardTitle,
   CardImage,
 } from "@/components/ui/card";
-import { ArrowRight, Lightbulb, TrendingUp } from "lucide-react";
+import { ArrowRight, Lightbulb, TrendingUp, Shield } from "lucide-react";
 import Link from "next/link";
 import { HomeNavbar } from "@/components/home/home-navbar";
 import { HomeFooter } from "@/components/home/home-footer";
@@ -18,6 +18,22 @@ export default function SigninPage() {
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
       <HomeNavbar />
+
+      {/* Admin Access - Fixed in corner */}
+      <div className="fixed top-20 right-4 z-50">
+        <Link href="/signin/admin">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="bg-background/80 backdrop-blur-sm border border-border/50 hover:bg-muted/80 hover:border-primary/30 transition-all duration-200 shadow-sm group"
+          >
+            <Shield className="h-4 w-4 mr-2 text-muted-foreground group-hover:text-primary transition-colors" />
+            <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+              Admin Access
+            </span>
+          </Button>
+        </Link>
+      </div>
 
       {/* Hero Section */}
       <section className="relative overflow-hidden">

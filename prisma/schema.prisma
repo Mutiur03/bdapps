@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../lib/generated/prisma"
+  // output   = "../lib/generated/prisma"
 }
 
 datasource db {
@@ -38,9 +38,11 @@ model User {
 
   projectMembers ProjectMember[]
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  Project   Project[]
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  Project          Project[]
+  sentMessages     Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
 }
 
 model Investor {
@@ -67,6 +69,9 @@ model Investor {
   investments         Investment[]
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
+  sentMessages        Message[]         @relation("SentMessagesInvestor")
+  receivedMessages    Message[]         @relation("ReceivedMessagesInvestor")
+  Project             Project[]
 }
 
 model Project {
@@ -86,13 +91,16 @@ model Project {
   start_date      String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+  invesrorId      Int?
 
   user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  investor         Investor?         @relation(fields: [invesrorId], references: [id], onDelete: Cascade)
   projectMembers   ProjectMember[]
   projectInvestors ProjectInvestor[]
   investments      Investment[]
   milestones       Milestone[]
   documents        Documents[]
+  message          Message[]
 }
 
 model ProjectMember {
@@ -160,4 +168,33 @@ model Documents {
   updatedAt DateTime @updatedAt
 
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  content   String
+  projectId Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  senderType       MessageRole
+  senderUserId     Int?
+  senderInvestorId Int?
+
+  receiverType       MessageRole
+  receiverUserId     Int?
+  receiverInvestorId Int?
+
+  senderUser   User? @relation("SentMessages", fields: [senderUserId], references: [id])
+  receiverUser User? @relation("ReceivedMessages", fields: [receiverUserId], references: [id])
+
+  senderInvestor   Investor? @relation("SentMessagesInvestor", fields: [senderInvestorId], references: [id])
+  receiverInvestor Investor? @relation("ReceivedMessagesInvestor", fields: [receiverInvestorId], references: [id])
+
+  project Project @relation(fields: [projectId], references: [id])
+}
+
+enum MessageRole {
+  user
+  investor
 }

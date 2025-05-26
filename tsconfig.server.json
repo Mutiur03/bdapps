@@ -7,7 +7,8 @@
         "moduteResolution": "Node",
         "strict": true,
         "noEmit": false,
-        "isolatedModules": false
+        "isolatedModules": false,
+        "allowImportingTsExtensions": true,
     },
     " include": [
         "server.mts"

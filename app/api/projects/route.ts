@@ -1,10 +1,12 @@
 import prisma from "@/lib/prisma";
-
 import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
     const projects = await prisma.project.findMany({
+      where: {
+        status: "pending",
+      },
       include: {
         user: {
           select: {
@@ -59,6 +61,7 @@ export async function GET() {
         },
       },
     });
+    console.log("Projects retrieved successfully:", projects);
 
     return NextResponse.json(projects);
   } catch (error) {

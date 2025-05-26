@@ -294,21 +294,21 @@ export async function PUT(request: Request) {
             milestone?.status === "in-progress"
               ? milestone.deadlineAt?.toString()
               : null,
-          progress:
-            milestone?.status === "in-progress" && milestone?.progress
-              ? Number(milestone.progress)
-              : 0,
-          raised_amount:
-            milestone?.status !== "planned" && milestone?.raised_amount
-              ? Number(milestone.raised_amount)
-              : null,
+          // progress:
+          //   milestone?.status === "in-progress" && milestone?.progress
+          //     ? Number(milestone.progress)
+          //     : 0,
+          // raised_amount:
+          //   milestone?.status !== "planned" && milestone?.raised_amount
+          //     ? Number(milestone.raised_amount)
+          //     : null,
           projectId: Number(projectId),
         })),
       });
     }
     const raised_amount = parsedMilestones.reduce((acc, milestone) => {
-      if (milestone.status !== "planned" && milestone.raised_amount) {
-        return acc + Number(milestone.raised_amount);
+      if (milestone.status !== "planned" && milestone.amount) {
+        return acc + Number(milestone.amount);
       }
       return acc;
     }, 0);
@@ -358,34 +358,34 @@ export async function PUT(request: Request) {
     const newDocuments = body.getAll("documents");
     if (newDocuments && newDocuments.length > 0) {
       const newFileNames = await Promise.all(
-      newDocuments.map(async (document: FormDataEntryValue) => {
-        if (!(document instanceof File)) {
-        return null;
-        }
-        const file = document as File;
-        const fileName = `${Date.now()}-${file.name}`;
-        const filePath = path.join(filePaths, fileName);
-        const buffer = await file.arrayBuffer();
-        const uint8Array = new Uint8Array(buffer);
-        fs.writeFileSync(filePath, uint8Array);
-        console.log("File saved:", filePath);
-        
-        return {
-        path: `uploads/project_documents/${userId}/${fileName}`,
-        size: file.size // Store the file size in bytes
-        };
-      })
+        newDocuments.map(async (document: FormDataEntryValue) => {
+          if (!(document instanceof File)) {
+            return null;
+          }
+          const file = document as File;
+          const fileName = `${Date.now()}-${file.name}`;
+          const filePath = path.join(filePaths, fileName);
+          const buffer = await file.arrayBuffer();
+          const uint8Array = new Uint8Array(buffer);
+          fs.writeFileSync(filePath, uint8Array);
+          console.log("File saved:", filePath);
+
+          return {
+            path: `uploads/project_documents/${userId}/${fileName}`,
+            size: file.size, // Store the file size in bytes
+          };
+        })
       ).then((items) => items.filter((item) => item !== null));
 
       // Create new document records in database
       if (newFileNames.length > 0) {
-      await prisma.documents.createMany({
-        data: newFileNames.map((fileInfo) => ({
-        projectId: Number(projectId),
-        document: fileInfo.path as string,
-        size: fileInfo.size // Store the file size in database
-        })),
-      });
+        await prisma.documents.createMany({
+          data: newFileNames.map((fileInfo) => ({
+            projectId: Number(projectId),
+            document: fileInfo.path as string,
+            size: fileInfo.size, // Store the file size in database
+          })),
+        });
       }
     }
 
@@ -402,7 +402,11 @@ export async function PUT(request: Request) {
         });
       }
     }
-
+    if (parsedMilestones.length > 0) {
+      updateData.status = "active";
+    } else {
+      updateData.status = "pending";
+    }
     const updatedProject = await prisma.project.update({
       where: {
         id: Number(projectId),

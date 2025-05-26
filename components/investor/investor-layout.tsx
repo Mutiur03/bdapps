@@ -21,6 +21,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { HomeFooter } from "../home/home-footer";
 import useInvestorStore from "@/store/useInvestorStore";
 import { signOut } from "next-auth/react";
+import { safeUrl } from "@/app/udayee/projects/[id]/manage/page";
 
 interface InvestorLayoutProps {
   children: React.ReactNode;
@@ -39,9 +40,9 @@ export function InvestorLayout({ children }: InvestorLayoutProps) {
     async function loadInvestorData() {
       try {
         await fetchInvestor();
+        console.log(investor?.profile_picture);
       } catch (err) {
         console.error("Failed to fetch investor data:", err);
-
       }
     }
 
@@ -169,8 +170,11 @@ export function InvestorLayout({ children }: InvestorLayoutProps) {
               <div className="sticky bottom-0 left-0 right-0 p-4 border-t border-border bg-card shadow-sm">
                 <div className="flex items-center gap-3 mb-4">
                   <Avatar className="h-9 w-9">
-                    <AvatarImage src="/placeholder-avatar.png" alt="User" />
-                    <AvatarFallback className="bg-primary/10 text-primary">
+                    <AvatarImage
+                      src={safeUrl(investor?.profile_picture)}
+                      alt={investor?.name}
+                      className="object-cover"
+                    />                    <AvatarFallback className="bg-primary/10 text-primary">
                       {investor?.name
                         .split(" ")
                         .map((n) => n[0])
@@ -241,6 +245,7 @@ export function InvestorLayout({ children }: InvestorLayoutProps) {
                     <AvatarImage
                       src={(investor?.profile_picture instanceof File ? URL.createObjectURL(investor.profile_picture) : investor?.profile_picture as string)}
                       alt={investor?.name}
+                      className="object-cover"
                     />
                     <AvatarFallback className="bg-primary/10 text-primary">
                       {investor?.name

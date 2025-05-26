@@ -1,79 +1,111 @@
+"use client"
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { MessageSquare, Search, ArrowUpRight, Mail } from "lucide-react";
 import Link from "next/link";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
 export function InvestorMessages() {
   // Mock data - in a real app, this would come from an API
-  const conversations = [
-    {
-      id: "1",
-      udayee: {
-        id: "ud1",
-        name: "Rahul Ahmed",
-        startup: "EcoSolutions",
-        avatar: "/placeholder.svg?height=40&width=40",
-      },
-      lastMessage: {
-        text: "Thank you for your interest in our startup! I'd be happy to provide more details about our technology.",
-        timestamp: "1 hour ago",
-        isRead: true,
-        sentByMe: false,
-      },
-      hasUnread: false,
-    },
-    {
-      id: "2",
-      udayee: {
-        id: "ud2",
-        name: "Nusrat Khan",
-        startup: "HealthTech",
-        avatar: "/placeholder.svg?height=40&width=40",
-      },
-      lastMessage: {
-        text: "We've completed the market research phase and are now moving to prototype development.",
-        timestamp: "Yesterday",
-        isRead: false,
-        sentByMe: false,
-      },
-      hasUnread: true,
-      unreadCount: 3,
-    },
-    {
-      id: "3",
-      udayee: {
-        id: "ud3",
-        name: "Tanvir Rahman",
-        startup: "EduConnect",
-        avatar: "/placeholder.svg?height=40&width=40",
-      },
-      lastMessage: {
-        text: "I've sent you the financial projections for the next 12 months. Let me know if you need anything else.",
-        timestamp: "2 days ago",
-        isRead: true,
-        sentByMe: false,
-      },
-      hasUnread: false,
-    },
-    {
-      id: "4",
-      udayee: {
-        id: "ud4",
-        name: "Fahmida Akter",
-        startup: "AgriTech Solutions",
-        avatar: "/placeholder.svg?height=40&width=40",
-      },
-      lastMessage: {
-        text: "Thanks for considering our startup. I'd be happy to schedule a call to discuss the investment opportunity.",
-        timestamp: "5 days ago",
-        isRead: true,
-        sentByMe: true,
-      },
-      hasUnread: false,
-    },
-  ];
+  // const conversations = [
+  //   {
+  //     id: "1",
+  //     udayee: {
+  //       id: "ud1",
+  //       name: "Rahul Ahmed",
+  //       startup: "EcoSolutions",
+  //       avatar: "/placeholder.svg?height=40&width=40",
+  //     },
+  //     lastMessage: {
+  //       text: "Thank you for your interest in our startup! I'd be happy to provide more details about our technology.",
+  //       timestamp: "1 hour ago",
+  //       isRead: true,
+  //       sentByMe: false,
+  //     },
+  //     hasUnread: false,
+  //   },
+  //   {
+  //     id: "2",
+  //     udayee: {
+  //       id: "ud2",
+  //       name: "Nusrat Khan",
+  //       startup: "HealthTech",
+  //       avatar: "/placeholder.svg?height=40&width=40",
+  //     },
+  //     lastMessage: {
+  //       text: "We've completed the market research phase and are now moving to prototype development.",
+  //       timestamp: "Yesterday",
+  //       isRead: false,
+  //       sentByMe: false,
+  //     },
+  //     hasUnread: true,
+  //     unreadCount: 3,
+  //   },
+  //   {
+  //     id: "3",
+  //     udayee: {
+  //       id: "ud3",
+  //       name: "Tanvir Rahman",
+  //       startup: "EduConnect",
+  //       avatar: "/placeholder.svg?height=40&width=40",
+  //     },
+  //     lastMessage: {
+  //       text: "I've sent you the financial projections for the next 12 months. Let me know if you need anything else.",
+  //       timestamp: "2 days ago",
+  //       isRead: true,
+  //       sentByMe: false,
+  //     },
+  //     hasUnread: false,
+  //   },
+  //   {
+  //     id: "4",
+  //     udayee: {
+  //       id: "ud4",
+  //       name: "Fahmida Akter",
+  //       startup: "AgriTech Solutions",
+  //       avatar: "/placeholder.svg?height=40&width=40",
+  //     },
+  //     lastMessage: {
+  //       text: "Thanks for considering our startup. I'd be happy to schedule a call to discuss the investment opportunity.",
+  //       timestamp: "5 days ago",
+  //       isRead: true,
+  //       sentByMe: true,
+  //     },
+  //     hasUnread: false,
+  //   },
+  // ];
+  interface Conversation {
+    id: string;
+    title: string;
+    user: {
+      id: string;
+      name: string;
+      startup: string;
+      profile_picture: string;
+    };
+    lastMessage: {
+      text: string;
+      timestamp: string;
+      isRead: boolean;
+      sentByMe: boolean;
+    };
+    hasUnread: boolean;
+    unreadCount?: number;
+  }
+
+  const [conversations, setConversations] = useState<Conversation[]>([])
+  useEffect(() => {
+    const fetchConversations = async () => {
+      const res = await axios.get("/api/investor/messages");
+      console.log(res.data);
+
+      setConversations(res.data);
+    }
+    fetchConversations();
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -100,7 +132,7 @@ export function InvestorMessages() {
         {conversations.map((conversation) => (
           <Link
             key={conversation.id}
-            href={`/investor/chat/${conversation.udayee.id}`}
+            href={`/investor/chat/${conversation.id}/${conversation.user?.id || 'unknown'}`}
           >
             <Card
               className="hover:shadow-md transition-shadow"
@@ -114,30 +146,32 @@ export function InvestorMessages() {
                 <div className="flex items-start gap-4">
                   <Avatar className="h-12 w-12">
                     <AvatarImage
-                      src={conversation.udayee.avatar || "/placeholder.svg"}
-                      alt={conversation.udayee.name}
+                      src={conversation.user?.profile_picture || "/placeholder.svg"}
+                      alt={conversation.user?.name || "User"}
                     />
                     <AvatarFallback>
-                      {conversation.udayee.name
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")}
+                      {conversation.user?.name
+                        ? conversation.user.name
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")
+                        : "U"}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 space-y-1">
                     <div className="flex justify-between items-start">
                       <div>
                         <h3 className="font-medium">
-                          {conversation.udayee.name}
+                          {conversation.user?.name || "Unknown User"}
                         </h3>
                         <p className="text-xs text-muted-foreground">
-                          {conversation.udayee.startup}
+                          {conversation.title || "Unknown Startup"}
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground">
+                        {/* <span className="text-xs text-muted-foreground">
                           {conversation.lastMessage.timestamp}
-                        </span>
+                        </span> */}
                         {conversation.hasUnread && (
                           <span
                             className="text-xs w-5 h-5 rounded-full flex items-center justify-center font-medium"
@@ -151,12 +185,12 @@ export function InvestorMessages() {
                         )}
                       </div>
                     </div>
-                    <p className="text-sm text-muted-foreground line-clamp-1">
+                    {/* <p className="text-sm text-muted-foreground line-clamp-1">
                       {conversation.lastMessage.sentByMe && (
                         <span style={{ color: "var(--primary)" }}>You: </span>
                       )}
                       {conversation.lastMessage.text}
-                    </p>
+                    </p> */}
                     <div className="pt-1 flex justify-end">
                       <Button
                         variant="ghost"

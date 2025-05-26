@@ -58,11 +58,14 @@ const useUserStore = create<UserStore>()(
       clearUser: () => set({ user: null }),
       getUser: async () => {
         try {
+          set({ isLoading: true });
           const response = await axios.get(`/api/getuser`);
-          console.log(response.data);
+          console.log("User data fetched:", response.data);
           set({ user: response.data });
         } catch (error) {
           console.error("Error fetching user data:", error);
+        } finally {
+          set({ isLoading: false });
         }
       },
       updateUser: async (userData: Partial<User>) => {
