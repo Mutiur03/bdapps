@@ -67,14 +67,14 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       icon: LayoutDashboard,
       active: pathname === "/admin/dashboard",
     },
-    // {
-    //   href: "/admin/applications",
-    //   label: "Applications",
-    //   icon: FileText,
-    //   active:
-    //     pathname === "/admin/applications" ||
-    //     pathname.startsWith("/admin/applications/"),
-    // },
+    {
+      href: "/admin/investments",
+      label: "investments",
+      icon: FileText,
+      active:
+        pathname === "/admin/investments" ||
+        pathname.startsWith("/admin/investments/"),
+    },
     {
       href: "/admin/startups",
       label: "Browse Startups",
