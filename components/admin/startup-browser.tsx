@@ -309,7 +309,7 @@ function StartupCard({ startup }: { startup: Startup }) {
               </>
             )}
           </div>
-          <Link href={`/investor/startups/${startup?.id || ""}`}>
+          <Link href={`/admin/startups/${startup?.id || ""}`}>
             <Button
               size="sm"
               className="h-8 text-xs bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-1"

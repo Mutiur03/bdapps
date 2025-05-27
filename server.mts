@@ -1,103 +1,102 @@
 import { createServer } from "http";
 import next from "next";
 import { Server } from "socket.io";
-import prisma from "./lib/prisma.ts";
-import { MessageRole } from "@prisma/client"; // Import MessageRole enum
+import { MessageRole } from "@prisma/client";
+
+// Dynamic import for prisma to avoid module loading issues
+let prisma: any;
+
+const initPrisma = async () => {
+  if (!prisma) {
+    try {
+      const { default: prismaClient } = await import("./lib/prisma.js");
+      prisma = prismaClient;
+    } catch (error) {
+      console.error("Failed to load Prisma client:", error);
+      process.exit(1);
+    }
+  }
+  return prisma;
+};
 
 const dev = process.env.NODE_ENV !== "production";
 const host = process.env.HOST || "localhost";
 const port = parseInt(process.env.PORT || "3000", 10);
-const app = next({ dev, hostname: host, port });
+
+// Simple Next.js configuration for App Router
+const app = next({
+  dev,
+  hostname: host,
+  port,
+});
 const handle = app.getRequestHandler();
 
-// Track online users
-const onlineUsers = new Map(); // userId/investorId -> socket.id
-const userTypes = new Map(); // socket.id -> { type: 'user'/'investor', id: userId/investorId }
+const startServer = async () => {
+  try {
+    // Initialize Prisma
+    await initPrisma();
 
-app
-  .prepare()
-  .then(() => {
-    const server = createServer((req, res) => {
-      handle(req, res);
+    // Prepare Next.js app
+    await app.prepare();
+
+    const server = createServer(async (req, res) => {
+      try {
+        await handle(req, res);
+      } catch (err) {
+        console.error("Error occurred handling", req.url, err);
+        res.statusCode = 500;
+        res.end("internal server error");
+      }
     });
 
-    const io = new Server(server);
+    const io = new Server(server, {
+      cors: {
+        origin: dev
+          ? ["http://localhost:3000", "http://127.0.0.1:3000"]
+          : false,
+        methods: ["GET", "POST"],
+        credentials: true,
+      },
+      transports: ["websocket", "polling"],
+    });
 
     io.on("connection", (socket) => {
       console.log(`${socket.id} connected`);
 
-      socket.on("join", ({ userId, investorId }) => {
+      socket.on("join", ({ userId, adminId }) => {
         if (userId) {
           socket.join(`user-${userId}`);
-          onlineUsers.set(`user-${userId}`, socket.id);
-          userTypes.set(socket.id, { type: "user", id: userId });
           console.log(`User joined room: user-${userId}`);
-
-          // Broadcast user online status
-          io.emit("userStatus", { type: "user", id: userId, status: "online" });
         }
 
-        if (investorId) {
-          socket.join(`investor-${investorId}`);
-          onlineUsers.set(`investor-${investorId}`, socket.id);
-          userTypes.set(socket.id, { type: "investor", id: investorId });
-          console.log(`Investor joined room: investor-${investorId}`);
-
-          // Broadcast investor online status
-          io.emit("userStatus", {
-            type: "investor",
-            id: investorId,
-            status: "online",
-          });
+        if (adminId) {
+          socket.join(`admin-${adminId}`);
+          console.log(`Admin joined room: admin-${adminId}`);
         }
-      });
-
-      // Handle user requesting status of another user
-      socket.on("checkUserStatus", ({ userType, userId }) => {
-        const isOnline = onlineUsers.has(`${userType}-${userId}`);
-        socket.emit("userStatusResponse", {
-          type: userType,
-          id: userId,
-          status: isOnline ? "online" : "offline",
-        });
       });
 
       socket.on("message", async (msg) => {
         try {
           console.log("Received message:", msg);
-          const projectId = Number(msg.projectId);
-          if (isNaN(projectId)) {
-            throw new Error("Invalid project ID");
-          }
-          await prisma.project.update({
-            where: { id: projectId },
-            data: {
-              invesrorId: msg.senderInvestorId
-                ? Number(msg.senderInvestorId)
-                : undefined,
-            },
-          });
 
           const messageData = {
             content: msg.content,
             senderType: msg.senderType as MessageRole,
             receiverType: msg.receiverType as MessageRole,
-            project: {
-              connect: { id: projectId },
-            },
+            ...(msg.projectId && {
+              project: { connect: { id: Number(msg.projectId) } },
+            }),
             ...(msg.senderUserId && {
               senderUser: { connect: { id: Number(msg.senderUserId) } },
             }),
-            ...(msg.senderInvestorId && {
-              senderInvestor: { connect: { id: Number(msg.senderInvestorId) } },
+            ...(msg.senderAdminId && {
+              senderAdmin: { connect: { id: Number(msg.senderAdminId) } },
             }),
             ...(msg.receiverUserId && {
               receiverUser: { connect: { id: Number(msg.receiverUserId) } },
             }),
-            ...(msg.receiverInvestorId && {
-              receiverInvestor: {
-                connect: { id: Number(msg.receiverInvestorId) },
-              },
+            ...(msg.receiverAdminId && {
+              receiverAdmin: { connect: { id: Number(msg.receiverAdminId) } },
             }),
           };
 
@@ -108,14 +107,11 @@ app
 
           const message = await prisma.message.create({
             data: messageData,
-            // Include all related data needed by the client
             include: {
               senderUser: { select: { name: true, profile_picture: true } },
-              senderInvestor: { select: { name: true, profile_picture: true } },
+              senderAdmin: { select: { name: true, profile_picture: true } },
               receiverUser: { select: { name: true, profile_picture: true } },
-              receiverInvestor: {
-                select: { name: true, profile_picture: true },
-              },
+              receiverAdmin: { select: { name: true, profile_picture: true } },
             },
           });
 
@@ -126,14 +122,10 @@ app
             sender: message.senderType.toLowerCase(),
             receiver: message.receiverType.toLowerCase(),
             createdAt: message.createdAt.toISOString(),
-            // Add any other fields your client needs
           };
 
           console.log("Sending to user room:", `user-${msg.receiverUserId}`);
-          console.log(
-            "Sending to investor room:",
-            `investor-${msg.receiverInvestorId}`
-          );
+          console.log("Sending to admin room:", `admin-${msg.receiverAdminId}`);
 
           // Send to sender as confirmation
           if (msg.senderUserId) {
@@ -142,8 +134,8 @@ app
               formattedMessage
             );
           }
-          if (msg.senderInvestorId) {
-            io.to(`investor-${msg.senderInvestorId}`).emit(
+          if (msg.senderAdminId) {
+            io.to(`admin-${msg.senderAdminId}`).emit(
               "newMessage",
               formattedMessage
             );
@@ -156,13 +148,20 @@ app
               formattedMessage
             );
           }
-          if (msg.receiverInvestorId) {
-            io.to(`investor-${msg.receiverInvestorId}`).emit(
+          if (msg.receiverAdminId) {
+            io.to(`admin-${msg.receiverAdminId}`).emit(
               "newMessage",
               formattedMessage
             );
           }
-
+          if (msg.senderAdminId) {
+            await prisma.project.update({
+              where: { id: Number(msg.projectId) },
+              data: {
+                adminId: Number(msg.senderAdminId),
+              },
+            });
+          }
           console.log("Message sent successfully:", formattedMessage);
         } catch (error) {
           console.error("Failed to save message:", error);
@@ -173,32 +172,99 @@ app
         }
       });
 
+      // Add milestone socket events
+      socket.on("milestoneRequest", async (data) => {
+        try {
+          console.log("Received milestone request:", data);
+
+          // Broadcast to all users in the project
+          if (data.projectId) {
+            socket.broadcast.emit("milestoneUpdate", {
+              type: "request",
+              projectId: data.projectId,
+              ...data,
+            });
+          }
+        } catch (error) {
+          console.error("Failed to handle milestone request:", error);
+        }
+      });
+
+      socket.on("milestoneApproval", async (data) => {
+        try {
+          console.log("Received milestone approval:", data);
+
+          // Broadcast to all users in the project
+          if (data.projectId) {
+            socket.broadcast.emit("milestoneUpdate", {
+              type: "approval",
+              projectId: data.projectId,
+              ...data,
+            });
+          }
+        } catch (error) {
+          console.error("Failed to handle milestone approval:", error);
+        }
+      });
+
+      socket.on("milestoneCompletion", async (data) => {
+        try {
+          console.log("Received milestone completion:", data);
+
+          // Broadcast to all users in the project
+          if (data.projectId) {
+            socket.broadcast.emit("milestoneUpdate", {
+              type: "completion",
+              projectId: data.projectId,
+              ...data,
+            });
+          }
+        } catch (error) {
+          console.error("Failed to handle milestone completion:", error);
+        }
+      });
+
+      socket.on("milestoneDecline", async (data) => {
+        try {
+          console.log("Received milestone decline:", data);
+
+          // Broadcast to all users in the project
+          if (data.projectId) {
+            socket.broadcast.emit("milestoneUpdate", {
+              type: "decline",
+              projectId: data.projectId,
+              ...data,
+            });
+          }
+        } catch (error) {
+          console.error("Failed to handle milestone decline:", error);
+        }
+      });
+
       socket.on("disconnect", () => {
         console.log(`${socket.id} disconnected`);
-
-        // Handle user going offline
-        if (userTypes.has(socket.id)) {
-          const { type, id } = userTypes.get(socket.id);
-          const key = `${type}-${id}`;
-
-          if (onlineUsers.get(key) === socket.id) {
-            onlineUsers.delete(key);
-
-            // Broadcast offline status
-            io.emit("userStatus", { type, id, status: "offline" });
-            console.log(`${type} ${id} is now offline`);
-          }
-
-          userTypes.delete(socket.id);
-        }
       });
     });
 
     server.listen(port, () => {
       console.log(`> Ready on http://${host}:${port}`);
     });
-  })
-  .catch((err) => {
+  } catch (err) {
     console.error("Error starting server:", err);
     process.exit(1);
-  });
+  }
+};
+
+// Handle uncaught exceptions
+process.on("uncaughtException", (error) => {
+  console.error("Uncaught Exception:", error);
+  process.exit(1);
+});
+
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("Unhandled Rejection at:", promise, "reason:", reason);
+  process.exit(1);
+});
+
+// Start the server
+startServer();

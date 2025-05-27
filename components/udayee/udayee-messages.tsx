@@ -12,11 +12,10 @@ export function UdayeeMessages() {
 
   interface Conversation {
     id: string;
-    investor: {
+    admin: {
       id: string;
       name: string;
       profile_picture: string;
-      company_name: string;
     };
     lastMessage: {
       text: string;
@@ -71,7 +70,7 @@ export function UdayeeMessages() {
         {conversations?.map((conversation) => (
           <Link
             key={conversation.id}
-            href={`/udayee/chat/${conversation.id}/${conversation.investor?.id || 'unknown'}`}
+            href={`/udayee/chat/${conversation.id}/${conversation.admin?.id || 'unknown'}`}
           >
             <Card
               className={`hover:shadow-md transition-shadow ${conversation.hasUnread ? "" : ""
@@ -86,13 +85,13 @@ export function UdayeeMessages() {
                 <div className="flex items-start gap-4">
                   <Avatar className="h-12 w-12">
                     <AvatarImage
-                      src={safeUrl(conversation?.investor?.profile_picture)}
-                      alt={conversation?.investor?.name}
+                      src={safeUrl(conversation?.admin?.profile_picture)}
+                      alt={conversation?.admin?.name}
                       className="object-cover"
                     />
                     <AvatarFallback>
-                      {conversation?.investor?.name
-                        ? conversation?.investor?.name
+                      {conversation?.admin?.name
+                        ? conversation?.admin?.name
                           .split(" ")
                           .map((n) => n[0])
                           .join("")
@@ -104,11 +103,9 @@ export function UdayeeMessages() {
                     <div className="flex justify-between items-start">
                       <div>
                         <h3 className="font-medium">
-                          {conversation.investor?.name}
+                          {conversation.admin?.name}
                         </h3>
-                        <p className="text-xs text-muted-foreground">
-                          {conversation.investor?.company_name}
-                        </p>
+                        
                       </div>
                       <div className="flex items-center gap-2">
                         {/* <span className="text-xs text-muted-foreground">

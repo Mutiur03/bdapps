@@ -1,6 +1,5 @@
-import { InvestorLayout } from "@/components/investor/investor-layout";
-import { StartupProfile } from "@/components/investor/startup-profile";
-
+import { StartupProfile } from "@/components/admin/startup-profile";
+import { AdminLayout } from "@/components/admin/admin-layout";
 export default function StartupProfilePage({
   params,
 }: {
@@ -8,9 +7,9 @@ export default function StartupProfilePage({
 }) {
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <InvestorLayout>
+      <AdminLayout>
         <StartupProfile id={params.id} />
-      </InvestorLayout>
+      </AdminLayout>
     </div>
   );
 }

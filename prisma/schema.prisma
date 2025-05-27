@@ -69,9 +69,6 @@ model Investor {
   investments         Investment[]
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
-  sentMessages        Message[]         @relation("SentMessagesInvestor")
-  receivedMessages    Message[]         @relation("ReceivedMessagesInvestor")
-  Project             Project[]
 }
 
 model Project {
@@ -91,16 +88,16 @@ model Project {
   start_date      String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
-  invesrorId      Int?
+  adminId         Int?
 
   user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  investor         Investor?         @relation(fields: [invesrorId], references: [id], onDelete: Cascade)
   projectMembers   ProjectMember[]
   projectInvestors ProjectInvestor[]
   investments      Investment[]
   milestones       Milestone[]
   documents        Documents[]
   message          Message[]
+  admin            Admin?            @relation(fields: [adminId], references: [id], onDelete: SetNull, onUpdate: Cascade)
 }
 
 model ProjectMember {
@@ -173,28 +170,52 @@ model Documents {
 model Message {
   id        Int      @id @default(autoincrement())
   content   String
-  projectId Int
+  projectId Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  senderType       MessageRole
-  senderUserId     Int?
-  senderInvestorId Int?
+  senderType    MessageRole
+  senderUserId  Int?
+  senderAdminId Int?
 
-  receiverType       MessageRole
-  receiverUserId     Int?
-  receiverInvestorId Int?
+  receiverType    MessageRole
+  receiverUserId  Int?
+  receiverAdminId Int?
 
-  senderUser   User? @relation("SentMessages", fields: [senderUserId], references: [id])
-  receiverUser User? @relation("ReceivedMessages", fields: [receiverUserId], references: [id])
+  senderUser   User? @relation("SentMessages", fields: [senderUserId], references: [id], onDelete: SetNull)
+  receiverUser User? @relation("ReceivedMessages", fields: [receiverUserId], references: [id], onDelete: SetNull)
 
-  senderInvestor   Investor? @relation("SentMessagesInvestor", fields: [senderInvestorId], references: [id])
-  receiverInvestor Investor? @relation("ReceivedMessagesInvestor", fields: [receiverInvestorId], references: [id])
+  senderAdmin   Admin? @relation("SentMessagesAdmin", fields: [senderAdminId], references: [id], onDelete: SetNull)
+  receiverAdmin Admin? @relation("ReceivedMessagesAdmin", fields: [receiverAdminId], references: [id], onDelete: SetNull)
 
-  project Project @relation(fields: [projectId], references: [id])
+  project Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
 }
 
 enum MessageRole {
   user
-  investor
+  admin
+}
+
+model Admin {
+  id               Int       @id @default(autoincrement())
+  email            String    @unique
+  password         String
+  name             String?
+  phone            String?
+  location         String?
+  bio              String?
+  profile_picture  String?
+  company          String?
+  companyRole      String?
+  experienceYears  String?
+  customSocials    Json?     @default("[]")
+  role             String    @default("admin")
+  permissions      String[]  @default([])
+  isSuperAdmin     Boolean   @default(false)
+  lastLogin        DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  sentMessages     Message[] @relation("SentMessagesAdmin")
+  receivedMessages Message[] @relation("ReceivedMessagesAdmin")
+  Project          Project[]
 }

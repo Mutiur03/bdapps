@@ -116,9 +116,41 @@ export const authOptions: NextAuthOptions = {
             role: user.role ?? "investor",
             remember: credentials.remember === "true", // Convert string to boolean
           };
-        } else {
-          throw new Error("Invalid role specified");
+        } else if (credentials.role === "admin") {
+          if (!credentials.email || !credentials.password) {
+            throw new Error("Please enter your email and password");
+          }
+          const res = await prisma.admin.findUnique({
+            where: { email: credentials.email.trim() },
+          });
+          if (!res) {
+            throw new Error("Invalid email or password");
+          }
+          const user = res as {
+            id: number;
+            email?: string | null;
+            password?: string;
+            role?: string;
+          };
+          if (!user.password) {
+            throw new Error("User password is not set");
+          }
+
+          const isPasswordValid = await bcrypt.compare(
+            credentials.password.trim(),
+            user.password
+          );
+          if (!isPasswordValid) {
+            throw new Error("Invalid password");
+          }
+          return {
+            id: String(user.id),
+            email: user.email ?? undefined,
+            role: user.role ?? "admin",
+            remember: credentials.remember === "true", // Convert string to boolean
+          };
         }
+        throw new Error("Invalid role specified");
       },
     }),
   ],

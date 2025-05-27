@@ -23,7 +23,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { HomeFooter } from "../home/home-footer";
-// import useAdminStore from "@/store/useAdminStore"; // Uncomment when admin store is created
+import useAdminStore from "@/store/useAdminStore"; // Uncomment when admin store is created
 import { signOut } from "next-auth/react";
 import { safeUrl } from "@/app/udayee/projects/[id]/manage/page";
 
@@ -35,30 +35,22 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  // const { admin, fetchAdmin } = useAdminStore(); // Uncomment when admin store is created
+  const { admin, fetchAdmin } = useAdminStore(); // Uncomment when admin store is created
 
-  // Mock admin data - replace with actual store when available
-  const admin = {
-    name: "Admin User",
-    email: "admin@uday.com",
-    profile_picture: null,
-  };
 
   useEffect(() => {
     setMounted(true);
+    async function loadAdminData() {
+      try {
+        await fetchAdmin();
+        console.log("Admin data loaded:", admin);
+        
+      } catch (err) {
+        console.error("Failed to fetch admin data:", err);
+      }
+    }
+    loadAdminData();
   }, []);
-
-  // useEffect(() => {
-  //   async function loadAdminData() {
-  //     try {
-  //       await fetchAdmin();
-  //       console.log(admin?.profile_picture);
-  //     } catch (err) {
-  //       console.error("Failed to fetch admin data:", err);
-  //     }
-  //   }
-  //   loadAdminData();
-  // }, [fetchAdmin]);
 
   const routes = [
     {

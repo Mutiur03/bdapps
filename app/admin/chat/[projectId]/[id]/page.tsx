@@ -1,8 +1,8 @@
-import { InvestorLayout } from "@/components/investor/investor-layout";
 import ChatInterface from "@/components/shared/chat-interface";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
+import { AdminLayout } from "@/components/admin/admin-layout";
 export default async function InvestorChatPage({
   params,
 }: {
@@ -19,14 +19,14 @@ export default async function InvestorChatPage({
   console.log(`User ID: ${userId}`);
 
   return (
-    <InvestorLayout>
+    <AdminLayout>
       <ChatInterface
         project={params.projectId}
         recipientId={params.id}
         recipientType="user"
-        userType="investor"
+        userType="admin"
         currentUserId={userId}
       />
-    </InvestorLayout>
+    </AdminLayout>
   );
 }

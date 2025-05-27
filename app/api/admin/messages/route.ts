@@ -1,9 +1,11 @@
-import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import { NextRequest, NextResponse } from "next/server";
+import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
-export async function GET() {
+const prisma = new PrismaClient();
+
+export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     if (!session) {
@@ -11,16 +13,16 @@ export async function GET() {
         status: 401,
       });
     }
-    const userId = (session.user as { id?: string })?.id;
+    const adminId = (session.user as { id?: string })?.id;
 
-    // Find all projects where the user has sent or received messages
+    // Find all projects where the admin has sent or received messages
     const projectsWithMessages = await prisma.project.findMany({
       where: {
         message: {
           some: {
             OR: [
-              { senderType: "user", senderUserId: Number(userId) },
-              { receiverType: "user", receiverUserId: Number(userId) },
+              { senderType: "admin", senderAdminId: Number(adminId) },
+              { receiverType: "admin", receiverAdminId: Number(adminId) },
             ],
           },
         },
@@ -46,8 +48,8 @@ export async function GET() {
         message: {
           where: {
             OR: [
-              { senderType: "user", senderUserId: Number(userId) },
-              { receiverType: "user", receiverUserId: Number(userId) },
+              { senderType: "admin", senderAdminId: Number(adminId) },
+              { receiverType: "admin", receiverAdminId: Number(adminId) },
             ],
           },
           include: {
@@ -86,7 +88,6 @@ export async function GET() {
         },
       },
     });
-    console.log(projectsWithMessages);
 
     // Transform the messages to a more usable format
     const transformedProjects = projectsWithMessages.map((project) => {
@@ -116,11 +117,10 @@ export async function GET() {
         }),
       };
     });
-    console.log(transformedProjects);
 
     return NextResponse.json(transformedProjects, { status: 200 });
   } catch (error) {
-    console.error("Error fetching projects:", error);
+    console.error("Error fetching admin conversations:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }

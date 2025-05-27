@@ -29,7 +29,7 @@ export default async function UdayeeChatPage({ params }: PageParams) {
       <ChatInterface
         recipientId={params.id}
         project={params.projectid}
-        recipientType="investor"
+        recipientType="admin"
         userType="user"
         currentUserId={userId}
       />
