@@ -18,8 +18,7 @@ export function HomeFooter() {
           <div className="lg:col-span-1">
             <Link href="/" className="flex items-center">
               <span className="text-xl sm:text-2xl font-bold text-primary">
-                Udayee
-                <span className="text-secondary">Connect</span>
+                Uday
               </span>
             </Link>
             <p className="mt-4 text-sm text-secondary">
@@ -105,7 +104,7 @@ export function HomeFooter() {
               </li>
               <li>
                 <Link
-                  href="#"
+                  href="/about"
                   className="text-secondary hover:text-background transition-colors"
                 >
                   How It Works
@@ -130,12 +129,13 @@ export function HomeFooter() {
               <li className="flex items-start">
                 <MapPin className="h-5 w-5 text-primary mr-2 mt-0.5" />
                 <span className="text-secondary">
-                  123 University Road, Dhaka, Bangladesh
+                  Khulna University of Engineering & Technology, Khulna,
+                  Bangladesh
                 </span>
               </li>
               <li className="flex items-center">
                 <Phone className="h-5 w-5 text-primary mr-2" />
-                <span className="text-secondary">+880 1712 345678</span>
+                <span className="text-secondary">+880 1879426869</span>
               </li>
               <li className="flex items-center">
                 <Mail className="h-5 w-5 text-primary mr-2" />
