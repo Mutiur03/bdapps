@@ -5,10 +5,8 @@ import { formatDistanceToNow } from "date-fns";
 import { io, Socket } from "socket.io-client";
 import axios from "axios";
 import { safeUrl } from "@/app/udayee/projects/[id]/manage/page";
-// Use a ref to store the socket instance to prevent recreating it on rerenders
 let socketInstance: Socket | null = null;
 
-// Initialize the socket only on the client side
 if (typeof window !== "undefined" && !socketInstance) {
   socketInstance = io({
     reconnection: true,
@@ -44,6 +42,7 @@ interface CurrentMilestone {
   amount: number;
   status: string;
   progress?: number;
+  deadlineAt?: string;
 }
 
 interface ChatInterfaceProps {
@@ -152,57 +151,57 @@ const MilestoneRequestForm = ({
   );
 };
 
-const MilestoneRequestList = ({
-  requests,
-  onApprove,
-  isAdmin
-}: {
-  requests: MilestoneRequest[];
-  onApprove: (id: number) => void;
-  isAdmin: boolean;
-}) => {
-  if (requests.length === 0) return null;
+// const MilestoneRequestList = ({
+//   requests,
+//   onApprove,
+//   isAdmin
+// }: {
+//   requests: MilestoneRequest[];
+//   onApprove: (id: number) => void;
+//   isAdmin: boolean;
+// }) => {
+//   if (requests.length === 0) return null;
 
-  return (
-    <div className="border-b border-border p-4 bg-accent/30">
-      <h4 className="font-medium mb-3 text-sm text-muted-foreground">
-        Milestone Requests
-      </h4>
-      <div className="space-y-2">
-        {requests.map((request) => (
-          <div
-            key={request.id}
-            className="bg-background p-3 rounded-md border border-border text-sm"
-          >
-            <div className="flex justify-between items-start mb-2">
-              <p className="font-medium">${request.amount}</p>
-              <span className="text-xs text-muted-foreground">
-                {formatDistanceToNow(new Date(request.createdAt), { addSuffix: true })}
-              </span>
-            </div>
-            <p className="text-muted-foreground mb-2">{request.description}</p>
-            <div className="flex justify-between items-center">
-              <span className={`text-xs px-2 py-1 rounded-full ${request.status === 'PENDING'
-                ? 'bg-yellow-100 text-yellow-800'
-                : 'bg-green-100 text-green-800'
-                }`}>
-                {request.status}
-              </span>
-              {isAdmin && request.status === 'PENDING' && (
-                <button
-                  onClick={() => onApprove(request.id)}
-                  className="text-xs px-3 py-1 bg-primary text-primary-foreground rounded-md hover:opacity-90"
-                >
-                  Approve
-                </button>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
+//   return (
+//     <div className="border-b border-border p-4 bg-accent/30">
+//       <h4 className="font-medium mb-3 text-sm text-muted-foreground">
+//         Milestone Requests
+//       </h4>
+//       <div className="space-y-2">
+//         {requests.map((request) => (
+//           <div
+//             key={request.id}
+//             className="bg-background p-3 rounded-md border border-border text-sm"
+//           >
+//             <div className="flex justify-between items-start mb-2">
+//               <p className="font-medium">${request.amount}</p>
+//               <span className="text-xs text-muted-foreground">
+//                 {formatDistanceToNow(new Date(request.createdAt), { addSuffix: true })}
+//               </span>
+//             </div>
+//             <p className="text-muted-foreground mb-2">{request.description}</p>
+//             <div className="flex justify-between items-center">
+//               <span className={`text-xs px-2 py-1 rounded-full ${request.status === 'PENDING'
+//                 ? 'bg-yellow-100 text-yellow-800'
+//                 : 'bg-green-100 text-green-800'
+//                 }`}>
+//                 {request.status}
+//               </span>
+//               {isAdmin && request.status === 'PENDING' && (
+//                 <button
+//                   onClick={() => onApprove(request.id)}
+//                   className="text-xs px-3 py-1 bg-primary text-primary-foreground rounded-md hover:opacity-90"
+//                 >
+//                   Approve
+//                 </button>
+//               )}
+//             </div>
+//           </div>
+//         ))}
+//       </div>
+//     </div>
+//   );
+// };
 
 const MilestoneDetailModal = ({
   milestone,
@@ -218,20 +217,32 @@ const MilestoneDetailModal = ({
   onClose: () => void;
   userType: string;
   onComplete?: (id: number) => void;
-  onApprove?: (id: number) => void;
+  onApprove?: (id: number, deadline?: string) => void;
   onDecline?: (id: number, reason?: string) => void;
 }) => {
   const [declineReason, setDeclineReason] = useState("");
   const [showDeclineInput, setShowDeclineInput] = useState(false);
+  const [deadline, setDeadline] = useState("");
+  const [showApprovalForm, setShowApprovalForm] = useState(false);
+
+  // Reset form states when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      setDeclineReason("");
+      setShowDeclineInput(false);
+      setDeadline("");
+      setShowApprovalForm(false);
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'pending':
-      case 'requested':
+      // case 'pending':
+      case 'planned':
         return 'bg-yellow-100 text-yellow-800';
-      case 'in_progress':
+      case 'in-progress':
         return 'bg-blue-100 text-blue-800';
       case 'completed':
         return 'bg-green-100 text-green-800';
@@ -279,7 +290,20 @@ const MilestoneDetailModal = ({
             </div>
           </div>
 
-          {milestone.progress !== undefined && (
+          {milestone.deadlineAt && (
+            <div>
+              <label className="block text-sm font-medium mb-1">Deadline</label>
+              <p className="text-sm bg-muted p-2 rounded">
+                {new Date(milestone.deadlineAt).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })}
+              </p>
+            </div>
+          )}
+
+          {/* {milestone.progress !== undefined && (
             <div>
               <label className="block text-sm font-medium mb-1">Progress</label>
               <div className="flex items-center gap-2">
@@ -292,7 +316,7 @@ const MilestoneDetailModal = ({
                 <span className="text-xs text-muted-foreground">{milestone.progress}%</span>
               </div>
             </div>
-          )}
+          )} */}
 
           {showDeclineInput && (
             <div>
@@ -307,23 +331,54 @@ const MilestoneDetailModal = ({
             </div>
           )}
 
+          {showApprovalForm && (
+            <div>
+              <label className="block text-sm font-medium mb-1">Set Deadline *</label>
+              <input
+                type="date"
+                value={deadline}
+                onChange={(e) => setDeadline(e.target.value)}
+                className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+                min={new Date().toISOString().split('T')[0]}
+                required
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Please set a deadline for this milestone approval
+              </p>
+            </div>
+          )}
+
           <div className="flex justify-end gap-2 mt-6">
             <button
-              onClick={onClose}
+              onClick={() => {
+                setShowApprovalForm(false);
+                setShowDeclineInput(false);
+                setDeadline("");
+                setDeclineReason("");
+                onClose();
+              }}
               className="px-4 py-2 border border-input rounded-md hover:bg-accent"
             >
-              Close
+              {showApprovalForm || showDeclineInput ? 'Cancel' : 'Close'}
             </button>
-            {userType === "admin" && milestone.status === "requested" && (
+            {userType === "admin" && milestone.status === "planned" && (
               <>
-                {!showDeclineInput ? (
-                  <button
-                    onClick={() => setShowDeclineInput(true)}
-                    className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-                  >
-                    Decline
-                  </button>
-                ) : (
+                {!showDeclineInput && !showApprovalForm ? (
+                  <>
+                    <button
+                      onClick={() => setShowDeclineInput(true)}
+                      className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                    >
+                      Decline
+                    </button>
+                    <button
+                      onClick={() => setShowApprovalForm(true)}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    >
+                      Approve
+                    </button>
+                  </>
+                ) : showDeclineInput ? (
                   <button
                     onClick={() => {
                       onDecline && onDecline(milestone.id, declineReason);
@@ -335,21 +390,27 @@ const MilestoneDetailModal = ({
                   >
                     Confirm Decline
                   </button>
-                )}
-                {onApprove && (
+                ) : showApprovalForm ? (
                   <button
                     onClick={() => {
-                      onApprove(milestone.id);
+                      if (!deadline || deadline.trim() === "") {
+                        alert("Please set a deadline for this milestone before approving");
+                        return;
+                      }
+                      onApprove && onApprove(milestone.id, deadline);
+                      setShowApprovalForm(false);
+                      setDeadline("");
                       onClose();
                     }}
                     className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    disabled={!deadline || deadline.trim() === ""}
                   >
-                    Approve
+                    Confirm Approval
                   </button>
-                )}
+                ) : null}
               </>
             )}
-            {userType === "admin" && milestone.status === "in_progress" && onComplete && (
+            {userType === "admin" && milestone.status === "in-progress" && onComplete && (
               <button
                 onClick={() => {
                   onComplete(milestone.id);
@@ -380,10 +441,10 @@ const CurrentMilestoneDisplay = ({
 }) => {
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'pending':
-      case 'requested':
+      // case 'pending':
+      case 'planned':
         return 'bg-yellow-100 text-yellow-800';
-      case 'in_progress':
+      case 'in-progress':
         return 'bg-blue-100 text-blue-800';
       case 'completed':
         return 'bg-green-100 text-green-800';
@@ -762,11 +823,51 @@ const ChatInterface = ({
       senderAdminId: userType === "admin" ? Number(currentUserId) : null,
       receiverUserId: recipientType === "user" ? Number(recipientId) : null,
       receiverAdminId: recipientType === "admin" ? Number(recipientId) : null,
+      timestamp: new Date().toISOString()
     };
     console.log("Sending message data:", messageData);
 
     // Emit message via socket
     socketInstance?.emit("message", messageData);
+
+    // Emit messageListUpdate for real-time admin messages page updates
+    const messageListUpdateData = {
+      projectId: project,
+      senderUserId: userType === "user" ? Number(currentUserId) : null,
+      senderAdminId: userType === "admin" ? Number(currentUserId) : null,
+      receiverUserId: recipientType === "user" ? Number(recipientId) : null,
+      receiverAdminId: recipientType === "admin" ? Number(recipientId) : null,
+      senderType: userType,
+      receiverType: recipientType,
+      lastMessage: {
+        text: text,
+        timestamp: new Date().toISOString(),
+        isRead: false,
+        sentByMe: false
+      },
+      project: {
+        title: "Project"
+      },
+      senderUser: userType === "user" ? {
+        id: Number(currentUserId),
+        name: "Current User", // This should be the actual user's name
+        profile_picture: ""
+      } : null,
+      user: userType === "user" ? {
+        id: Number(currentUserId),
+        name: "Current User",
+        profile_picture: ""
+      } : null
+    };
+
+    console.log("Emitting messageListUpdate:", messageListUpdateData);
+    socketInstance?.emit("messageListUpdate", messageListUpdateData);
+
+    // Also emit newMessage event for additional coverage
+    socketInstance?.emit("newMessage", {
+      ...messageData,
+      content: text
+    });
   };
 
   useEffect(() => {
@@ -787,6 +888,48 @@ const ChatInterface = ({
     fetchMilestoneRequests();
   }, [project]);
 
+  useEffect(() => {
+    const fetchMilestoneStatus = async () => {
+      try {
+        // Fetch all milestones for the project
+        const res = await axios.get("/api/milestones", {
+          params: { projectId: project },
+        });
+        const milestones = res.data;
+
+        // Check for incomplete milestones (not completed and not declined)
+        const incompleteMilestones = milestones.filter((m: any) =>
+          m.status !== 'completed' && m.status !== 'declined'
+        );
+
+        setHasIncompleteMilestones(incompleteMilestones.length > 0);
+
+        // Find the latest pending or in-progress milestone (exclude declined)
+        const activeMilestone = milestones
+          .filter((m: any) => m.status === 'planned' || m.status === 'in-progress')
+          .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
+
+        if (activeMilestone) {
+          setCurrentMilestone({
+            id: activeMilestone.id,
+            title: activeMilestone.title,
+            description: activeMilestone.description,
+            amount: activeMilestone.amount,
+            status: activeMilestone.status,
+            progress: activeMilestone.progress,
+            deadlineAt: activeMilestone.deadlineAt,
+          });
+        } else {
+          setCurrentMilestone(null);
+        }
+      } catch (error) {
+        console.error("Error fetching milestone status:", error);
+      }
+    };
+
+    fetchMilestoneStatus();
+  }, [project, milestoneRequests]);
+
   // Add helper function to refresh milestone data
   const refreshMilestoneData = async () => {
     try {
@@ -805,16 +948,16 @@ const ChatInterface = ({
       });
       const milestones = res.data;
 
-      // Update current milestone state
+      // Update current milestone state (exclude declined milestones)
       const incompleteMilestones = milestones.filter((m: any) =>
-        m.status !== 'completed'
+        m.status !== 'completed' && m.status !== 'declined'
       );
 
       setHasIncompleteMilestones(incompleteMilestones.length > 0);
 
       // Find the latest pending or in-progress milestone
       const activeMilestone = milestones
-        .filter((m: any) => m.status === 'requested' || m.status === 'in_progress')
+        .filter((m: any) => m.status === 'planned' || m.status === 'in-progress')
         .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
 
       if (activeMilestone) {
@@ -825,6 +968,7 @@ const ChatInterface = ({
           amount: activeMilestone.amount,
           status: activeMilestone.status,
           progress: activeMilestone.progress,
+          deadlineAt: activeMilestone.deadlineAt,
         });
       } else {
         setCurrentMilestone(null);
@@ -844,7 +988,6 @@ const ChatInterface = ({
         userId: currentUserId,
       });
 
-      // Emit socket event for real-time update
       if (socketInstance) {
         socketInstance.emit("milestoneRequest", {
           projectId: project,
@@ -854,7 +997,6 @@ const ChatInterface = ({
         });
       }
 
-      // Refresh milestone requests
       refreshMilestoneData();
     } catch (error) {
       console.error("Error creating milestone request:", error);
@@ -862,20 +1004,21 @@ const ChatInterface = ({
     }
   };
 
-  const handleApproveMilestone = async (requestId: number) => {
+  const handleApproveMilestone = async (requestId: number, deadline?: string) => {
     try {
       await axios.post("/api/milestones", {
         action: "approve",
         milestoneId: requestId,
         adminId: currentUserId,
+        deadline: deadline,
       });
 
-      // Emit socket event for real-time update
       if (socketInstance) {
         socketInstance.emit("milestoneApproval", {
           projectId: project,
           milestoneId: requestId,
           adminId: currentUserId,
+          deadline: deadline,
         });
       }
 
@@ -948,16 +1091,16 @@ const ChatInterface = ({
         });
         const milestones = res.data;
 
-        // Check for incomplete milestones (not completed)
+        // Check for incomplete milestones (not completed and not declined)
         const incompleteMilestones = milestones.filter((m: any) =>
-          m.status !== 'completed'
+          m.status !== 'completed' && m.status !== 'declined'
         );
 
         setHasIncompleteMilestones(incompleteMilestones.length > 0);
 
-        // Find the latest pending or in-progress milestone
+        // Find the latest pending or in-progress milestone (exclude declined)
         const activeMilestone = milestones
-          .filter((m: any) => m.status === 'requested' || m.status === 'in_progress')
+          .filter((m: any) => m.status === 'planned' || m.status === 'in-progress')
           .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
 
         if (activeMilestone) {
@@ -968,6 +1111,7 @@ const ChatInterface = ({
             amount: activeMilestone.amount,
             status: activeMilestone.status,
             progress: activeMilestone.progress,
+            deadlineAt: activeMilestone.deadlineAt,
           });
         } else {
           setCurrentMilestone(null);
@@ -979,6 +1123,55 @@ const ChatInterface = ({
 
     fetchMilestoneStatus();
   }, [project, milestoneRequests]);
+
+  // Mark messages as read when chat interface is opened
+  useEffect(() => {
+    const markMessagesAsRead = async () => {
+      if (!currentUserId || !project) return;
+
+      try {
+        // Mark messages as read via API
+        await axios.post('/api/messages/mark-read', {
+          projectId: project,
+          userType: userType
+        });
+
+        // Also emit socket event for real-time updates with correct ID
+        if (socketInstance && socketInstance.connected) {
+          const markReadData = userType === 'user'
+            ? { projectId: project, userId: currentUserId }
+            : { projectId: project, adminId: currentUserId };
+
+          console.log("Emitting markMessagesRead with data:", markReadData);
+          socketInstance.emit('markMessagesRead', markReadData);
+        }
+      } catch (error) {
+        console.error('Error marking messages as read:', error);
+      }
+    };
+
+    // Mark as read when component mounts and when messages are loaded
+    if (!isLoading && messages.length > 0) {
+      markMessagesAsRead();
+    }
+  }, [isLoading, messages.length, currentUserId, project, userType]);
+
+  // Handle read status updates from socket
+  useEffect(() => {
+    if (!socketInstance) return;
+
+    const handleMessagesMarkedRead = (data: any) => {
+      console.log("Messages marked as read:", data);
+      // This is mainly for the sender to know their messages were read
+      // We could add read receipts or other UI updates here if needed
+    };
+
+    socketInstance.on("messagesMarkedRead", handleMessagesMarkedRead);
+
+    return () => {
+      socketInstance?.off("messagesMarkedRead", handleMessagesMarkedRead);
+    };
+  }, []);
 
   if (isLoading) {
     return (
@@ -1030,8 +1223,6 @@ const ChatInterface = ({
           onClick={() => setShowMilestoneDetail(true)}
         />
       )}
-
-      {/* Remove the MilestoneRequestList component completely */}
 
       <div
         ref={messageContainerRef}

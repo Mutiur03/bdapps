@@ -1,9 +1,10 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
-export async function GET() {
+// New code for user messages API endpoint
+export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     if (!session) {
@@ -13,30 +14,39 @@ export async function GET() {
     }
     const userId = (session.user as { id?: string })?.id;
 
-    // Find all projects where the user has sent or received messages
-    const projectsWithMessages = await prisma.project.findMany({
+    // Get all projects where this user has exchanged messages (either as sender or receiver)
+    const conversations = await prisma.project.findMany({
       where: {
-        message: {
-          some: {
-            OR: [
-              { senderType: "user", senderUserId: Number(userId) },
-              { receiverType: "user", receiverUserId: Number(userId) },
-            ],
+        OR: [
+          // Projects owned by this user that have messages
+          {
+            userId: Number(userId),
+            message: {
+              some: {},
+            },
           },
-        },
+          // Projects where this user has sent or received messages
+          {
+            message: {
+              some: {
+                OR: [
+                  { senderUserId: Number(userId) },
+                  { receiverUserId: Number(userId) },
+                ],
+              },
+            },
+          },
+        ],
       },
       include: {
-        user: {
+        admin: {
           select: {
             id: true,
             name: true,
-            university_email: true,
             profile_picture: true,
-            university: true,
-            department: true,
           },
         },
-        admin: {
+        user: {
           select: {
             id: true,
             name: true,
@@ -46,83 +56,95 @@ export async function GET() {
         message: {
           where: {
             OR: [
-              { senderType: "user", senderUserId: Number(userId) },
-              { receiverType: "user", receiverUserId: Number(userId) },
+              { senderUserId: Number(userId) },
+              { receiverUserId: Number(userId) },
+              { senderAdminId: { not: null } },
+              { receiverAdminId: { not: null } },
             ],
-          },
-          include: {
-            senderUser: {
-              select: {
-                id: true,
-                name: true,
-                profile_picture: true,
-              },
-            },
-            receiverUser: {
-              select: {
-                id: true,
-                name: true,
-                profile_picture: true,
-              },
-            },
-            senderAdmin: {
-              select: {
-                id: true,
-                name: true,
-                profile_picture: true,
-              },
-            },
-            receiverAdmin: {
-              select: {
-                id: true,
-                name: true,
-                profile_picture: true,
-              },
-            },
           },
           orderBy: {
             createdAt: "desc",
           },
+          take: 1,
+          include: {
+            senderUser: { select: { name: true } },
+            senderAdmin: { select: { name: true } },
+          },
         },
       },
     });
-    console.log(projectsWithMessages);
 
-    // Transform the messages to a more usable format
-    const transformedProjects = projectsWithMessages.map((project) => {
-      return {
-        ...project,
-        message: project.message.map((msg) => {
-          const sender =
-            msg.senderType === "user" ? msg.senderUser : msg.senderAdmin;
-          const receiver =
-            msg.receiverType === "user" ? msg.receiverUser : msg.receiverAdmin;
+    // Format conversations with unread counts and last messages
+    const formattedConversations = await Promise.all(
+      conversations.map(async (project) => {
+        // Get unread message count for this user
+        const unreadCount = await prisma.message.count({
+          where: {
+            projectId: project.id,
+            receiverUserId: Number(userId),
+            isRead: false,
+          },
+        });
 
-          return {
-            ...msg,
-            sender: {
-              id: sender?.id,
-              name: sender?.name,
-              profile_picture: sender?.profile_picture,
-              type: msg.senderType,
-            },
-            receiver: {
-              id: receiver?.id,
-              name: receiver?.name,
-              profile_picture: receiver?.profile_picture,
-              type: msg.receiverType,
-            },
-          };
-        }),
-      };
+        const lastMessage = project.message[0];
+
+        // Determine the admin - could be from project.admin or from message senders
+        let admin = project.admin;
+
+        // If no admin assigned to project, try to find admin from messages
+        if (!admin && lastMessage) {
+          if (lastMessage.senderAdmin) {
+            admin = {
+              id: lastMessage.senderAdmin.id,
+              name: lastMessage.senderAdmin.name,
+              profile_picture: null,
+            };
+          }
+        }
+
+        return {
+          id: project.id.toString(),
+          admin: admin
+            ? {
+                id: admin.id.toString(),
+                name: admin.name || "Admin",
+                profile_picture: admin.profile_picture || "",
+              }
+            : {
+                id: "unknown",
+                name: "Admin",
+                profile_picture: "",
+              },
+          lastMessage: lastMessage
+            ? {
+                text: lastMessage.content,
+                timestamp: lastMessage.createdAt.toISOString(),
+                isRead: lastMessage.isRead,
+                sentByMe: lastMessage.senderUserId === Number(userId),
+              }
+            : null,
+          hasUnread: unreadCount > 0,
+          unreadCount: unreadCount,
+        };
+      })
+    );
+
+    // Sort by last message timestamp
+    formattedConversations.sort((a, b) => {
+      const aTime = a.lastMessage
+        ? new Date(a.lastMessage.timestamp).getTime()
+        : 0;
+      const bTime = b.lastMessage
+        ? new Date(b.lastMessage.timestamp).getTime()
+        : 0;
+      return bTime - aTime;
     });
-    console.log(transformedProjects);
 
-    return NextResponse.json(transformedProjects, { status: 200 });
+    return NextResponse.json(formattedConversations);
   } catch (error) {
-    console.error("Error fetching projects:", error);
+    console.error("Error fetching user conversations:", error);
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      { error: "Failed to fetch conversations" },
       { status: 500 }
     );
   }

@@ -40,6 +40,7 @@ export default withAuth(
     callbacks: {
       authorized: ({ token, req }) => {
         const { pathname } = req.nextUrl;
+
         if (
           pathname === "/" ||
           pathname === "/about" ||
@@ -76,7 +77,15 @@ export default withAuth(
 );
 export const config = {
   matcher: [
-    "/((?!api|_next|static|public|favicon.ico|.*\\.(?:jpg|jpeg|gif|png|svg|ico|webp|woff|woff2|ttf|otf|css|js)).*)",
+    "/",
+    "/about",
+    "/contact",
+    "/signin",
+    "/signup",
+    "/onboarding",
+    "/udayee/:path*",
+    "/investor/:path*",
+    "/admin/:path*",
   ],
 };
 // export const config = {

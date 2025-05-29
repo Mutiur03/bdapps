@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import prisma from "@/lib/prisma";
 
 export async function GET(request: NextRequest) {
   try {
@@ -18,11 +18,10 @@ export async function GET(request: NextRequest) {
 
     switch (action) {
       case "requests":
-        // Get milestone requests (requested status)
         const requestedMilestones = await prisma.milestone.findMany({
           where: {
             projectId: parseInt(projectId),
-            status: "requested",
+            status: "planned",
           },
           include: {
             project: {
@@ -54,11 +53,10 @@ export async function GET(request: NextRequest) {
         );
 
       case "user":
-        // Get user milestones (requested status)
         const userMilestones = await prisma.milestone.findMany({
           where: {
             projectId: parseInt(projectId),
-            status: "requested",
+            status: "planned",
           },
           include: {
             project: {
@@ -84,7 +82,7 @@ export async function GET(request: NextRequest) {
             description: milestone.description,
             amount: milestone.amount,
             status:
-              milestone.status === "requested"
+              milestone.status === "planned"
                 ? "PENDING"
                 : milestone.status.toUpperCase(),
             createdAt: milestone.createdAt.toISOString(),
@@ -154,7 +152,6 @@ async function createMilestone(body: any) {
     );
   }
 
-  // Verify that the project exists and the user has access to it
   const project = await prisma.project.findUnique({
     where: { id: parseInt(projectId) },
     include: {
@@ -168,7 +165,6 @@ async function createMilestone(body: any) {
     return NextResponse.json({ error: "Project not found" }, { status: 404 });
   }
 
-  // Check if user is project owner or member
   const isOwner = project.userId === parseInt(userId);
   const isMember = project.projectMembers.length > 0;
 
@@ -184,7 +180,7 @@ async function createMilestone(body: any) {
       title: `Milestone Request - ${description.substring(0, 50)}...`,
       description,
       amount: parseFloat(amount),
-      status: "requested",
+      status: "planned",
       projectId: parseInt(projectId),
       plannedAt: new Date().toISOString(),
     },
@@ -217,7 +213,7 @@ async function createMilestone(body: any) {
 }
 
 async function approveMilestone(body: any) {
-  const { milestoneId, adminId } = body;
+  const { milestoneId, adminId, deadline } = body;
 
   if (!adminId || !milestoneId) {
     return NextResponse.json(
@@ -226,7 +222,13 @@ async function approveMilestone(body: any) {
     );
   }
 
-  // Verify the milestone exists and is in requested status
+  if (!deadline) {
+    return NextResponse.json(
+      { error: "Deadline is required for milestone approval" },
+      { status: 400 }
+    );
+  }
+
   const milestone = await prisma.milestone.findUnique({
     where: { id: parseInt(milestoneId) },
     include: {
@@ -247,42 +249,86 @@ async function approveMilestone(body: any) {
     return NextResponse.json({ error: "Milestone not found" }, { status: 404 });
   }
 
-  if (milestone.status !== "requested") {
+  if (milestone.status !== "planned") {
     return NextResponse.json(
       { error: "Milestone is not in requested status" },
       { status: 400 }
     );
   }
 
-  // Update milestone status to approved/in_progress
-  const updatedMilestone = await prisma.milestone.update({
-    where: { id: parseInt(milestoneId) },
-    data: {
-      status: "in_progress",
-      updatedAt: new Date(),
-    },
-    include: {
-      project: {
-        include: {
-          user: {
-            select: {
-              id: true,
-              name: true,
-              profile_picture: true,
+  // Start transaction to update all related entities
+  const result = await prisma.$transaction(async (tx) => {
+    // Update milestone status
+    const updatedMilestone = await tx.milestone.update({
+      where: { id: parseInt(milestoneId) },
+      data: {
+        status: "in-progress",
+        deadlineAt: deadline,
+        raised_amount: milestone.amount, // Set raised amount to milestone amount
+        updatedAt: new Date(),
+      },
+      include: {
+        project: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                profile_picture: true,
+              },
             },
           },
         },
       },
-    },
+    });
+
+    // Update project raised amount
+    await tx.project.update({
+      where: { id: milestone.project.id },
+      data: {
+        raised_amount:
+          (milestone.project.raised_amount || 0) + milestone.amount,
+      },
+    });
+
+    // Update category fund if category exists
+    if (milestone.project.categoryId) {
+      await tx.category.update({
+        where: { id: milestone.project.categoryId },
+        data: {
+          fund: {
+            decrement: milestone.amount,
+          },
+        },
+      });
+    }
+
+    // Update admin released amount
+    const admin = await tx.admin.findUnique({
+      where: { id: Number(adminId) },
+    });
+
+    if (admin) {
+      await tx.admin.update({
+        where: { id: Number(adminId) },
+        data: {
+          released_amount: (admin.released_amount || 0) + milestone.amount,
+        },
+      });
+    }
+
+    return updatedMilestone;
   });
 
   return NextResponse.json({
-    id: updatedMilestone.id,
-    description: updatedMilestone.description,
-    amount: updatedMilestone.amount,
+    id: result.id,
+    title: result.title,
+    description: result.description,
+    amount: result.amount,
     status: "APPROVED",
-    createdAt: updatedMilestone.createdAt.toISOString(),
-    userId: updatedMilestone.project.user.id,
+    deadlineAt: result.deadlineAt,
+    createdAt: result.createdAt.toISOString(),
+    userId: result.project.user.id,
   });
 }
 
@@ -317,7 +363,7 @@ async function declineMilestone(body: any) {
     return NextResponse.json({ error: "Milestone not found" }, { status: 404 });
   }
 
-  if (milestone.status !== "requested") {
+  if (milestone.status !== "planned") {
     return NextResponse.json(
       { error: "Milestone is not in requested status" },
       { status: 400 }
@@ -390,14 +436,13 @@ async function completeMilestone(body: any) {
     return NextResponse.json({ error: "Milestone not found" }, { status: 404 });
   }
 
-  if (milestone.status !== "in_progress") {
+  if (milestone.status !== "in-progress") {
     return NextResponse.json(
       { error: "Milestone is not in progress" },
       { status: 400 }
     );
   }
 
-  // Update milestone status to completed
   const updatedMilestone = await prisma.milestone.update({
     where: { id: parseInt(milestoneId) },
     data: {
@@ -525,7 +570,7 @@ async function deleteMilestone(body: any) {
   }
 
   // Only allow deletion of requested or declined milestones
-  if (!["requested", "declined"].includes(milestone.status)) {
+  if (!["planned", "declined"].includes(milestone.status)) {
     return NextResponse.json(
       { error: "Cannot delete milestone in current status" },
       { status: 400 }

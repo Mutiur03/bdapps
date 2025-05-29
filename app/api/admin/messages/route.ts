@@ -1,44 +1,37 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
-const prisma = new PrismaClient();
-
-export async function GET(req: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session) {
-      return new NextResponse(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-      });
-    }
-    const adminId = (session.user as { id?: string })?.id;
 
-    // Find all projects where the admin has sent or received messages
-    const projectsWithMessages = await prisma.project.findMany({
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Get current admin ID
+    const currentAdminId = Number((session.user as { id?: string })?.id);
+
+    // Get all projects where this admin has exchanged messages
+    const conversations = await prisma.project.findMany({
       where: {
-        message: {
-          some: {
-            OR: [
-              { senderType: "admin", senderAdminId: Number(adminId) },
-              { receiverType: "admin", receiverAdminId: Number(adminId) },
-            ],
+        OR: [
+          {
+            message: {
+              some: {
+                OR: [
+                  { senderAdminId: currentAdminId },
+                  { receiverAdminId: currentAdminId },
+                ],
+              },
+            },
           },
-        },
+        ],
       },
       include: {
         user: {
-          select: {
-            id: true,
-            name: true,
-            university_email: true,
-            profile_picture: true,
-            university: true,
-            department: true,
-          },
-        },
-        admin: {
           select: {
             id: true,
             name: true,
@@ -48,81 +41,77 @@ export async function GET(req: NextRequest) {
         message: {
           where: {
             OR: [
-              { senderType: "admin", senderAdminId: Number(adminId) },
-              { receiverType: "admin", receiverAdminId: Number(adminId) },
+              { senderAdminId: currentAdminId },
+              { receiverAdminId: currentAdminId },
+              { senderUserId: { not: null } },
+              { receiverUserId: { not: null } },
             ],
-          },
-          include: {
-            senderUser: {
-              select: {
-                id: true,
-                name: true,
-                profile_picture: true,
-              },
-            },
-            receiverUser: {
-              select: {
-                id: true,
-                name: true,
-                profile_picture: true,
-              },
-            },
-            senderAdmin: {
-              select: {
-                id: true,
-                name: true,
-                profile_picture: true,
-              },
-            },
-            receiverAdmin: {
-              select: {
-                id: true,
-                name: true,
-                profile_picture: true,
-              },
-            },
           },
           orderBy: {
             createdAt: "desc",
+          },
+          take: 1,
+          include: {
+            senderUser: { select: { name: true } },
+            senderAdmin: { select: { name: true } },
           },
         },
       },
     });
 
-    // Transform the messages to a more usable format
-    const transformedProjects = projectsWithMessages.map((project) => {
-      return {
-        ...project,
-        message: project.message.map((msg) => {
-          const sender =
-            msg.senderType === "user" ? msg.senderUser : msg.senderAdmin;
-          const receiver =
-            msg.receiverType === "user" ? msg.receiverUser : msg.receiverAdmin;
+    // Format conversations with unread counts and last messages
+    const formattedConversations = await Promise.all(
+      conversations.map(async (project) => {
+        // Get unread message count for this admin
+        const unreadCount = await prisma.message.count({
+          where: {
+            projectId: project.id,
+            receiverAdminId: currentAdminId,
+            isRead: false,
+          },
+        });
 
-          return {
-            ...msg,
-            sender: {
-              id: sender?.id,
-              name: sender?.name,
-              profile_picture: sender?.profile_picture,
-              type: msg.senderType,
-            },
-            receiver: {
-              id: receiver?.id,
-              name: receiver?.name,
-              profile_picture: receiver?.profile_picture,
-              type: msg.receiverType,
-            },
-          };
-        }),
-      };
+        const lastMessage = project.message[0];
+
+        return {
+          id: project.id.toString(),
+          title: project.title,
+          user: {
+            id: project.user.id.toString(),
+            name: project.user.name || "Unknown User",
+            startup: project.title,
+            profile_picture: project.user.profile_picture || "",
+          },
+          lastMessage: lastMessage
+            ? {
+                text: lastMessage.content,
+                timestamp: lastMessage.createdAt.toISOString(),
+                isRead: lastMessage.isRead,
+                sentByMe: lastMessage.senderAdminId === currentAdminId,
+              }
+            : null,
+          hasUnread: unreadCount > 0,
+          unreadCount: unreadCount,
+        };
+      })
+    );
+
+    // Sort by last message timestamp
+    formattedConversations.sort((a, b) => {
+      const aTime = a.lastMessage
+        ? new Date(a.lastMessage.timestamp).getTime()
+        : 0;
+      const bTime = b.lastMessage
+        ? new Date(b.lastMessage.timestamp).getTime()
+        : 0;
+      return bTime - aTime;
     });
 
-    return NextResponse.json(transformedProjects, { status: 200 });
+    return NextResponse.json(formattedConversations);
   } catch (error) {
     console.error("Error fetching admin conversations:", error);
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      { error: "Failed to fetch conversations" },
       { status: 500 }
     );
   }

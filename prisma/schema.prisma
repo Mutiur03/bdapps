@@ -76,7 +76,6 @@ model Project {
   userId          Int
   title           String
   description     String
-  category        String
   budget          Float
   raised_amount   Float?
   status          String   @default("draft")
@@ -98,6 +97,8 @@ model Project {
   documents        Documents[]
   message          Message[]
   admin            Admin?            @relation(fields: [adminId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  category         Category?         @relation(fields: [categoryId], references: [id])
+  categoryId       Int?
 }
 
 model ProjectMember {
@@ -173,6 +174,7 @@ model Message {
   projectId Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  isRead    Boolean  @default(false)
 
   senderType    MessageRole
   senderUserId  Int?
@@ -215,7 +217,18 @@ model Admin {
   lastLogin        DateTime?
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
+  released_amount  Int?      @default(0)
   sentMessages     Message[] @relation("SentMessagesAdmin")
   receivedMessages Message[] @relation("ReceivedMessagesAdmin")
   Project          Project[]
+}
+
+model Category {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  fund      Int?     @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projects Project[]
 }

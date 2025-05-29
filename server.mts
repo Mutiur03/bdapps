@@ -83,6 +83,7 @@ const startServer = async () => {
             content: msg.content,
             senderType: msg.senderType as MessageRole,
             receiverType: msg.receiverType as MessageRole,
+            isRead: false,
             ...(msg.projectId && {
               project: { connect: { id: Number(msg.projectId) } },
             }),
@@ -100,20 +101,43 @@ const startServer = async () => {
             }),
           };
 
-          console.log(
-            "Creating message with data:",
-            JSON.stringify(messageData, null, 2)
-          );
-
           const message = await prisma.message.create({
             data: messageData,
             include: {
-              senderUser: { select: { name: true, profile_picture: true } },
-              senderAdmin: { select: { name: true, profile_picture: true } },
+              senderUser: {
+                select: { id: true, name: true, profile_picture: true },
+              },
+              senderAdmin: {
+                select: { id: true, name: true, profile_picture: true },
+              },
               receiverUser: { select: { name: true, profile_picture: true } },
               receiverAdmin: { select: { name: true, profile_picture: true } },
+              project: { select: { id: true, title: true } },
             },
           });
+
+          // Update project.adminId and status for any admin involved in the conversation
+          if (msg.senderAdminId || msg.receiverAdminId) {
+            // First get the current project status
+            const currentProject = await prisma.project.findUnique({
+              where: { id: Number(msg.projectId) },
+              select: { status: true },
+            });
+
+            const updateData: any = {
+              adminId: Number(msg.senderAdminId || msg.receiverAdminId),
+            };
+
+            // Only update status to ACTIVE if current status is PENDING
+            if (currentProject?.status === "pending") {
+              updateData.status = "active";
+            }
+
+            await prisma.project.update({
+              where: { id: Number(msg.projectId) },
+              data: updateData,
+            });
+          }
 
           // Format the message for client consumption
           const formattedMessage = {
@@ -122,12 +146,36 @@ const startServer = async () => {
             sender: message.senderType.toLowerCase(),
             receiver: message.receiverType.toLowerCase(),
             createdAt: message.createdAt.toISOString(),
+            projectId: msg.projectId,
           };
 
-          console.log("Sending to user room:", `user-${msg.receiverUserId}`);
-          console.log("Sending to admin room:", `admin-${msg.receiverAdminId}`);
+          // Format message for message list updates
+          const messageListUpdate = {
+            projectId: msg.projectId,
+            lastMessage: {
+              text: message.content,
+              timestamp: message.createdAt.toISOString(),
+              isRead: false,
+              sentByMe: false,
+            },
+            hasUnread: true,
+            sender: message.senderType.toLowerCase(),
+            receiver: message.receiverType.toLowerCase(),
+            senderUser: message.senderUser,
+            senderAdmin: message.senderAdmin,
+            receiverUser: message.receiverUser,
+            receiverAdmin: message.receiverAdmin,
+            project: message.project,
+          };
 
-          // Send to sender as confirmation
+          // Check if this is a new conversation
+          const existingMessagesCount = await prisma.message.count({
+            where: {
+              projectId: Number(msg.projectId),
+            },
+          });
+
+          // Send to chat interface participants
           if (msg.senderUserId) {
             io.to(`user-${msg.senderUserId}`).emit(
               "newMessage",
@@ -140,8 +188,6 @@ const startServer = async () => {
               formattedMessage
             );
           }
-
-          // Send to recipient
           if (msg.receiverUserId) {
             io.to(`user-${msg.receiverUserId}`).emit(
               "newMessage",
@@ -154,6 +200,165 @@ const startServer = async () => {
               formattedMessage
             );
           }
+
+          // Send message list updates to all connected users/admins
+          if (msg.receiverUserId) {
+            const updateForUser = {
+              ...messageListUpdate,
+              lastMessage: {
+                ...messageListUpdate.lastMessage,
+                sentByMe: false,
+              },
+              receiverUserId: msg.receiverUserId,
+            };
+
+            io.to(`user-${msg.receiverUserId}`).emit(
+              "messageListUpdate",
+              updateForUser
+            );
+
+            // If this is a new conversation, emit newConversation event
+            if (existingMessagesCount === 1) {
+              io.to(`user-${msg.receiverUserId}`).emit(
+                "newConversation",
+                updateForUser
+              );
+            }
+          }
+
+          if (msg.receiverAdminId) {
+            const updateForAdmin = {
+              ...messageListUpdate,
+              lastMessage: {
+                ...messageListUpdate.lastMessage,
+                sentByMe: false,
+              },
+              receiverAdminId: msg.receiverAdminId,
+            };
+
+            io.to(`admin-${msg.receiverAdminId}`).emit(
+              "messageListUpdate",
+              updateForAdmin
+            );
+
+            // If this is a new conversation, emit newConversation event
+            if (existingMessagesCount === 1) {
+              io.to(`admin-${msg.receiverAdminId}`).emit(
+                "newConversation",
+                updateForAdmin
+              );
+            }
+          }
+
+          // When a user sends a message, notify ALL connected admins
+          if (msg.senderUserId) {
+            // Emit to sender for their own message list
+            io.to(`user-${msg.senderUserId}`).emit("messageListUpdate", {
+              ...messageListUpdate,
+              lastMessage: { ...messageListUpdate.lastMessage, sentByMe: true },
+              hasUnread: false,
+              senderUserId: msg.senderUserId,
+            });
+
+            // Emit to ALL connected admins when user sends message
+            const updateForAllAdmins = {
+              ...messageListUpdate,
+              lastMessage: {
+                ...messageListUpdate.lastMessage,
+                sentByMe: false,
+              },
+              senderUserId: msg.senderUserId,
+              receiverAdminId: null, // This ensures all admins can see it
+            };
+
+            // Broadcast to all admin rooms
+            const adminRooms = Array.from(
+              io.sockets.adapter.rooms.keys()
+            ).filter((room) => room.startsWith("admin-"));
+
+            console.log("Broadcasting to admin rooms:", adminRooms);
+            adminRooms.forEach((room) => {
+              io.to(room).emit("messageListUpdate", updateForAllAdmins);
+            });
+
+            // If this is a new conversation, also broadcast to all admins
+            if (existingMessagesCount === 1) {
+              adminRooms.forEach((room) => {
+                io.to(room).emit("newConversation", updateForAllAdmins);
+              });
+            }
+          }
+
+          // When an admin sends a message, notify the specific user
+          if (msg.senderAdminId) {
+            // Emit to admin sender for their own message list
+            io.to(`admin-${msg.senderAdminId}`).emit("messageListUpdate", {
+              ...messageListUpdate,
+              lastMessage: { ...messageListUpdate.lastMessage, sentByMe: true },
+              hasUnread: false,
+              senderAdminId: msg.senderAdminId,
+            });
+
+            // Emit to the specific user if they're connected
+            if (msg.receiverUserId) {
+              const updateForUser = {
+                ...messageListUpdate,
+                lastMessage: {
+                  ...messageListUpdate.lastMessage,
+                  sentByMe: false,
+                },
+                receiverUserId: msg.receiverUserId,
+                senderAdminId: msg.senderAdminId,
+                sender: "admin",
+                receiver: "user",
+              };
+
+              console.log(
+                "Sending message update to user:",
+                msg.receiverUserId,
+                updateForUser
+              );
+              io.to(`user-${msg.receiverUserId}`).emit(
+                "messageListUpdate",
+                updateForUser
+              );
+
+              // If this is a new conversation, also emit newConversation
+              if (existingMessagesCount === 1) {
+                io.to(`user-${msg.receiverUserId}`).emit(
+                  "newConversation",
+                  updateForUser
+                );
+              }
+            }
+
+            // Also broadcast to all users in general for new conversations
+            if (existingMessagesCount === 1) {
+              const generalUserUpdate = {
+                ...messageListUpdate,
+                lastMessage: {
+                  ...messageListUpdate.lastMessage,
+                  sentByMe: false,
+                },
+                senderAdminId: msg.senderAdminId,
+                sender: "admin",
+                receiver: "user",
+              };
+
+              // Find all user rooms and broadcast
+              const userRooms = Array.from(
+                io.sockets.adapter.rooms.keys()
+              ).filter((room) => room.startsWith("user-"));
+
+              userRooms.forEach((room) => {
+                const userId = room.replace("user-", "");
+                if (userId === msg.receiverUserId?.toString()) {
+                  io.to(room).emit("newConversation", generalUserUpdate);
+                }
+              });
+            }
+          }
+
           if (msg.senderAdminId) {
             await prisma.project.update({
               where: { id: Number(msg.projectId) },
@@ -162,6 +367,7 @@ const startServer = async () => {
               },
             });
           }
+
           console.log("Message sent successfully:", formattedMessage);
         } catch (error) {
           console.error("Failed to save message:", error);
@@ -238,6 +444,84 @@ const startServer = async () => {
           }
         } catch (error) {
           console.error("Failed to handle milestone decline:", error);
+        }
+      });
+
+      socket.on("markMessagesRead", async (data) => {
+        try {
+          console.log("Marking messages as read:", data);
+          const { projectId, userId, adminId } = data;
+
+          // Update read status in database
+          if (userId) {
+            await prisma.message.updateMany({
+              where: {
+                projectId: parseInt(projectId),
+                receiverUserId: parseInt(userId),
+                isRead: false,
+              },
+              data: {
+                isRead: true,
+              },
+            });
+
+            // Emit read status update to sender (admin)
+            const senderAdmin = await prisma.message.findFirst({
+              where: {
+                projectId: parseInt(projectId),
+                senderAdminId: { not: null },
+              },
+              select: {
+                senderAdminId: true,
+              },
+            });
+
+            if (senderAdmin?.senderAdminId) {
+              io.to(`admin-${senderAdmin.senderAdminId}`).emit(
+                "messagesMarkedRead",
+                {
+                  projectId: projectId,
+                  readByUserId: userId,
+                }
+              );
+            }
+          } else if (adminId) {
+            await prisma.message.updateMany({
+              where: {
+                projectId: parseInt(projectId),
+                receiverAdminId: parseInt(adminId),
+                isRead: false,
+              },
+              data: {
+                isRead: true,
+              },
+            });
+
+            // Emit read status update to sender (user)
+            const senderUser = await prisma.message.findFirst({
+              where: {
+                projectId: parseInt(projectId),
+                senderUserId: { not: null },
+              },
+              select: {
+                senderUserId: true,
+              },
+            });
+
+            if (senderUser?.senderUserId) {
+              io.to(`user-${senderUser.senderUserId}`).emit(
+                "messagesMarkedRead",
+                {
+                  projectId: projectId,
+                  readByAdminId: adminId,
+                }
+              );
+            }
+          }
+
+          console.log("Messages marked as read successfully");
+        } catch (error) {
+          console.error("Failed to mark messages as read:", error);
         }
       });
 

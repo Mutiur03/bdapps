@@ -136,11 +136,25 @@ export default function ProjectPreviewPage({
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white/50 backdrop-blur-sm p-4 rounded-lg border shadow-sm">
         <div className="flex items-center gap-3">
           <Badge className="bg-primary hover:bg-primary/90">
-            {project?.category}
+            {project?.category?.name}
           </Badge>
-          <div className="flex items-center gap-1 text-amber-500">
+          <Badge
+            className={`${project.status === "active"
+              ? "bg-muted text-primary"
+              : project.status === "pending"
+                ? "bg-amber-100 text-amber-700"
+                : project.status === "completed"
+                  ? "bg-green-100 text-green-700"
+                  : "bg-card text-muted-foreground"
+              }`}
+          >
+            {project.status === "active" && "Active"}
+            {project.status === "pending" && "Pending"}
+            {project.status === "completed" && "Completed"}
+          </Badge>
+          {/* <div className="flex items-center gap-1 text-amber-500">
             <Star className="h-4 w-4 fill-current" />
-          </div>
+          </div> */}
         </div>
         <div className="flex gap-3">
           <Button
@@ -151,16 +165,14 @@ export default function ProjectPreviewPage({
             <Share2 className="h-4 w-4" />
             Share
           </Button>
-          <Link href={`/udayee/chat/${project?.id}`}>
-            <Button
-              variant="outline"
-              className="flex items-center gap-2"
-              size="sm"
-            >
-              <MessageSquare className="h-4 w-4" />
-              Contact Creator
-            </Button>
-          </Link>
+          <Button
+            variant="outline"
+            className="flex items-center gap-2"
+            size="sm"
+          >
+            <MessageSquare className="h-4 w-4" />
+            Contact Creator
+          </Button>
           <Button
             className="bg-primary hover:bg-primary/90 text-white flex items-center gap-2"
             size="sm"
@@ -192,7 +204,7 @@ export default function ProjectPreviewPage({
 
           {/* Tabs for Details, Milestones, Updates */}
           <Tabs defaultValue="about" className="space-y-4">
-            <TabsList className="grid grid-cols-3 p-0 bg-transparent">
+            <TabsList className="grid grid-cols-2 p-0 bg-transparent">
               <TabsTrigger
                 value="about"
                 className="rounded-md data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 font-medium"
@@ -205,12 +217,12 @@ export default function ProjectPreviewPage({
               >
                 Milestones
               </TabsTrigger>
-              <TabsTrigger
+              {/* <TabsTrigger
                 value="updates"
                 className="rounded-md data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 font-medium"
               >
                 Updates
-              </TabsTrigger>
+              </TabsTrigger> */}
             </TabsList>
 
             {/* About Tab */}
@@ -245,7 +257,7 @@ export default function ProjectPreviewPage({
                     </div>
                     <div className="space-y-1">
                       <p className="text-sm text-muted-foreground">Category</p>
-                      <p className="font-medium">{project?.category}</p>
+                      <p className="font-medium">{project?.category?.name}</p>
                     </div>
                     <div className="space-y-1">
                       <p className="text-sm text-muted-foreground">
@@ -428,10 +440,13 @@ export default function ProjectPreviewPage({
                     key={index}
                     variant="ghost"
                     className="w-full justify-start text-muted-foreground hover:bg-primary/5 hover:text-primary"
-                    onClick={() => window.open(safeUrl(doc), '_blank')}
+                    onClick={() => window.open(safeUrl(typeof doc === 'string' ? doc : doc.document), '_blank')}
                   >
                     <FileText className="h-4 w-4 mr-2" />
-                    {doc.document.split('/').pop().split('-').pop()}
+                    {typeof doc === 'string'
+                      ? doc.split('/').pop()?.split('-').pop() || 'Document'
+                      : doc.document?.split('/').pop()?.split('-').pop() || 'Document'
+                    }
                   </Button>
                 ))
               ) : (

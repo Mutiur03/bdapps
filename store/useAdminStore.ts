@@ -17,12 +17,18 @@ export interface Startup {
   budget: string;
   pitch_video: string;
   raised_amount: string;
-  category: string;
+  category: { id: string; name: string };
   tags: string;
   trending?: boolean;
   image?: string;
   logo?: string;
   createdAt: string;
+  adminId: number | null;
+  admin: {
+    id: string;
+    name: string;
+    profile_picture: string;
+  };
   user: {
     id: string;
     name: string;
@@ -83,25 +89,25 @@ export interface AdminData {
   lastLogin: string;
 }
 
-export interface InvestorProfile {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  location: string;
-  profile_picture: string;
-  bio: string;
-  company: string;
-  role: string;
-  experienceYears: string;
-  investmentFocus: string[];
-  minInvestment: number;
-  maxInvestment: number;
-  preferredStages: string[];
-  customSocials: SocialLink[];
-  status: "active" | "inactive" | "pending";
-  createdAt: string;
-}
+// export interface InvestorProfile {
+//   id: string;
+//   name: string;
+//   email: string;
+//   phone: string;
+//   location: string;
+//   profile_picture: string;
+//   bio: string;
+//   company: string;
+//   role: string;
+//   experienceYears: string;
+//   investmentFocus: string[];
+//   minInvestment: number;
+//   maxInvestment: number;
+//   preferredStages: string[];
+//   customSocials: SocialLink[];
+//   status: "active" | "inactive" | "pending";
+//   createdAt: string;
+// }
 
 export interface PlatformStats {
   totalStartups: number;
@@ -116,10 +122,9 @@ interface AdminStore {
   loading: boolean;
   error: string | null;
   startups: Startup[] | null;
-  investors: InvestorProfile[] | null;
+  // investors: InvestorProfile[] | null;
   stats: PlatformStats | null;
 
-  // Admin profile management
   fetchAdmin: () => Promise<void>;
   updateAdmin: (data: Partial<AdminData>) => Promise<void>;
   updateAdminField: <K extends keyof AdminData>(
@@ -136,10 +141,10 @@ interface AdminStore {
   deleteStartup: (id: string) => Promise<void>;
 
   // Investor management
-  fetchInvestors: () => Promise<void>;
-  approveInvestor: (id: string) => Promise<void>;
-  suspendInvestor: (id: string) => Promise<void>;
-  deleteInvestor: (id: string) => Promise<void>;
+  // fetchInvestors: () => Promise<void>;
+  // approveInvestor: (id: string) => Promise<void>;
+  // suspendInvestor: (id: string) => Promise<void>;
+  // deleteInvestor: (id: string) => Promise<void>;
 
   // Platform statistics
   fetchStats: () => Promise<void>;
@@ -153,7 +158,7 @@ const useAdminStore = create<AdminStore>((set, get) => ({
   loading: false,
   error: null,
   startups: null,
-  investors: null,
+  // investors: null,
   stats: null,
 
   fetchStartups: async () => {
@@ -283,21 +288,21 @@ const useAdminStore = create<AdminStore>((set, get) => ({
     });
   },
 
-  fetchInvestors: async () => {
-    set({ loading: true, error: null });
-    try {
-      const response = await axios.get("/api/admin/investors");
-      console.log("Fetched investors:", response.data);
-      set({ investors: response.data, loading: false });
-    } catch (error) {
-      console.error("Error fetching investors:", error);
-      set({
-        error:
-          error instanceof Error ? error.message : "Failed to fetch investors",
-        loading: false,
-      });
-    }
-  },
+  // fetchInvestors: async () => {
+  //   set({ loading: true, error: null });
+  //   try {
+  //     const response = await axios.get("/api/admin/investors");
+  //     console.log("Fetched investors:", response.data);
+  //     set({ investors: response.data, loading: false });
+  //   } catch (error) {
+  //     console.error("Error fetching investors:", error);
+  //     set({
+  //       error:
+  //         error instanceof Error ? error.message : "Failed to fetch investors",
+  //       loading: false,
+  //     });
+  //   }
+  // },
 
   approveStartup: async (id) => {
     set({ loading: true, error: null });
@@ -345,50 +350,50 @@ const useAdminStore = create<AdminStore>((set, get) => ({
     }
   },
 
-  approveInvestor: async (id) => {
-    set({ loading: true, error: null });
-    try {
-      await axios.patch(`/api/admin/investors/${id}/approve`);
-      get().fetchInvestors();
-    } catch (error) {
-      console.error("Error approving investor:", error);
-      set({
-        error:
-          error instanceof Error ? error.message : "Failed to approve investor",
-        loading: false,
-      });
-    }
-  },
+  // approveInvestor: async (id) => {
+  //   set({ loading: true, error: null });
+  //   try {
+  //     await axios.patch(`/api/admin/investors/${id}/approve`);
+  //     get().fetchInvestors();
+  //   } catch (error) {
+  //     console.error("Error approving investor:", error);
+  //     set({
+  //       error:
+  //         error instanceof Error ? error.message : "Failed to approve investor",
+  //       loading: false,
+  //     });
+  //   }
+  // },
 
-  suspendInvestor: async (id) => {
-    set({ loading: true, error: null });
-    try {
-      await axios.patch(`/api/admin/investors/${id}/suspend`);
-      get().fetchInvestors();
-    } catch (error) {
-      console.error("Error suspending investor:", error);
-      set({
-        error:
-          error instanceof Error ? error.message : "Failed to suspend investor",
-        loading: false,
-      });
-    }
-  },
+  // suspendInvestor: async (id) => {
+  //   set({ loading: true, error: null });
+  //   try {
+  //     await axios.patch(`/api/admin/investors/${id}/suspend`);
+  //     get().fetchInvestors();
+  //   } catch (error) {
+  //     console.error("Error suspending investor:", error);
+  //     set({
+  //       error:
+  //         error instanceof Error ? error.message : "Failed to suspend investor",
+  //       loading: false,
+  //     });
+  //   }
+  // },
 
-  deleteInvestor: async (id) => {
-    set({ loading: true, error: null });
-    try {
-      await axios.delete(`/api/admin/investors/${id}`);
-      get().fetchInvestors();
-    } catch (error) {
-      console.error("Error deleting investor:", error);
-      set({
-        error:
-          error instanceof Error ? error.message : "Failed to delete investor",
-        loading: false,
-      });
-    }
-  },
+  // deleteInvestor: async (id) => {
+  //   set({ loading: true, error: null });
+  //   try {
+  //     await axios.delete(`/api/admin/investors/${id}`);
+  //     get().fetchInvestors();
+  //   } catch (error) {
+  //     console.error("Error deleting investor:", error);
+  //     set({
+  //       error:
+  //         error instanceof Error ? error.message : "Failed to delete investor",
+  //       loading: false,
+  //     });
+  //   }
+  // },
 
   fetchStats: async () => {
     set({ loading: true, error: null });

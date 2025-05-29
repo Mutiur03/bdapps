@@ -70,7 +70,7 @@ export async function POST(request: Request) {
         title: title?.toString(),
         description: description?.toString(),
         budget: parseFloat(budget?.toString() || "0"),
-        category: category?.toString(),
+        categoryId: category ? Number(category) : null,
         userId: Number(userId),
         profile_picture: profile_picture_url,
         cover_image: cover_image_url,
@@ -144,6 +144,12 @@ export async function GET() {
           },
         },
         milestones: true,
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
         projectMembers: {
           include: {
             user: {
@@ -318,7 +324,7 @@ export async function PUT(request: Request) {
       title: title?.toString(),
       description: description?.toString(),
       budget: Number(budget) || 0,
-      category: category?.toString(),
+      categoryId: Number(category),
       status: status?.toString(),
       tags: tags?.toString(),
       raised_amount: raised_amount || 0,
