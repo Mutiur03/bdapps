@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
-import fs from "fs";
-import path from "path";
 import cloudinary from "@/lib/cloudinary";
 import sharp from "sharp";
 
@@ -55,15 +53,30 @@ async function compressImage(file: File): Promise<Buffer> {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.formData();
+    // Debug: log all form entries
+    const entries = Object.fromEntries(body.entries());
+    console.log("Form entries:", entries);
 
-    // const uploadDir = path.join(
-    //   process.cwd(),
-    //   "public/uploads/verification_data"
-    // );
-    // if (!fs.existsSync(uploadDir)) {
-    //   fs.mkdirSync(uploadDir, { recursive: true });
-    // }
-    console.log(Object.fromEntries(body.entries()));
+    // Validate required fields
+    const requiredFields = [
+      "password",
+      "university",
+      "name",
+      "department",
+      "student_id",
+      "university_email",
+      "phone",
+    ];
+    for (const field of requiredFields) {
+      if (!body.get(field)) {
+        console.error(`Missing required field: ${field}`);
+        return NextResponse.json(
+          { error: `Missing required field: ${field}` },
+          { status: 400 }
+        );
+      }
+    }
+
     const existingUser = await prisma.user.findFirst({
       where: {
         OR: [
@@ -88,33 +101,47 @@ export async function POST(request: NextRequest) {
     const uploadedFiles: Record<string, string> = {};
 
     for (const field of fileFields) {
-      const file = body.get(field) as File;
-      if (file && file instanceof File) {
-        // Compress image before upload
-        const compressedBuffer = await compressImage(file);
+      const file = body.get(field);
+      // Check if file is a file-like object (has arrayBuffer and type)
+      if (
+        file &&
+        typeof file === "object" &&
+        typeof (file as any).arrayBuffer === "function" &&
+        typeof (file as any).type === "string"
+      ) {
+        try {
+          // Compress image before upload
+          const compressedBuffer = await compressImage(file as any);
 
-        await new Promise<void>((resolve, reject) => {
-          cloudinary.uploader
-            .upload_stream(
-              {
-                resource_type: "auto",
-                folder: "udayee/verification_data",
-              },
-              (error, result) => {
-                if (error) {
-                  console.error(`Error uploading ${field}:`, error);
-                  reject(error);
-                } else if (result) {
-                  console.log(`Uploaded ${field} successfully:`, result);
-                  uploadedFiles[field] = result.secure_url;
-                  resolve();
-                } else {
-                  reject(new Error("Upload result is undefined"));
+          await new Promise<void>((resolve, reject) => {
+            cloudinary.uploader
+              .upload_stream(
+                {
+                  resource_type: "auto",
+                  folder: "udayee/verification_data",
+                },
+                (error, result) => {
+                  if (error) {
+                    console.error(`Error uploading ${field}:`, error);
+                    reject(error);
+                  } else if (result) {
+                    console.log(`Uploaded ${field} successfully:`, result);
+                    uploadedFiles[field] = result.secure_url;
+                    resolve();
+                  } else {
+                    reject(new Error("Upload result is undefined"));
+                  }
                 }
-              }
-            )
-            .end(compressedBuffer);
-        });
+              )
+              .end(compressedBuffer);
+          });
+        } catch (uploadError) {
+          console.error(`Failed to process file field ${field}:`, uploadError);
+          return NextResponse.json(
+            { error: `Failed to upload ${field}` },
+            { status: 500 }
+          );
+        }
       }
     }
 
@@ -127,33 +154,44 @@ export async function POST(request: NextRequest) {
       department,
       student_id,
       university_email,
-    } = Object.fromEntries(body.entries());
-    let { phone } = Object.fromEntries(body.entries());
-    console.log({
-      password,
-      university,
-      name,
-      department,
-      student_id,
-      university_email,
-      phone,
-      ...uploadedFiles,
-    });
+    } = entries;
+    let { phone } = entries;
+    // Validate phone
+    if (!phone || typeof phone !== "string" || phone.length < 10) {
+      console.error("Invalid phone number:", phone);
+      return NextResponse.json(
+        { error: "Invalid phone number" },
+        { status: 400 }
+      );
+    }
     phone = "0" + phone.slice(-10);
+
+    // Hash password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password.toString(), salt);
-    const user = await prisma.user.create({
-      data: {
-        name: String(name),
-        university: String(university),
-        department: department.toString(),
-        student_id: student_id.toString(),
-        university_email: university_email.toString(),
-        phone: phone.toString(),
-        password: hashedPassword,
-        ...uploadedFiles,
-      },
-    });
+
+    let user;
+    try {
+      user = await prisma.user.create({
+        data: {
+          name: String(name),
+          university: String(university),
+          department: department.toString(),
+          student_id: student_id.toString(),
+          university_email: university_email.toString(),
+          phone: phone.toString(),
+          password: hashedPassword,
+          ...uploadedFiles,
+        },
+      });
+    } catch (dbError) {
+      console.error("Database error during user creation:", dbError);
+      return NextResponse.json(
+        { error: "Database error during user creation" },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json(
       {
         message: "User registered successfully",
@@ -164,7 +202,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Registration error:", error);
     return NextResponse.json(
-      { error: "Failed to process registration" },
+      { error: "Failed to process registration", details: String(error) },
       { status: 500 }
     );
   }
