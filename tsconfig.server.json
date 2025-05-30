@@ -6,9 +6,7 @@
         "outDir": "dist",
         "moduleResolution": "Node",
         "strict": true,
-        "noEmit": false,
-        "isolatedModules": false,
-        "allowImportingTsExtensions": true
+        "isolatedModules": false
     },
     "include": [
         "server.mts"
