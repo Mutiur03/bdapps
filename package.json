@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "next dev --turbo & nodemon server.mts",
-    "build": "prisma generate && prisma migrate deploy && prisma db seed && next build",
-    "start": "node server.mjs & next start",
+    "build": "tsc && prisma generate && prisma migrate deploy && prisma db seed && next build && tsc --project tsconfig.server.json",
+    "start": "node dist/server.mjs & next start",
     "lint": "next lint",
     "db:seed": "prisma generate && prisma db seed"
   },
