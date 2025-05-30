@@ -17,7 +17,8 @@ export default withAuth(
     }
     if (
       !token &&
-      (pathname.startsWith("/udayee") || pathname.startsWith("/investor"))
+      (pathname.startsWith("/udayee") || pathname.startsWith("/investor")) &&
+      !pathname.endsWith("/onboarding")
     ) {
       return NextResponse.redirect(new URL("/signin", req.url));
     }
