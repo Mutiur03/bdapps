@@ -1,7 +1,7 @@
 import React from "react";
 import "@/app/globals.css";
 import type { Metadata } from "next";
-import { Toaster } from 'react-hot-toast';
+import { Toaster } from "react-hot-toast";
 import { SessionProviderWrapper } from "@/components/providers/session-provider";
 export const metadata: Metadata = {
   title: "UdayeeConnect - Connecting Student Founders with Investors",
@@ -15,15 +15,15 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   return (
     <html lang="en">
       <body
         cz-shortcut-listen="true"
-      // className={cn(
-      //   "min-h-screen bg-[hsl(var(--background))] text-[hsl(var(--foreground))] font-sans antialiased",
-      //   inter.className
-      // )}
+        // className={cn(
+        //   "min-h-screen bg-[hsl(var(--background))] text-[hsl(var(--foreground))] font-sans antialiased",
+        //   inter.className
+        // )}
+        className="bg-gradient-to-br from-primary/30 via-cyan-500/10 to-background"
       >
         <SessionProviderWrapper>
           <Toaster />

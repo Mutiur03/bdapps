@@ -18,7 +18,7 @@ export function HomeFooter() {
           <div className="lg:col-span-1">
             <Link href="/" className="flex items-center">
               <span className="text-xl sm:text-2xl font-bold text-primary">
-                FundMyIdea
+                FundIt
               </span>
             </Link>
             <p className="mt-4 text-sm text-secondary">
@@ -139,13 +139,13 @@ export function HomeFooter() {
               </li>
               <li className="flex items-center">
                 <Mail className="h-5 w-5 text-primary mr-2" />
-                <span className="text-secondary">info@Uday.com</span>
+                <span className="text-secondary">info@FundIt.com</span>
               </li>
             </ul>
           </div>
         </div>
         <div className="border-t border-border mt-8 sm:mt-10 pt-6 text-center text-sm text-secondary">
-          <p>© {new Date().getFullYear()} Uday. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} FundIt. All rights reserved.</p>
         </div>
       </div>
     </footer>
