@@ -3,51 +3,53 @@ import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
 import cloudinary from "@/lib/cloudinary";
 import sharp from "sharp";
+import stream from "stream";
+import { promisify } from "util";
 
-// Add image compression function
+// Helper to stream buffer to Cloudinary
+const streamUpload = (buffer: Buffer, field: string) => {
+  return new Promise<string>((resolve, reject) => {
+    const passthrough = new stream.PassThrough();
+    passthrough.end(buffer);
+    cloudinary.uploader
+      .upload_stream(
+        {
+          resource_type: "auto",
+          folder: "udayee/verification_data",
+        },
+        (error, result) => {
+          if (error) {
+            console.error(`Error uploading ${field}:`, error);
+            reject(error);
+          } else if (result) {
+            resolve(result.secure_url);
+          } else {
+            reject(new Error("Upload result is undefined"));
+          }
+        }
+      )
+      .end(buffer);
+  });
+};
+
+// Add image compression function (streamlined, single pass)
 async function compressImage(file: File): Promise<Buffer> {
   const buffer = Buffer.from(await file.arrayBuffer());
   const isJpeg = file.type === "image/jpeg" || file.type === "image/jpg";
   const isPng = file.type === "image/png";
-
+  // Limit file size to 5MB
+  if (buffer.length > 5 * 1024 * 1024) {
+    throw new Error("File too large. Max 5MB allowed.");
+  }
   let compressed = sharp(buffer);
-
-  // Start with high quality and reduce only if needed
   if (isJpeg) {
-    compressed = compressed.jpeg({ quality: 85 });
+    compressed = compressed.jpeg({ quality: 70 });
   } else if (isPng) {
-    compressed = compressed.png({ quality: 85 });
+    compressed = compressed.png({ quality: 70 });
   } else {
-    // Convert other formats to JPEG
-    compressed = compressed.jpeg({ quality: 85 });
+    compressed = compressed.jpeg({ quality: 70 });
   }
-
-  let result = await compressed.toBuffer();
-
-  // If still too large, reduce quality further
-  if (result.length > 500 * 1024) {
-    if (isJpeg || !isPng) {
-      result = await sharp(buffer).jpeg({ quality: 70 }).toBuffer();
-    } else {
-      result = await sharp(buffer).png({ quality: 70 }).toBuffer();
-    }
-  }
-
-  // Final check - if still too large, use lower quality
-  if (result.length > 500 * 1024) {
-    if (isJpeg || !isPng) {
-      result = await sharp(buffer).jpeg({ quality: 50 }).toBuffer();
-    } else {
-      result = await sharp(buffer).png({ quality: 50 }).toBuffer();
-    }
-  }
-
-  // Last resort - very low quality
-  if (result.length > 500 * 1024) {
-    result = await sharp(buffer).jpeg({ quality: 30 }).toBuffer();
-  }
-
-  return result;
+  return await compressed.toBuffer();
 }
 
 export async function POST(request: NextRequest) {
@@ -110,35 +112,14 @@ export async function POST(request: NextRequest) {
         typeof (file as any).type === "string"
       ) {
         try {
-          // Compress image before upload
+          // Only compress and upload if file is not too large
           const compressedBuffer = await compressImage(file as any);
-
-          await new Promise<void>((resolve, reject) => {
-            cloudinary.uploader
-              .upload_stream(
-                {
-                  resource_type: "auto",
-                  folder: "udayee/verification_data",
-                },
-                (error, result) => {
-                  if (error) {
-                    console.error(`Error uploading ${field}:`, error);
-                    reject(error);
-                  } else if (result) {
-                    console.log(`Uploaded ${field} successfully:`, result);
-                    uploadedFiles[field] = result.secure_url;
-                    resolve();
-                  } else {
-                    reject(new Error("Upload result is undefined"));
-                  }
-                }
-              )
-              .end(compressedBuffer);
-          });
+          const url = await streamUpload(compressedBuffer, field);
+          uploadedFiles[field] = url;
         } catch (uploadError) {
           console.error(`Failed to process file field ${field}:`, uploadError);
           return NextResponse.json(
-            { error: `Failed to upload ${field}` },
+            { error: `Failed to upload ${field}: ${uploadError instanceof Error ? uploadError.message : String(uploadError)}` },
             { status: 500 }
           );
         }
