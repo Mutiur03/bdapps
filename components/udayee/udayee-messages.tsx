@@ -7,7 +7,7 @@ import { MessageSquare, Search, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { safeUrl } from "@/app/udayee/projects/[id]/manage/page";
+import safeUrl from "@/lib/safeURL";
 import { io, Socket } from "socket.io-client";
 
 // Initialize socket instance

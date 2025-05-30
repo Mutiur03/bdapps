@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,7 +13,8 @@ import { HomeFooter } from "@/components/home/home-footer";
 import { signIn } from "next-auth/react";
 import useUserStore from "@/store/useUserStore";
 import { useRouter } from "next/navigation";
-export default function StudentSignin() {
+
+function StudentSigninContent() {
   const [isClient, setIsClient] = useState(false);
   const searchParams = useSearchParams();
   const { getUser } = useUserStore();
@@ -214,5 +215,13 @@ export default function StudentSignin() {
 
       <HomeFooter />
     </div>
+  );
+}
+
+export default function StudentSignin() {
+  return (
+    <Suspense>
+      <StudentSigninContent />
+    </Suspense>
   );
 }

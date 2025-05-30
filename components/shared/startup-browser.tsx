@@ -21,7 +21,7 @@ import {
   Clock,
   Tag,
 } from "lucide-react";
-import { safeUrl } from "@/app/udayee/projects/[id]/manage/page";
+import safeUrl from "@/lib/safeURL";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import useAdminStore from "@/store/useAdminStore";

@@ -1,15 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import prisma from "@/lib/prisma";
+import { authOptions } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
-    if (!session?.user || session.user.role !== "admin") {
+    if (!session?.user || (session.user as any).role !== "admin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -60,26 +58,26 @@ export async function GET(request: NextRequest) {
     const conversationMap = new Map();
 
     for (const message of conversations) {
-      const projectId = message.projectId.toString();
+      const projectId = message?.projectId?.toString();
 
       if (!conversationMap.has(projectId)) {
         // Determine the other participant (user)
         let otherUser;
         if (message.senderAdminId === adminId) {
           // This admin sent the message, so the other participant is the receiver
-          otherUser = message.receiverUser || message.project.user;
+          otherUser = message.receiverUser || message?.project?.user;
         } else {
           // This admin received the message, so the other participant is the sender
-          otherUser = message.senderUser || message.project.user;
+          otherUser = message.senderUser || message?.project?.user;
         }
 
         conversationMap.set(projectId, {
           id: projectId,
-          title: message.project.title,
+          title: message.project?.title,
           user: {
             id: otherUser?.id?.toString() || "unknown",
             name: otherUser?.name || "User",
-            startup: message.project.title,
+            startup: message.project?.title,
             profile_picture: otherUser?.profile_picture || "",
           },
           lastMessage: {
@@ -131,7 +129,9 @@ export async function GET(request: NextRequest) {
       return bTime - aTime;
     });
 
-    console.log(`Returning ${conversationsArray.length} conversations for admin`);
+    console.log(
+      `Returning ${conversationsArray.length} conversations for admin`
+    );
     return NextResponse.json(conversationsArray);
   } catch (error) {
     console.error("Error fetching admin conversations:", error);

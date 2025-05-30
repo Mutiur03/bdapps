@@ -25,8 +25,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { HomeFooter } from "../home/home-footer";
 import useAdminStore from "@/store/useAdminStore"; // Uncomment when admin store is created
 import { signOut } from "next-auth/react";
-import { safeUrl } from "@/app/udayee/projects/[id]/manage/page";
-
+import safeUrl from "@/lib/safeURL";
 interface AdminLayoutProps {
   children: React.ReactNode;
 }

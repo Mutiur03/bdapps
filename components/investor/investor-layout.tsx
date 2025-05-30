@@ -21,7 +21,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { HomeFooter } from "../home/home-footer";
 import useInvestorStore from "@/store/useInvestorStore";
 import { signOut } from "next-auth/react";
-import { safeUrl } from "@/app/udayee/projects/[id]/manage/page";
+import safeUrl from "@/lib/safeURL";
 
 interface InvestorLayoutProps {
   children: React.ReactNode;

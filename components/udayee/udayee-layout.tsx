@@ -25,7 +25,7 @@ import useUserStore from "@/store/useUserStore";
 interface UdayeeLayoutProps {
   children: React.ReactNode;
 }
-import { safeUrl } from "@/app/udayee/projects/[id]/manage/page";
+import safeUrl from "@/lib/safeURL";
 
 export function UdayeeLayout({ children }: UdayeeLayoutProps) {
   const pathname = usePathname();

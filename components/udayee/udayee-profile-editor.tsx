@@ -30,8 +30,7 @@ import {
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import useUserStore from "@/store/useUserStore";
-import { safeUrl } from "@/app/udayee/projects/[id]/manage/page";
-import Image from "next/image";
+import safeUrl from "@/lib/safeURL";
 
 export function UdayeeProfileEditor() {
   const [saving, setSaving] = useState(false);

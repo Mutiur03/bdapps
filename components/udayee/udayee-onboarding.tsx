@@ -243,7 +243,11 @@ export function UdayeeOnboarding() {
     } catch (error) {
       setLoading(false);
       console.log(error);
-      setFormWarning(error.response?.data?.error || "An error occurred");
+      if (axios.isAxiosError(error)) {
+        setFormWarning(error.response?.data?.error || "An error occurred");
+      } else {
+        setFormWarning("An error occurred");
+      }
     }
   };
 

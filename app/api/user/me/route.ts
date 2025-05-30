@@ -1,30 +1,29 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import prisma from "@/lib/prisma";
 export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
-    if (!session?.user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+
+    if (!session?.user || !session.user.email) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Return user data
-    return NextResponse.json({
-      id: session.user.id,
-      email: session.user.email,
-      name: session.user.name,
-      role: session.user.role || 'user',
+    let user = await prisma.user.findUnique({
+      where: { university_email: session.user.email },
     });
 
+    return NextResponse.json({
+      id: user?.id,
+      email: user?.university_email,
+      name: user?.name,
+      role: user?.role,
+    });
   } catch (error) {
-    console.error('Error in /api/user/me:', error);
+    console.error("Error in /api/user/me:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }
