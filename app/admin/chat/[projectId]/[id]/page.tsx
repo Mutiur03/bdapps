@@ -6,8 +6,10 @@ import { AdminLayout } from "@/components/admin/admin-layout";
 export default async function InvestorChatPage({
   params,
 }: {
-  params: { id: string, projectId: string };
+  params: Promise<{ id: string, projectId: string }>;
 }) {
+
+  const { id, projectId } = await params;
 
   // Get session server-side
   const session = await getServerSession(authOptions);
@@ -21,8 +23,8 @@ export default async function InvestorChatPage({
   return (
     <AdminLayout>
       <ChatInterface
-        project={params.projectId}
-        recipientId={params.id}
+        project={projectId}
+        recipientId={id}
         recipientType="user"
         userType="admin"
         currentUserId={userId}
