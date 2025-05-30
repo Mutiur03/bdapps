@@ -412,7 +412,11 @@ export async function PUT(request: Request) {
     };
 
     const profile_picture = body.get("profile_picture");
-    if (profile_picture instanceof File) {
+    if (
+      profile_picture &&
+      typeof profile_picture === "object" &&
+      "stream" in profile_picture
+    ) {
       try {
         const buffer = await profile_picture.arrayBuffer();
         const compressedBuffer = await compressImage(buffer);
@@ -447,7 +451,11 @@ export async function PUT(request: Request) {
     }
 
     const cover_image = body.get("cover_image");
-    if (cover_image instanceof File) {
+    if (
+      cover_image &&
+      typeof cover_image === "object" &&
+      "stream" in cover_image
+    ) {
       try {
         const buffer = await cover_image.arrayBuffer();
         const compressedBuffer = await compressImage(buffer);
@@ -494,7 +502,9 @@ export async function PUT(request: Request) {
     if (newDocuments && newDocuments.length > 0) {
       const newFileNames = await Promise.all(
         newDocuments.map(async (document: FormDataEntryValue) => {
-          if (!(document instanceof File)) {
+          if (
+            !(document && typeof document === "object" && "stream" in document)
+          ) {
             return null;
           }
 

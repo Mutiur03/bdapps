@@ -57,7 +57,11 @@ export async function POST(request: NextRequest) {
       console.warn("Failed to parse social_links:", error);
     }
     let avatar = "";
-    if (profile_picture instanceof File) {
+    if (
+      profile_picture &&
+      typeof profile_picture === "object" &&
+      "stream" in profile_picture
+    ) {
       // const uploadDir = path.join(
       //   process.cwd(),
       //   "public/uploads/profile_pictures"
