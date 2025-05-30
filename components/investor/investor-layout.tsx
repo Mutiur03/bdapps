@@ -4,6 +4,7 @@ import type React from "react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 import {
   LayoutDashboard,
   Search,
@@ -31,10 +32,9 @@ export function InvestorLayout({ children }: InvestorLayoutProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const { investor, fetchInvestor } = useInvestorStore()
+  const { investor, fetchInvestor } = useInvestorStore();
   useEffect(() => {
     setMounted(true);
-
   }, []);
   useEffect(() => {
     async function loadInvestorData() {
@@ -142,18 +142,21 @@ export function InvestorLayout({ children }: InvestorLayoutProps) {
             title="Investor Navigation"
           >
             <div className="flex flex-col h-full">
-              <div className="p-6 border-b border-border bg-card">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                    <User className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h2 className="text-xl font-bold text-primary">FundMyIdea </h2>
-                    <p className="text-xs text-muted-foreground">
-                      Investor Portal
-                    </p>
+              <div className="border-b border-border bg-card">
+                <div className="flex items-center justify-center">
+                  <div className="h-12 w-full flex items-center justify-center overflow-hidden">
+                    <Image
+                      src="/logo_light.png"
+                      alt="logo"
+                      height={32}
+                      width={80}
+                      style={{ objectFit: "contain" }}
+                    />
                   </div>
                 </div>
+                <p className="text-md text-foreground text-center pb-4">
+                  InvestorPortal
+                </p>
               </div>
 
               {/* Navigation section with proper sticky behavior */}
@@ -172,13 +175,10 @@ export function InvestorLayout({ children }: InvestorLayoutProps) {
                   <Avatar className="h-9 w-9">
                     <AvatarImage
                       src={safeUrl(investor?.profile_picture)}
-                      alt={investor?.name}
-                      className="object-cover"
-                    />                    <AvatarFallback className="bg-primary/10 text-primary">
-                      {investor?.name
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")}
+                      alt="Investor"
+                    />
+                    <AvatarFallback className="bg-primary/10 text-primary">
+                      IN
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
@@ -195,8 +195,7 @@ export function InvestorLayout({ children }: InvestorLayoutProps) {
                     signOut({
                       callbackUrl: "/",
                     });
-                  }
-                  }
+                  }}
                   variant="ghost"
                   className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
                 >
@@ -214,18 +213,21 @@ export function InvestorLayout({ children }: InvestorLayoutProps) {
           <aside className="hidden md:block md:w-72 border-r border-border bg-card h-screen sticky top-0 left-0">
             <div className="h-full flex flex-col">
               {/* Logo and Header */}
-              <div className="p-6 border-b border-border flex-shrink-0">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                    <User className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h2 className="text-xl font-bold text-primary">FundMyIdea </h2>
-                    <p className="text-xs text-muted-foreground">
-                      Investor Portal
-                    </p>
+              <div className="border-b border-border flex-shrink-0">
+                <div className="flex items-center justify-center">
+                  <div className="h-12 w-full flex items-center justify-center overflow-hidden">
+                    <Image
+                      src="/logo_light.png"
+                      alt="logo"
+                      height={32}
+                      width={80}
+                      style={{ objectFit: "contain" }}
+                    />
                   </div>
                 </div>
+                <p className="text-md text-foreground text-center pb-4">
+                  InvestorPortal
+                </p>
               </div>
 
               {/* Navigation section - independently scrollable */}
@@ -243,15 +245,11 @@ export function InvestorLayout({ children }: InvestorLayoutProps) {
                 <div className="flex items-center gap-3 mb-4">
                   <Avatar className="h-9 w-9">
                     <AvatarImage
-                      src={(investor?.profile_picture instanceof File ? URL.createObjectURL(investor.profile_picture) : investor?.profile_picture as string)}
-                      alt={investor?.name}
-                      className="object-cover"
+                      src={safeUrl(investor?.profile_picture)}
+                      alt="Investor"
                     />
                     <AvatarFallback className="bg-primary/10 text-primary">
-                      {investor?.name
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")}
+                      IN
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
@@ -268,8 +266,7 @@ export function InvestorLayout({ children }: InvestorLayoutProps) {
                     signOut({
                       callbackUrl: "/",
                     });
-                  }
-                  }
+                  }}
                   variant="ghost"
                   className="w-full justify-start text-destructive/90 hover:text-destructive hover:bg-destructive/10"
                 >

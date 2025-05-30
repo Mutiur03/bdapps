@@ -49,9 +49,9 @@ const slideInRight = {
 // Data Arrays and Objects
 const HERO_DATA = {
   badge: "Our Story",
-  title: "About Uday",
+  title: "About FundIt",
   description:
-    "Uday bridges the gap between innovative student entrepreneurs and investors who believe in nurturing the next generation of changemakers.",
+    "FundIt bridges the gap between innovative student entrepreneurs and investors who believe in nurturing the next generation of changemakers.",
 };
 
 const MISSION_VISION = [
@@ -65,7 +65,7 @@ const MISSION_VISION = [
     icon: Lightbulb,
     title: "Our Vision",
     description:
-      "We envision a future where student entrepreneurship is celebrated and supported, where innovative ideas from university campuses can easily find the backing they need to grow and make an impact. Uday aims to be the bridge that connects promising student startups with investors who are looking to support the next generation of entrepreneurs.",
+      "We envision a future where student entrepreneurship is celebrated and supported, where innovative ideas from university campuses can easily find the backing they need to grow and make an impact. FundIt aims to be the bridge that connects promising student startups with investors who are looking to support the next generation of entrepreneurs.",
   },
 ];
 
@@ -96,17 +96,17 @@ const HOW_IT_WORKS_STEPS = [
   {
     title: "Student Registration",
     description:
-      "Students register as Udayees and create profiles for their startup projects.",
+      "Students register on FundIt and create profiles for their startup projects.",
   },
   {
     title: "Project Creation",
     description:
-      "Udayees can create multiple projects, each with detailed information, funding goals, and milestones.",
+      "Students can create multiple projects, each with detailed information, funding goals, and milestones.",
   },
   {
     title: "Investor Discovery",
     description:
-      "Investors browse through projects and can contact Udayees directly.",
+      "Investors browse through projects and can contact students directly.",
   },
   {
     title: "Milestone-Based Funding",
@@ -141,27 +141,27 @@ const TEAM_MEMBERS = [
 const TESTIMONIALS = [
   {
     quote:
-      "Uday helped me turn my idea into a real business. The milestone-based funding approach gave me clear goals to work towards, and the investor I connected with has become an invaluable mentor.",
+      "FundIt helped me turn my idea into a real business. The milestone-based funding approach gave me clear goals to work towards, and the investor I connected with has become an invaluable mentor.",
     name: "Tahmid Hassan",
     role: "Student Entrepreneur, BUET",
     project: "EcoSolutions",
   },
   {
     quote:
-      "As an investor, I appreciate the structured approach Uday brings to student startups. The platform makes it easy to track progress and maintain clear communication with founders.",
+      "As an investor, I appreciate the structured approach FundIt brings to student startups. The platform makes it easy to track progress and maintain clear communication with founders.",
     name: "Farzana Rahman",
     role: "Angel Investor",
   },
   {
     quote:
-      "Finding investors was my biggest challenge until I discovered Uday. Now my healthcare app has the funding it needs to reach communities across Bangladesh.",
+      "Finding investors was my biggest challenge until I discovered FundIt. Now my healthcare app has the funding it needs to reach communities across Bangladesh.",
     name: "Mahir Ahmed",
     role: "Student Entrepreneur, DMC",
     project: "MediConnect",
   },
   {
     quote:
-      "Uday gives me access to creative, ambitious student founders who bring fresh perspectives to old problems. It's been rewarding both financially and personally.",
+      "FundIt gives me access to creative, ambitious student founders who bring fresh perspectives to old problems. It's been rewarding both financially and personally.",
     name: "Nasreen Khan",
     role: "Tech Investor",
   },
@@ -170,14 +170,14 @@ const TESTIMONIALS = [
 const CTA_DATA = {
   title: "Ready to Join the Journey?",
   description:
-    "Whether you're a student entrepreneur with an innovative idea or an investor looking to support the next generation of startups, Uday is the platform for you.",
+    "Whether you're a student entrepreneur with an innovative idea or an investor looking to support the next generation of startups, FundIt is the platform for you.",
 };
 
 export function AboutComponent() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Hero Section */}
-      <section className="py-20 bg-accent/20 overflow-hidden">
+      <section className="py-20 overflow-hidden">
         <div className="container">
           <motion.div
             className="max-w-3xl mx-auto text-center"
@@ -460,8 +460,8 @@ export function AboutComponent() {
                 />
               </h2>
               <p className="text-xl text-foreground/70 max-w-2xl mx-auto">
-                Uday operates on a simple but effective model that benefits both
-                student entrepreneurs and investors.
+                FundIt operates on a simple but effective model that benefits
+                both student entrepreneurs and investors.
               </p>
             </motion.div>
 
@@ -557,8 +557,8 @@ export function AboutComponent() {
                 />
               </h2>
               <p className="text-xl text-foreground/70 max-w-2xl mx-auto">
-                The passionate individuals behind Uday, dedicated to empowering
-                student entrepreneurs.
+                The passionate individuals behind FundIt, dedicated to
+                empowering student entrepreneurs.
               </p>
             </motion.div>
 
@@ -635,7 +635,7 @@ export function AboutComponent() {
               </h2>
               <p className="text-xl text-foreground/70 max-w-2xl mx-auto">
                 Hear from students and investors who've found success through
-                Uday.
+                FundIt.
               </p>
             </motion.div>
 
