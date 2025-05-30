@@ -5,7 +5,7 @@
 /* Custom properties for theme colors and radii */
 :root {
   --radius: 0.75rem;
-  --background: oklch(1 0 0);
+  --background: oklch(98.4% 0.003 247.858);
   --foreground: oklch(0.141 0.005 285.823);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.141 0.005 285.823);

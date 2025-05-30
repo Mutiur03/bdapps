@@ -4,7 +4,7 @@ import { useRef } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 
 // Animation Variants
 const fadeInUp = {
@@ -115,7 +115,7 @@ export function HomeHero() {
             className="text-lg text-muted-foreground"
             variants={fadeInLeft}
           >
-            Uday empowers student entrepreneurs to showcase their ideas and
+            FundIt empowers student entrepreneurs to showcase their ideas and
             connect with investors who believe in their vision.
           </motion.p>
 

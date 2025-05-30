@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 export function HomeNavbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
@@ -37,9 +38,7 @@ export function HomeNavbar() {
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group">
-          <span className="text-2xl font-extrabold tracking-tight text-[var(--foreground)] font-poppins transition-colors group-hover:text-[var(--primary)]">
-            FundMyIdea
-          </span>
+          <Image src="/logo_light.png" alt="logo" height={135} width={135} />
         </Link>
 
         {/* Desktop Navigation */}

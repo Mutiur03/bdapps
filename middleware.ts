@@ -76,19 +76,19 @@ export default withAuth(
     },
   }
 );
-export const config = {
-  matcher: [
-    "/",
-    "/about",
-    "/contact",
-    "/signin",
-    "/signup",
-    "/onboarding",
-    "/udayee/:path*",
-    "/investor/:path*",
-    "/admin/:path*",
-  ],
-};
 // export const config = {
-//   matcher: [],
+//   matcher: [
+//     "/",
+//     "/about",
+//     "/contact",
+//     "/signin",
+//     "/signup",
+//     "/onboarding",
+//     "/udayee/:path*",
+//     "/investor/:path*",
+//     "/admin/:path*",
+//   ],
 // };
+export const config = {
+  matcher: [],
+};
