@@ -7,15 +7,24 @@ import axios from "axios";
 import safeUrl from "@/lib/safeURL";
 let socketInstance: Socket | null = null;
 
-if (typeof window !== "undefined" && !socketInstance) {
-  socketInstance = io({
-    reconnection: true,
-    reconnectionAttempts: 5,
-    reconnectionDelay: 1000,
-    reconnectionDelayMax: 5000,
-    timeout: 20000,
-  });
-}
+const initializeSocket = () => {
+  if (typeof window !== "undefined" && !socketInstance) {
+    const socketUrl = process.env.NODE_ENV === 'production'
+      ? process.env.NEXTAUTH_URL || window.location.origin
+      : 'http://localhost:3000';
+
+    socketInstance = io(socketUrl, {
+      reconnection: true,
+      reconnectionAttempts: 10,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      timeout: 20000,
+      forceNew: false,
+      transports: ['websocket', 'polling'],
+    });
+  }
+  return socketInstance;
+};
 
 interface Message {
   id: string;
@@ -551,14 +560,20 @@ const ChatInterface = ({
   const [currentMilestone, setCurrentMilestone] = useState<CurrentMilestone | null>(null);
   const [hasIncompleteMilestones, setHasIncompleteMilestones] = useState(false);
   const [showMilestoneDetail, setShowMilestoneDetail] = useState(false);
+  const [lastMessageTime, setLastMessageTime] = useState<number>(0);
   const messageEndRef = useRef<HTMLDivElement | null>(null);
   const messageContainerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (!socketInstance) return;
+    if (!socketInstance) {
+      socketInstance = initializeSocket();
+    }
+
+    const socket = socketInstance;
+    if (!socket) return;
 
     const handleConnect = () => {
-      console.log("Socket connected with ID:", socketInstance?.id);
+      console.log("Socket connected with ID:", socket.id);
       setSocketConnected(true);
 
       if (currentUserId) {
@@ -567,7 +582,7 @@ const ChatInterface = ({
           : { adminId: currentUserId };
 
         console.log("Joining room with data:", joinData);
-        socketInstance.emit("join", joinData);
+        socket.emit("join", joinData);
       }
     };
 
@@ -583,39 +598,27 @@ const ChatInterface = ({
 
     const handleMilestoneUpdate = (updateData: any) => {
       console.log("Received milestone update:", updateData);
-
       if (updateData.projectId !== project) return;
-
       refreshMilestoneData();
     };
 
-    socketInstance.on("connect", handleConnect);
-    socketInstance.on("disconnect", handleDisconnect);
-    socketInstance.on("connect_error", handleConnectError);
-    socketInstance.on("milestoneUpdate", handleMilestoneUpdate);
+    socket.on("connect", handleConnect);
+    socket.on("disconnect", handleDisconnect);
+    socket.on("connect_error", handleConnectError);
+    socket.on("milestoneUpdate", handleMilestoneUpdate);
 
-    if (socketInstance.connected) {
-      console.log("Socket already connected");
-      setSocketConnected(true);
-
-      if (currentUserId) {
-        const joinData = userType === "user"
-          ? { userId: currentUserId }
-          : { adminId: currentUserId };
-
-        console.log("Joining room with existing connection:", joinData);
-        socketInstance.emit("join", joinData);
-      }
+    if (socket.connected) {
+      handleConnect();
     } else {
       console.log("Attempting to connect socket...");
-      socketInstance.connect();
+      socket.connect();
     }
 
     return () => {
-      socketInstance?.off("connect", handleConnect);
-      socketInstance?.off("disconnect", handleDisconnect);
-      socketInstance?.off("connect_error", handleConnectError);
-      socketInstance?.off("milestoneUpdate", handleMilestoneUpdate);
+      socket.off("connect", handleConnect);
+      socket.off("disconnect", handleDisconnect);
+      socket.off("connect_error", handleConnectError);
+      socket.off("milestoneUpdate", handleMilestoneUpdate);
     };
   }, [currentUserId, userType, project]);
 
@@ -693,10 +696,19 @@ const ChatInterface = ({
   }, [isLoading, messages.length]);
 
   useEffect(() => {
-    if (!socketInstance) return;
+    const socket = socketInstance;
+    if (!socket) return;
 
     const handleNewMessage = (newMessage: Message) => {
       console.log("Received new message:", newMessage);
+
+      // Add timestamp check to prevent duplicate processing
+      const messageTime = new Date(newMessage.createdAt).getTime();
+      if (messageTime <= lastMessageTime) {
+        console.log("Ignoring old/duplicate message");
+        return;
+      }
+      setLastMessageTime(messageTime);
 
       const isRelevantMessage =
         (newMessage.sender === userType && newMessage.receiver === recipientType) ||
@@ -705,39 +717,45 @@ const ChatInterface = ({
       if (isRelevantMessage) {
         setMessages((prev) => {
           // Remove temporary message if this is the server response
-          const filteredMessages = prev.filter(msg =>
-            !(typeof msg.id === 'string' && msg.id.startsWith('temp-')) ||
-            msg.content !== newMessage.content ||
-            msg.sender !== newMessage.sender
-          );
+          const filteredMessages = prev.filter(msg => {
+            // Remove temp messages with same content and sender
+            if (typeof msg.id === 'string' && msg.id.startsWith('temp-')) {
+              return !(msg.content === newMessage.content && msg.sender === newMessage.sender);
+            }
+            return true;
+          });
 
           // Check if message already exists (avoid duplicates)
           if (filteredMessages.some((msg) => msg.id === newMessage.id)) {
-            return filteredMessages;
+            console.log("Message already exists, skipping");
+            return prev;
           }
 
+          console.log("Adding new message to state");
           return [...filteredMessages, newMessage];
         });
       }
     };
 
-    socketInstance.on("newMessage", handleNewMessage);
+    socket.on("newMessage", handleNewMessage);
 
     return () => {
-      socketInstance?.off("newMessage", handleNewMessage);
+      socket.off("newMessage", handleNewMessage);
     };
-  }, [userType, recipientType]);
+  }, [userType, recipientType, lastMessageTime]);
 
   const handleSendMessage = async (text: string, image?: File) => {
-    if (!socketInstance) {
+    const socket = socketInstance;
+    if (!socket) {
       console.error("Socket instance not available");
       alert("Connection to chat server not available. Please refresh the page.");
       return;
     }
 
     // Create temporary message for immediate display
+    const tempId = `temp-${Date.now()}-${Math.random()}`;
     const tempMessage: Message = {
-      id: `temp-${Date.now()}`,
+      id: tempId,
       content: text,
       sender: userType,
       receiver: recipientType,
@@ -748,57 +766,87 @@ const ChatInterface = ({
     // Add message immediately to UI for instant feedback
     setMessages((prev) => [...prev, tempMessage]);
 
-    const messageData = {
-      content: text,
-      projectId: project,
-      senderType: userType,
-      receiverType: recipientType,
-      senderUserId: userType === "user" ? Number(currentUserId) : null,
-      senderAdminId: userType === "admin" ? Number(currentUserId) : null,
-      receiverUserId: recipientType === "user" ? Number(recipientId) : null,
-      receiverAdminId: recipientType === "admin" ? Number(recipientId) : null,
-      timestamp: new Date().toISOString()
-    };
-    console.log("Sending message data:", messageData);
+    try {
+      const messageData = {
+        content: text,
+        projectId: project,
+        senderType: userType,
+        receiverType: recipientType,
+        senderUserId: userType === "user" ? Number(currentUserId) : null,
+        senderAdminId: userType === "admin" ? Number(currentUserId) : null,
+        receiverUserId: recipientType === "user" ? Number(recipientId) : null,
+        receiverAdminId: recipientType === "admin" ? Number(recipientId) : null,
+        timestamp: new Date().toISOString()
+      };
 
-    socketInstance?.emit("message", messageData);
+      console.log("Sending message data:", messageData);
 
-    const messageListUpdateData = {
-      projectId: project,
-      senderUserId: userType === "user" ? Number(currentUserId) : null,
-      senderAdminId: userType === "admin" ? Number(currentUserId) : null,
-      receiverUserId: recipientType === "user" ? Number(recipientId) : null,
-      receiverAdminId: recipientType === "admin" ? Number(recipientId) : null,
-      senderType: userType,
-      receiverType: recipientType,
-      lastMessage: {
-        text: text,
-        timestamp: new Date().toISOString(),
-        isRead: false,
-        sentByMe: false
-      },
-      project: {
-        title: "Project"
-      },
-      senderUser: userType === "user" ? {
-        id: Number(currentUserId),
-        name: "Current User",
-        profile_picture: ""
-      } : null,
-      user: userType === "user" ? {
-        id: Number(currentUserId),
-        name: "Current User",
-        profile_picture: ""
-      } : null
-    };
+      // Send message with acknowledgment
+      socket.emit("message", messageData, (response: any) => {
+        if (response?.error) {
+          console.error("Message send error:", response.error);
+          // Remove temp message on error
+          setMessages(prev => prev.filter(msg => msg.id !== tempId));
+          alert("Failed to send message. Please try again.");
+        } else {
+          console.log("Message sent successfully:", response);
+        }
+      });
 
-    console.log("Emitting messageListUpdate:", messageListUpdateData);
-    socketInstance?.emit("messageListUpdate", messageListUpdateData);
+      // Also emit other events
+      const messageListUpdateData = {
+        projectId: project,
+        senderUserId: userType === "user" ? Number(currentUserId) : null,
+        senderAdminId: userType === "admin" ? Number(currentUserId) : null,
+        receiverUserId: recipientType === "user" ? Number(recipientId) : null,
+        receiverAdminId: recipientType === "admin" ? Number(recipientId) : null,
+        senderType: userType,
+        receiverType: recipientType,
+        lastMessage: {
+          text: text,
+          timestamp: new Date().toISOString(),
+          isRead: false,
+          sentByMe: false
+        },
+        project: {
+          title: "Project"
+        },
+        senderUser: userType === "user" ? {
+          id: Number(currentUserId),
+          name: "Current User",
+          profile_picture: ""
+        } : null,
+        user: userType === "user" ? {
+          id: Number(currentUserId),
+          name: "Current User",
+          profile_picture: ""
+        } : null
+      };
 
-    socketInstance?.emit("newMessage", {
-      ...messageData,
-      content: text
-    });
+      socket.emit("messageListUpdate", messageListUpdateData);
+      socket.emit("newMessage", {
+        ...messageData,
+        content: text
+      });
+
+      // Set timeout to remove temp message if server doesn't respond within 10 seconds
+      setTimeout(() => {
+        setMessages(prev => {
+          const stillHasTemp = prev.some(msg => msg.id === tempId);
+          if (stillHasTemp) {
+            console.log("Removing orphaned temp message after timeout");
+            return prev.filter(msg => msg.id !== tempId);
+          }
+          return prev;
+        });
+      }, 10000);
+
+    } catch (error) {
+      console.error("Error sending message:", error);
+      // Remove temp message on error
+      setMessages(prev => prev.filter(msg => msg.id !== tempId));
+      alert("Failed to send message. Please try again.");
+    }
   };
 
   useEffect(() => {

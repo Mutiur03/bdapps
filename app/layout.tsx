@@ -23,7 +23,7 @@ export default function RootLayout({
         //   "min-h-screen bg-[hsl(var(--background))] text-[hsl(var(--foreground))] font-sans antialiased",
         //   inter.className
         // )}
-        className="bg-gradient-to-br from-primary/30 via-cyan-500/10 to-background"
+        // className="bg-gradient-to-br from-primary/30 via-cyan-500/10 to-background"
       >
         <SessionProviderWrapper>
           <Toaster />
