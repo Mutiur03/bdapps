@@ -1,6 +1,6 @@
 "use client"
 import type React from "react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {
   Dialog,
   DialogContent,
@@ -16,6 +16,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import axios from "axios"
 import { useProjectStore } from "@/store/useProjectStore"
+
 interface UdayeeCreateProjectDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -23,7 +24,7 @@ interface UdayeeCreateProjectDialogProps {
 export function UdayeeCreateProjectDialog({ open, onOpenChange }: UdayeeCreateProjectDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formRef, setFormRef] = useState<HTMLFormElement | null>(null)
-  const { fetchProjects } = useProjectStore()
+  const { fetchProjects, categories } = useProjectStore()
   const handleSubmit = async (e: React.FormEvent, isDraft: boolean = false) => {
     e.preventDefault()
     setIsSubmitting(true)
@@ -93,15 +94,12 @@ export function UdayeeCreateProjectDialog({ open, onOpenChange }: UdayeeCreatePr
                 <SelectTrigger id="category">
                   <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
-                <SelectContent >
-                  <SelectItem value="Environment">Environment</SelectItem>
-                  <SelectItem value="Healthcare">Healthcare</SelectItem>
-                  <SelectItem value="Education">Education</SelectItem>
-                  <SelectItem value="Agriculture">Agriculture</SelectItem>
-                  <SelectItem value="Finance">Finance</SelectItem>
-                  <SelectItem value="E-commerce">E-commerce</SelectItem>
-                  <SelectItem value="Technology">Technology</SelectItem>
-                  <SelectItem value="Other">Other</SelectItem>
+                <SelectContent>
+                  {categories.map((category) => (
+                    <SelectItem key={category.id} value={category.id}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

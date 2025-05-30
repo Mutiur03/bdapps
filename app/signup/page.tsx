@@ -29,13 +29,13 @@ export default function SignupPage() {
         <div className="container relative mx-auto px-4 py-16 md:py-24">
           <div className="max-w-4xl mx-auto text-center space-y-6 mb-12">
             <span className="inline-block px-3 py-1 text-sm font-medium rounded-full bg-primary/10 text-primary animate-fade-in">
-              Join UdayeeConnect
+              Join FundMyIdea
             </span>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-foreground animate-fade-in">
               Choose Your <span className="text-primary">Path</span>
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto animation-delay-200 animate-fade-in">
-              Select how you&apos;d like to participate in the UdayeeConnect
+              Select how you&apos;d like to participate in the FundMyIdea
               ecosystem
             </p>
           </div>
@@ -83,7 +83,7 @@ export default function SignupPage() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center space-y-6">
             <h2 className="text-2xl font-bold text-foreground">
-              How UdayeeConnect Works
+              How FundMyIdea  Works
             </h2>
             <p className="text-muted-foreground">
               Our platform connects student entrepreneurs with investors through

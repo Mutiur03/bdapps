@@ -26,6 +26,16 @@ export async function GET(
         profile_picture: true,
       },
     });
+  } else if (type === "admin") {
+    res = await prisma.admin.findUnique({
+      where: {
+        id: Number(id),
+      },
+      select: {
+        name: true,
+        profile_picture: true,
+      },
+    });
   } else {
     return new Response("Invalid type", { status: 400 });
   }
@@ -34,7 +44,7 @@ export async function GET(
   }
   return new Response(JSON.stringify(res), {
     headers: {
-      'Content-Type': 'application/json'
-    }
+      "Content-Type": "application/json",
+    },
   });
 }

@@ -4,6 +4,7 @@ import fs from "fs";
 import path from "path";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import cloudinary from "@/lib/cloudinary";
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
@@ -55,25 +56,42 @@ export async function POST(request: NextRequest) {
     } catch (error) {
       console.warn("Failed to parse social_links:", error);
     }
-    // const updatedData: any = {
-
-    // };
-
-    // Only process profile picture if it exists and is a File
     let avatar = "";
     if (profile_picture instanceof File) {
-      const uploadDir = path.join(
-        process.cwd(),
-        "public/uploads/profile_pictures"
-      );
-      if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir, { recursive: true });
-      }
-      const profile_picture_name = `${Date.now()}-${profile_picture.name}`;
-      const profile_picture_path = `public/uploads/profile_pictures/${profile_picture_name}`;
-      const fileBuffer = Buffer.from(await profile_picture.arrayBuffer());
-      fs.writeFileSync(profile_picture_path, fileBuffer);
-      avatar = `/uploads/profile_pictures/${profile_picture_name}`;
+      // const uploadDir = path.join(
+      //   process.cwd(),
+      //   "public/uploads/profile_pictures"
+      // );
+      // if (!fs.existsSync(uploadDir)) {
+      //   fs.mkdirSync(uploadDir, { recursive: true });
+      // }
+      // const profile_picture_name = `${Date.now()}-${profile_picture.name}`;
+      // const profile_picture_path = `public/uploads/profile_pictures/${profile_picture_name}`;
+      // const fileBuffer = Buffer.from(await profile_picture.arrayBuffer());
+      // fs.writeFileSync(profile_picture_path, fileBuffer);
+      // avatar = `/uploads/profile_pictures/${profile_picture_name}`;
+      await new Promise<void>((resolve, reject) => {
+        cloudinary.uploader
+          .upload_stream(
+            {
+              resource_type: "auto",
+              folder: "udayee/profile_pictures",
+            },
+            (error, result) => {
+              if (error) {
+                console.error("Error uploading profile picture:", error);
+                reject(error);
+              } else if (result) {
+                console.log("Profile picture uploaded successfully:", result);
+                avatar = result.secure_url;
+                resolve();
+              } else {
+                reject(new Error("Upload result is undefined"));
+              }
+            }
+          )
+          .end(profile_picture.stream());
+      });
     }
 
     // Update user data with proper ID validation

@@ -1,3 +1,4 @@
+"use client";
 import type React from "react";
 import {
   Card,
@@ -21,9 +22,9 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-
+import useAdminStore from "@/store/useAdminStore";
 export function AdminDashboard() {
-  // Mock data - admin managing platform investments
+  const { startups, investments, admin } = useAdminStore()
   const platformStats = {
     totalInvested: "৳245,000",
     activeInvestments: 15,
@@ -105,20 +106,20 @@ export function AdminDashboard() {
         {/* Platform Investment Overview */}
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle>Platform Investment Overview</CardTitle>
+            <CardTitle>Your Investment Overview</CardTitle>
             <CardDescription>Summary of managed investments</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="text-center p-3 bg-muted rounded-md">
                 <p className="text-2xl font-bold text-secondary-foreground">
-                  {platformStats.totalInvested}
+                  ৳{admin?.released_amount || "0"}
                 </p>
                 <p className="text-xs text-muted-foreground">Total Managed</p>
               </div>
               <div className="text-center p-3 bg-muted rounded-md">
                 <p className="text-2xl font-bold text-secondary-foreground">
-                  {platformStats.activeInvestments}
+                  {admin?.Project?.length || 0}
                 </p>
                 <p className="text-xs text-muted-foreground">
                   Active Investments
@@ -149,13 +150,13 @@ export function AdminDashboard() {
               <div>
                 <p className="text-sm text-muted-foreground">Return Rate</p>
                 <p className="text-3xl font-bold text-secondary-foreground">
-                  {platformStats.averageReturn}
+                  22%
                 </p>
               </div>
               <div className="text-right">
                 <p className="text-sm text-muted-foreground">Total Completed</p>
                 <p className="text-xl font-medium text-secondary-foreground">
-                  {platformStats.completedMilestones}
+                  {startups?.filter(startup => startup.status === 'completed').length} Startups
                 </p>
               </div>
             </div>
@@ -163,19 +164,19 @@ export function AdminDashboard() {
             <div className="grid grid-cols-3 gap-4 pt-2">
               <div className="text-center p-3 bg-muted rounded-md">
                 <p className="text-2xl font-bold text-secondary-foreground">
-                  {platformStats.activeInvestments}
+                  {startups?.filter(startup => startup.status === 'active').length}
                 </p>
                 <p className="text-xs text-muted-foreground">Active Startups</p>
               </div>
               <div className="text-center p-3 bg-muted rounded-md">
                 <p className="text-2xl font-bold text-secondary-foreground">
-                  {platformStats.completedMilestones}
+                  {startups?.filter(startup => startup.status === 'completed').length}
                 </p>
                 <p className="text-xs text-muted-foreground">Completed</p>
               </div>
               <div className="text-center p-3 bg-muted rounded-md">
                 <p className="text-2xl font-bold text-chart-3">
-                  {platformStats.pendingMilestones}
+                  {startups?.filter(startup => startup.status === 'pending').length}
                 </p>
                 <p className="text-xs text-muted-foreground">Pending</p>
               </div>
@@ -186,10 +187,10 @@ export function AdminDashboard() {
 
       {/* Main Content Tabs */}
       <Tabs defaultValue="investments" className="space-y-4">
-        <TabsList>
+        {/* <TabsList>
           <TabsTrigger value="investments">Managed Investments</TabsTrigger>
           <TabsTrigger value="pending">Pending Applications</TabsTrigger>
-        </TabsList>
+        </TabsList> */}
 
         {/* Managed Investments Tab */}
         <TabsContent value="investments" className="space-y-4">
@@ -198,7 +199,7 @@ export function AdminDashboard() {
           </h2>
 
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {managedInvestments.map((investment) => (
+            {startups?.filter((startup) => startup.status === 'active').map((investment) => (
               <Card
                 key={investment.id}
                 className="overflow-hidden hover:shadow-md transition-shadow duration-200"
@@ -207,30 +208,26 @@ export function AdminDashboard() {
                   <div className="flex justify-between items-start">
                     <div>
                       <CardTitle className="text-lg text-secondary-foreground">
-                        {investment.startupName}
+                        {investment.title}
                       </CardTitle>
                       <CardDescription>
-                        {investment.founder} • {investment.university}
+                        {investment.user.name} • {investment.user.university}
                       </CardDescription>
                     </div>
-                    {investment.completed ? (
-                      <span className="bg-ring text-foreground text-xs px-2 py-1 rounded-full font-medium border border-border">
-                        Completed
-                      </span>
-                    ) : (
-                      <span className="bg-chart-4 text-foreground text-xs px-2 py-1 rounded-full font-medium border border-border">
-                        In Progress
-                      </span>
-                    )}
+
+                    <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium border border-green-200">
+                      Active
+                    </span>
+
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-3">
                     <div className="p-2 rounded-md bg-muted/50">
                       <p className="text-xs text-muted-foreground mb-1">
-                        Investment
+                        Budget
                       </p>
-                      <p className="font-medium">{investment.amount}</p>
+                      <p className="font-medium">{investment.budget}</p>
                     </div>
                     <div className="p-2 rounded-md bg-muted/50">
                       <p className="text-xs text-muted-foreground mb-1">
@@ -238,9 +235,8 @@ export function AdminDashboard() {
                       </p>
                       <p
                         className="font-medium truncate"
-                        title={investment.milestone}
                       >
-                        {investment.milestone}
+                        {investment.milestones?.[investment.milestones.length - 1]?.title || "No milestone"}
                       </p>
                     </div>
                   </div>
@@ -249,16 +245,16 @@ export function AdminDashboard() {
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Progress:</span>
                       <span className="font-medium text-foreground">
-                        {investment.progress}%
+                        {Math.round((Number(investment.raised_amount) / parseInt(investment.budget.toString().replace(/[^0-9]/g, "")) * 100)) || 0}%
                       </span>
                     </div>
                     <Progress
-                      value={investment.progress}
+                      value={Math.round((Number(investment.raised_amount) / parseInt(investment.budget.toString().replace(/[^0-9]/g, "")) * 100)) || 0}
                       className="h-2 bg-secondary"
                       indicatorClassName="bg-primary"
                     />
                   </div>
-
+                  {/* 
                   <div className="flex justify-between items-center pt-2 border-t border-border">
                     {!investment.completed ? (
                       <span className="text-sm text-primary font-medium flex items-center">
@@ -278,7 +274,7 @@ export function AdminDashboard() {
                       Manage
                       <ArrowUpRight className="ml-1 h-3 w-3" />
                     </Link>
-                  </div>
+                  </div> */}
                 </CardContent>
               </Card>
             ))}

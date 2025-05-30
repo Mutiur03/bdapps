@@ -35,63 +35,63 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-// import useAdminStore from "@/store/useAdminStore";
+import useAdminStore from "@/store/useAdminStore";
 import { toast } from "@/components/ui/use-toast";
 
 export function AdminProfile() {
   // Mock admin data - replace with useAdminStore when available
-  const admin = {
-    name: "Admin User",
-    email: "admin@uday.com",
-    phone: "",
-    location: "",
-    bio: "",
-    profile_picture: null,
-    company: "",
-    role: "",
-    experienceYears: "",
-    customSocials: [] as { id: string; title: string; url: string }[],
-  };
+  // const admin = {
+  //   name: "Admin User",
+  //   email: "admin@uday.com",
+  //   phone: "",
+  //   location: "",
+  //   bio: "",
+  //   profile_picture: null,
+  //   company: "",
+  //   role: "",
+  //   experienceYears: "",
+  //   customSocials: [] as { id: string; title: string; url: string }[],
+  // };
 
-  const loading = false;
-  const error = null;
+  // const loading = false;
+  // const error = null;
 
   // Use admin store - uncomment when available
-  // const {
-  //   admin,
-  //   loading,
-  //   error,
-  //   updateAdmin,
-  //   updateAdminField,
-  //   addSocialLink,
-  //   removeSocialLink,
-  //   fetchAdmin,
-  // } = useAdminStore();
+  const {
+    admin,
+    loading,
+    error,
+    updateAdmin,
+    updateAdminField,
+    addSocialLink,
+    removeSocialLink,
+    fetchAdmin,
+  } = useAdminStore();
 
   // State for dialog
   const [socialDialogOpen, setSocialDialogOpen] = useState(false);
   const [newSocial, setNewSocial] = useState({ title: "", url: "" });
 
-  // Mock functions - replace with actual admin store functions
-  const updateAdminField = (field: string, value: any) => {
-    console.log(`Update ${field}:`, value);
-  };
+  // // Mock functions - replace with actual admin store functions
+  // const updateAdminField = (field: string, value: any) => {
+  //   console.log(`Update ${field}:`, value);
+  // };
 
-  const addSocialLink = (title: string, url: string) => {
-    console.log("Add social:", { title, url });
-  };
+  // const addSocialLink = (title: string, url: string) => {
+  //   console.log("Add social:", { title, url });
+  // };
 
-  const removeSocialLink = (id: string) => {
-    console.log("Remove social:", id);
-  };
+  // const removeSocialLink = (id: string) => {
+  //   console.log("Remove social:", id);
+  // };
 
-  const updateAdmin = async (adminData: any) => {
-    console.log("Update admin:", adminData);
-  };
+  // const updateAdmin = async (adminData: any) => {
+  //   console.log("Update admin:", adminData);
+  // };
 
-  const fetchAdmin = () => {
-    console.log("Fetch admin");
-  };
+  // const fetchAdmin = () => {
+  //   console.log("Fetch admin");
+  // };
 
   // Handle social link submission
   const handleAddSocial = () => {
@@ -299,12 +299,12 @@ export function AdminProfile() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="role">Role</Label>
+                  <Label htmlFor="companyRole">Role in Company</Label>
                   <Input
-                    id="role"
-                    value={admin.role}
-                    onChange={(e) => updateAdminField("role", e.target.value)}
-                    placeholder="Your professional role"
+                    id="companyRole"
+                    value={admin.companyRole}
+                    onChange={(e) => updateAdminField("companyRole", e.target.value)}
+                    placeholder="e.g. CEO, CTO, Product Manager"
                   />
                 </div>
               </div>
@@ -412,14 +412,14 @@ export function AdminProfile() {
                 </Dialog>
               </div>
 
-              {admin.customSocials.length > 0 && (
+              {(admin.customSocials?.length ?? 0) > 0 && (
                 <div className="space-y-4">
                   <Separator />
                   <h4 className="text-sm font-medium text-muted-foreground">
                     Social Links
                   </h4>
 
-                  {admin.customSocials.map((social) => (
+                  {(admin.customSocials || []).map((social) => (
                     <div key={social.id} className="flex items-center  gap-3">
                       <div className="flex-1 space-y-2">
                         <Label htmlFor={`social-${social.id}`}>
@@ -431,7 +431,7 @@ export function AdminProfile() {
                             id={`social-${social.id}`}
                             value={social.url}
                             onChange={(e) => {
-                              const updatedSocials = admin.customSocials.map(
+                              const updatedSocials = (admin.customSocials || []).map(
                                 (s) =>
                                   s.id === social.id
                                     ? { ...s, url: e.target.value }

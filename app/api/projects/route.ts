@@ -5,7 +5,9 @@ export async function GET() {
   try {
     const projects = await prisma.project.findMany({
       where: {
-        status: "pending",
+        NOT: {
+          status: "draft",
+        },
       },
       include: {
         user: {

@@ -6,7 +6,7 @@ export interface Milestone {
   id?: string;
   title?: string;
   description?: string;
-  status?: "planned" | "completed" | "in-progress";
+  status?: "planned" | "completed" | "in-progress" | "declined";
   amount?: number;
   progress?: number;
   deadlineAt?: string;
@@ -51,11 +51,12 @@ export interface ProjectMember {
   };
 }
 
+  
 export interface Project {
   id: string;
   title: string;
   description?: string;
-  category?: string;
+  category?: { id: string; name: string };
   budget?: number;
   raised_amount?: number;
   status: "active" | "draft" | "pending" | "completed";
@@ -93,6 +94,7 @@ export interface MediaFormState {
 }
 
 export interface ProjectStore {
+  categories: { id: string; name: string }[];
   projects: Project[];
   teamMembers: TeamMember[];
   milestones: Milestone[];
@@ -140,6 +142,7 @@ export const useProjectStore = create<ProjectStore>()(
     persist(
       (set, get) => ({
         projects: [],
+        categories: [],
         teamMembers: [],
         milestones: [],
         updates: [],
@@ -212,6 +215,13 @@ export const useProjectStore = create<ProjectStore>()(
                 } else {
                   formData.append("milestones", JSON.stringify([]));
                 }
+              } else if (key === "category") {
+                // Handle category - extract ID for backend
+                const categoryValue =
+                  typeof updatedData.category === "object"
+                    ? updatedData.category.id
+                    : updatedData.category;
+                formData.append("category", categoryValue?.toString() || "");
               } else {
                 formData.append(
                   key,
@@ -236,7 +246,9 @@ export const useProjectStore = create<ProjectStore>()(
         fetchProjects: async () => {
           try {
             const response = await axios.get("/api/user/project");
+            const res = await axios.get("/api/categories");
             console.log("Fetched projects:", response.data);
+            set({ categories: res.data });
             set({ projects: response.data });
           } catch (error) {
             console.error("Error fetching projects:", error);
@@ -415,10 +427,14 @@ export const useProjectStore = create<ProjectStore>()(
           }
         },
         setMediaFormState: (updates) => {
-          set((state) => ({
-            mediaFormState: { ...state.mediaFormState, ...updates },
-            mediaChanged: true,
-          }));
+          set((state) => {
+            const newMediaFormState = { ...state.mediaFormState, ...updates };
+            console.log("Setting media form state:", newMediaFormState);
+            return {
+              mediaFormState: newMediaFormState,
+              mediaChanged: true,
+            };
+          });
         },
 
         setMediaChanged: (changed) => {
@@ -466,7 +482,10 @@ export const useProjectStore = create<ProjectStore>()(
             formState: {
               title: project.title || "",
               description: project.description || "",
-              category: project.category || "",
+              category:
+                typeof project.category === "object"
+                  ? project.category?.id || ""
+                  : project.category || "",
               budget: project.budget || 0,
               tags: project.tags || "",
               university: project.projectMembers?.[0]?.user?.university || "",

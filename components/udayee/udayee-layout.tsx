@@ -36,17 +36,14 @@ export function UdayeeLayout({ children }: UdayeeLayoutProps) {
   useEffect(() => {
     setMounted(true);
     fetchUser();
-
   }, []);
   const fetchUser = async () => {
     setIsLoading(true);
     try {
       await getUser(); // Make sure this is awaited
-
     } catch (err) {
       location.href = "/";
       console.error('Failed to load user:', err);
-
     } finally {
       setIsLoading(false);
     }
@@ -87,13 +84,13 @@ export function UdayeeLayout({ children }: UdayeeLayoutProps) {
       active:
         pathname === "/udayee/messages" || pathname.startsWith("/udayee/chat/"),
     },
-    {
-      href: "/udayee/invest",
-      label: "Invest in Startups",
-      icon: Search,
-      active:
-        pathname === "/udayee/invest" || pathname.startsWith("/udayee/invest/"),
-    },
+    // {
+    //   href: "/udayee/invest",
+    //   label: "Invest in Startups",
+    //   icon: Search,
+    //   active:
+    //     pathname === "/udayee/invest" || pathname.startsWith("/udayee/invest/"),
+    // },
     {
       href: "/udayee/settings",
       label: "Settings",
@@ -164,7 +161,7 @@ export function UdayeeLayout({ children }: UdayeeLayoutProps) {
                     <User className="h-5 w-5" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold text-primary">Uday</h2>
+                    <h2 className="text-xl font-bold text-primary">FundMyIdea </h2>
                     <p className="text-xs text-muted-foreground">
                       Udayee Portal
                     </p>
@@ -230,7 +227,7 @@ export function UdayeeLayout({ children }: UdayeeLayoutProps) {
                     <User className="h-5 w-5" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold text-primary">Uday</h2>
+                    <h2 className="text-xl font-bold text-primary">FundMyIdea </h2>
                     <p className="text-xs text-muted-foreground">
                       Udayee Portal
                     </p>

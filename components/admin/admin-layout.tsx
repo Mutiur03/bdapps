@@ -23,7 +23,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { HomeFooter } from "../home/home-footer";
-// import useAdminStore from "@/store/useAdminStore"; // Uncomment when admin store is created
+import useAdminStore from "@/store/useAdminStore"; // Uncomment when admin store is created
 import { signOut } from "next-auth/react";
 import { safeUrl } from "@/app/udayee/projects/[id]/manage/page";
 
@@ -35,30 +35,24 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  // const { admin, fetchAdmin } = useAdminStore(); // Uncomment when admin store is created
+  const { admin, fetchAdmin, fetchStartups, fetchInvestments } = useAdminStore(); // Uncomment when admin store is created
 
-  // Mock admin data - replace with actual store when available
-  const admin = {
-    name: "Admin User",
-    email: "admin@uday.com",
-    profile_picture: null,
-  };
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    async function loadAdminData() {
+      try {
+        await fetchAdmin();
+        console.log("Admin data loaded:", admin);
 
-  // useEffect(() => {
-  //   async function loadAdminData() {
-  //     try {
-  //       await fetchAdmin();
-  //       console.log(admin?.profile_picture);
-  //     } catch (err) {
-  //       console.error("Failed to fetch admin data:", err);
-  //     }
-  //   }
-  //   loadAdminData();
-  // }, [fetchAdmin]);
+      } catch (err) {
+        console.error("Failed to fetch admin data:", err);
+      }
+    }
+    loadAdminData();
+    fetchInvestments();
+    fetchStartups();
+  }, []);
 
   const routes = [
     {
@@ -69,7 +63,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     },
     {
       href: "/admin/investments",
-      label: "investments",
+      label: "Investments",
       icon: FileText,
       active:
         pathname === "/admin/investments" ||
@@ -166,7 +160,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     <Shield className="h-5 w-5" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold text-primary">Uday</h2>
+                    <h2 className="text-xl font-bold text-primary">FundMyIdea</h2>
                     <p className="text-xs text-muted-foreground">
                       Admin Portal
                     </p>
@@ -238,7 +232,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     <Shield className="h-5 w-5" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold text-primary">Uday</h2>
+                    <h2 className="text-xl font-bold text-primary">FundMyIdea</h2>
                     <p className="text-xs text-muted-foreground">
                       Admin Portal
                     </p>

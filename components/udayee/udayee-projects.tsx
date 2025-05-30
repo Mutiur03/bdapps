@@ -270,7 +270,7 @@ function ProjectCard({
         <div className="flex justify-between text-sm">
           <span className="text-muted-foreground">Category:</span>
           <span className="font-medium text-secondary-foreground">
-            {project.category || "Uncategorized"}
+            {project.category.name || "Uncategorized"}
           </span>
         </div>
 

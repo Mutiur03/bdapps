@@ -1,5 +1,0 @@
-{
-  "watch": ["server.mts", "src/"],
-  "ext": "ts,mts",
-  "exec": "node --loader ts-node/esm --trace-warnings --no-warnings server.mts"
-}

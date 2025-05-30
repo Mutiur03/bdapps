@@ -31,12 +31,16 @@ export default withAuth(
     ) {
       return NextResponse.redirect(new URL("/investor/dashboard", req.url));
     }
+    // if (token && token?.role === "admin" && !pathname.startsWith("/admin")) {
+    //   return NextResponse.redirect(new URL("/admin/dashboard", req.url));
+    // }
     return NextResponse.next();
   },
   {
     callbacks: {
       authorized: ({ token, req }) => {
         const { pathname } = req.nextUrl;
+
         if (
           pathname === "/" ||
           pathname === "/about" ||
@@ -63,14 +67,27 @@ export default withAuth(
         ) {
           return true;
         }
+        if (token && token.role === "admin" && pathname.startsWith("/admin")) {
+          return true;
+        }
         return !!token;
       },
     },
   }
 );
-// export const config = {
-//   matcher: ["/((?!api|_next|static|public|favicon.ico|.*\\.(?:jpg|jpeg|gif|png|svg|ico|webp|woff|woff2|ttf|otf|css|js)).*)"],
-// };
 export const config = {
-  matcher: [],
+  matcher: [
+    "/",
+    "/about",
+    "/contact",
+    "/signin",
+    "/signup",
+    "/onboarding",
+    "/udayee/:path*",
+    "/investor/:path*",
+    "/admin/:path*",
+  ],
 };
+// export const config = {
+//   matcher: [],
+// };

@@ -96,18 +96,14 @@ interface InvestorStore {
     field: K,
     value: InvestorData[K]
   ) => void;
-  addItemToArray: (
-    field: "investmentFocus" | "preferredStages",
-    value: string
-  ) => void;
-  removeItemFromArray: (
-    field: "investmentFocus" | "preferredStages",
-    value: string
+  fetchStartups: () => Promise<void>;
+  addItemToArray: <K extends keyof InvestorData>(field: K, item: InvestorData[K] extends (infer U)[] ? U : never) => void;
+  removeItemFromArray: <K extends keyof InvestorData>(
+    field: K,
+    item: InvestorData[K] extends (infer U)[] ? U : never
   ) => void;
   addSocialLink: (title: string, url: string) => void;
   removeSocialLink: (id: string) => void;
-  clearError: () => void;
-  fetchStartups: () => Promise<void>;
 }
 
 const useInvestorStore = create<InvestorStore>((set, get) => ({
@@ -225,12 +221,14 @@ const useInvestorStore = create<InvestorStore>((set, get) => ({
   addItemToArray: (field, value) => {
     set((state) => {
       if (!state.investor) return state;
-      if (state.investor[field].includes(value)) return state;
+      const fieldValue = state.investor[field];
+      if (!Array.isArray(fieldValue)) return state;
+      if (fieldValue.includes(value)) return state;
 
       return {
         investor: {
           ...state.investor,
-          [field]: [...state.investor[field], value],
+          [field]: [...fieldValue, value] as InvestorData[typeof field],
         },
       };
     });
@@ -239,11 +237,13 @@ const useInvestorStore = create<InvestorStore>((set, get) => ({
   removeItemFromArray: (field, value) => {
     set((state) => {
       if (!state.investor) return state;
+      const fieldValue = state.investor[field];
+      if (!Array.isArray(fieldValue)) return state;
 
       return {
         investor: {
           ...state.investor,
-          [field]: state.investor[field].filter((item) => item !== value),
+          [field]: fieldValue.filter((item: any) => item !== value) as InvestorData[typeof field],
         },
       };
     });

@@ -19,12 +19,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -32,8 +26,6 @@ import {
   Target,
   FileImage,
   Users,
-  MessageSquare,
-  ChevronDown,
   Plus,
   Trash2,
   Save,
@@ -92,10 +84,10 @@ export const safeUrl = (url: string | File | undefined | null): string => {
 };
 
 const placeholders = {
-  cover: "https://source.unsplash.com/random/1200x630/?project",
-  logo: "https://source.unsplash.com/random/400x400/?logo",
-  avatar: (initial: string) => `https://source.unsplash.com/random/100x100/?portrait,${initial}`,
-  video: "https://source.unsplash.com/random/800x450/?video",
+  cover: "data:image/svg+xml,%3csvg width='1200' height='630' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='%23f3f4f6'/%3e%3ctext x='50%25' y='50%25' text-anchor='middle' fill='%239ca3af' font-size='24'%3eCover Image%3c/text%3e%3c/svg%3e",
+  logo: "data:image/svg+xml,%3csvg width='400' height='400' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='%23f3f4f6'/%3e%3ctext x='50%25' y='50%25' text-anchor='middle' fill='%239ca3af' font-size='18'%3eLogo%3c/text%3e%3c/svg%3e",
+  avatar: (initial: string) => `data:image/svg+xml,%3csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='%236366f1'/%3e%3ctext x='50%25' y='50%25' text-anchor='middle' fill='white' font-size='40'%3e${initial}%3c/text%3e%3c/svg%3e`,
+  video: "data:image/svg+xml,%3csvg width='800' height='450' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='%23f3f4f6'/%3e%3ctext x='50%25' y='50%25' text-anchor='middle' fill='%239ca3af' font-size='18'%3eVideo Placeholder%3c/text%3e%3c/svg%3e",
 };
 
 export default function ManageProjectPage({
@@ -107,6 +99,7 @@ export default function ManageProjectPage({
   const projectId = unwrappedParams.id;
   const {
     projects,
+    categories,
     fetchProjects,
     saveProject,
     milestones,
@@ -164,6 +157,7 @@ export default function ManageProjectPage({
       cover_image: placeholders.cover,
       profile_picture: placeholders.logo,
       createdAt: new Date().toDateString(),
+      documents: [],
     };
   }, [projects, projectId]);
   useEffect(() => {
@@ -187,7 +181,40 @@ export default function ManageProjectPage({
   const handleFileChange = (type: 'coverImage' | 'logoImage' | 'video' | 'additionalImage', e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
     const file = e.target.files[0];
-    setMediaFormState({ [type]: file });
+
+    // Validate image format
+    const allowedFormats = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
+    const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
+
+    const fileExtension = file.name.toLowerCase().substring(file.name.lastIndexOf('.'));
+
+    if (!allowedFormats.includes(file.type) && !allowedExtensions.includes(fileExtension)) {
+      alert('Please upload only international image formats: JPG, JPEG, PNG, GIF, WebP, or SVG');
+      // Reset the input
+      e.target.value = '';
+      return;
+    }
+
+    // Additional file size validation (optional - 10MB limit)
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+      alert('Image file size must be less than 10MB');
+      e.target.value = '';
+      return;
+    }
+
+    console.log(`Uploading ${type}:`, file);
+    console.log('File object URL:', URL.createObjectURL(file));
+
+    // Force a state update by creating a new object
+    const newMediaState = { ...mediaFormState, [type]: file };
+    setMediaFormState(newMediaState);
+    setMediaChanged(true);
+
+    // Force component re-render by triggering state update
+    setTimeout(() => {
+      console.log('Current media form state:', mediaFormState);
+    }, 100);
   };
 
   const handlepitch_videoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -204,7 +231,11 @@ export default function ManageProjectPage({
   };
 
   const handleSelectChange = (name: string, value: string) => {
-    setFormState({ [name]: value });
+    if (name === "category") {
+      setFormState({ [name]: value });
+    } else {
+      setFormState({ [name]: value });
+    }
 
     if (formErrors[name]) {
       setFormErrors({ ...formErrors, [name]: "" });
@@ -241,14 +272,14 @@ export default function ManageProjectPage({
 
     try {
       const updatedProject: Partial<Project> = {
-        id: projectId, // Ensure ID is included in the update
+        id: projectId,
         title: formState.title,
         description: formState.description,
-        category: formState.category,
+        category: { id: formState.category, name: formState.category },
         budget: formState.budget,
         tags: formState.tags,
         status: currentProject.status,
-        raised_amount: Number(formState.raised_amount), // Ensure it's a number
+        raised_amount: Number(formState.raised_amount),
       };
 
       if (mediaChanged) {
@@ -349,7 +380,7 @@ export default function ManageProjectPage({
 
         <div className="flex gap-2">
           <Link href={`/udayee/projects/${projectId}/preview`}>
-            <Button variant="outline" className="flex items-center gap-2">
+            <Button variant="outline" className="flex items-center gap-2" disabled={isLoading}>
               <Eye className="h-4 w-4" />
               Preview
             </Button>
@@ -359,8 +390,17 @@ export default function ManageProjectPage({
             className="bg-primary hover:bg-primary/90 text-primary-foreground flex items-center gap-2"
             disabled={isLoading}
           >
-            <Save className="h-4 w-4" />
-            {isLoading ? "Saving..." : "Save Changes"}
+            {isLoading ? (
+              <>
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent mr-2" />
+                Uploading...
+              </>
+            ) : (
+              <>
+                <Save className="h-4 w-4" />
+                Save Changes
+              </>
+            )}
           </Button>
         </div>
       </div>
@@ -369,13 +409,23 @@ export default function ManageProjectPage({
         <CardContent className="flex flex-col md:flex-row justify-between items-start md:items-center py-4">
           <div className="flex items-center gap-3">
             <div className="h-14 w-14 rounded-lg overflow-hidden">
-              <Image
-                src={safeUrl(currentProject.profile_picture)}
-                alt={currentProject.title || "Project"}
-                width={56}
-                height={56}
-                className="object-cover"
-              />
+              {safeUrl(currentProject.profile_picture) && currentProject.profile_picture !== placeholders.logo ? (
+                <Image
+                  src={safeUrl(currentProject.profile_picture)}
+                  alt={currentProject.title || "Project"}
+                  width={56}
+                  height={56}
+                  className="object-cover"
+                  onError={(e) => {
+                    console.log('Project logo load error');
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-muted">
+                  <FileImage className="h-6 w-6 text-muted-foreground/40" />
+                </div>
+              )}
             </div>
             <div>
               <h2 className="text-xl font-semibold">{currentProject.title}</h2>
@@ -512,13 +562,11 @@ export default function ManageProjectPage({
                         <SelectValue placeholder="Select a category" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Environment">Environment</SelectItem>
-                        <SelectItem value="Technology">Technology</SelectItem>
-                        <SelectItem value="Education">Education</SelectItem>
-                        <SelectItem value="Healthcare">Healthcare</SelectItem>
-                        <SelectItem value="Agriculture">Agriculture</SelectItem>
-                        <SelectItem value="Finance">Finance</SelectItem>
-                        <SelectItem value="E-commerce">E-commerce</SelectItem>
+                        {categories.map((category) => (
+                          <SelectItem key={category.id} value={category.id}>
+                            {category.name}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                     {formErrors.category && (
@@ -645,213 +693,164 @@ export default function ManageProjectPage({
               </Button> */}
             </CardHeader>
             <CardContent className="space-y-6">
-                {[...milestones]
+              {[...milestones]
                 .sort((a, b) => {
                   const statusOrder = { "completed": 0, "in-progress": 1, "planned": 2 };
                   return statusOrder[a.status as keyof typeof statusOrder] - statusOrder[b.status as keyof typeof statusOrder];
                 })
                 .map((milestone, index) => (
-                <Card
-                  key={milestone.id}
-                  className="overflow-hidden border-l-4 border-l-primary/40"
-                >
-                  <CardHeader className="bg-muted/40 py-3 px-4">
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full flex items-center justify-center bg-primary text-primary-foreground font-medium text-sm">
-                          {index + 1}
-                        </div>
-                        <Input
-                          readOnly={milestone.status !== "planned"}
-                          value={milestone.title}
-                          onChange={(e) => updateItem('milestone', milestone.id!, 'title', e.target.value)}
-                          className="border-0 bg-transparent px-2 text-base font-medium focus-visible:ring-0 focus-visible:ring-offset-0"
-                        />
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {/* <DropdownMenu> */}
-                        {/* <DropdownMenuTrigger asChild> */}
-                        <Button variant="ghost" className="h-8 px-2">
-                          <Badge
-                            variant={milestone.status === "completed"
-                              ? "default"
-                              : "outline"}
-                            className={`${milestone.status === "completed"
-                              ? "bg-primary/10 text-primary border-primary/20"
-                              : milestone.status === "in-progress"
-                                ? "bg-amber-500/10 text-amber-500 border-amber-500/20"
-                                : "bg-muted text-muted-foreground"
-                              }`}
-                          >
-                            {milestone.status === "completed"
-                              ? "Completed"
-                              : milestone.status === "in-progress"
-                                ? "In Progress"
-                                : "Planned"}
-                          </Badge>
-                          {/* <ChevronDown className="h-4 w-4 ml-1" /> */}
-                        </Button>
-                        {/* </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" >
-                            <DropdownMenuItem
-                              onClick={() => {
-                              updateItem('milestone', milestone.id!, 'status', 'planned'); updateItem('milestone', milestone.id!, 'plannedAt', new Date().toLocaleDateString());
-                              }}
-                              disabled={true}
-                            ></DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => {
-                                updateItem('milestone', milestone.id!, 'status', 'planned'); updateItem('milestone', milestone.id!, 'plannedAt', new Date().toLocaleDateString());
-
-                              }}
-                            >
-                              Planned
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => {
-                                updateItem('milestone', milestone.id!, 'status', 'in-progress');
-                                updateItem('milestone', milestone.id!, 'progress', 0);
-                                updateItem('milestone', milestone.id!, 'raised_amount', 0);
-                                updateItem('milestone', milestone.id!, 'deadlineAt', new Date().toLocaleDateString());
-                                setRaisedAmount();
-
-                              }}
-                            >
-                              In Progress
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => {
-                                updateItem('milestone', milestone.id!, 'status', 'completed');
-                                updateItem('milestone', milestone.id!, 'completedAt', new Date().toLocaleDateString());
-                                updateItem('milestone', milestone.id!, 'raised_amount', milestone.amount);
-                                setRaisedAmount();
-                              }}
-                            >
-                              Completed
-                            </DropdownMenuItem>
-                          </DropdownMenuContent> */}
-                        {/* </DropdownMenu> */}
-                        <Button
-                          variant="destructive"
-                          size="icon"
-                          hidden={milestone.status !== "planned"}
-                          className="h-8 w-8"
-                          onClick={() => deleteItem('milestone', milestone.id!)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="p-4 space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <p className="text-sm font-medium">Description</p>
-                        <Textarea
-                          value={milestone.description}
-                          readOnly={milestone.status !== "planned"}
-                          onChange={(e) => updateItem('milestone', milestone.id!, 'description', e.target.value)}
-                          placeholder="Describe what you'll achieve in this milestone"
-                          className="resize-none h-24"
-                        />
-                      </div>
-
-                      <div className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <p className="text-sm font-medium">
-                              Funding Amount
-                            </p>
-                            <Input
-                              value={milestone.amount}
-                              readOnly={milestone.status !== "planned"}
-                              onChange={(e) => {
-                                const newAmount = e.target.value;
-                                updateItem('milestone', milestone.id!, 'amount', newAmount);
-                                // If milestone is completed, also update the raised_amount to match
-                                if (milestone.status === "completed") {
-                                  updateItem('milestone', milestone.id!, 'raised_amount', newAmount);
-                                  setRaisedAmount();
-                                }
-
-                                // If milestone is in progress, recalculate progress percentage
-                                if (milestone.status === "in-progress" && milestone.raised_amount) {
-                                  const raised = Number(milestone.raised_amount) || 0;
-                                  const amount = Number(newAmount) || 1;
-                                  const newProgress = Math.min(Math.round((raised / amount) * 100), 100);
-                                  updateItem('milestone', milestone.id!, 'progress', newProgress);
-                                }
-                              }}
-                              placeholder="৳0"
-                            />
+                  <Card
+                    key={milestone.id}
+                    className="overflow-hidden border-l-4 border-l-primary/40"
+                  >
+                    <CardHeader className="bg-muted/40 py-3 px-4">
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                          <div className="w-6 h-6 rounded-full flex items-center justify-center bg-primary text-primary-foreground font-medium">
+                            {index + 1}
                           </div>
+                          <Input
+                            readOnly={milestone.status !== "planned"}
+                            value={milestone.title}
+                            onChange={(e) => updateItem('milestone', milestone.id!, 'title', e.target.value)}
+                            className="border-0 bg-transparent px-2 text-base font-medium focus-visible:ring-0 focus-visible:ring-offset-0"
+                          />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button variant="ghost" className="h-8 px-2" disabled>
+                            <Badge
+                              variant={milestone.status === "completed"
+                                ? "default"
+                                : "outline"}
+                              className={`${milestone.status === "completed"
+                                ? "bg-primary/10 text-primary border-primary/20"
+                                : milestone.status === "in-progress"
+                                  ? "bg-amber-500/10 text-amber-500 border-amber-500/20"
+                                  : milestone.status === "declined"
+                                    ? "bg-destructive/10 text-destructive border-destructive/20"
+                                    : "bg-muted text-muted-foreground"
+                                }`}
+                            >
+                              {milestone.status === "completed"
+                                ? "Completed"
+                                : milestone.status === "in-progress"
+                                  ? "In Progress"
+                                  : milestone.status === "declined"
+                                    ? "Declined"
+                                    : "Planned"}
+                            </Badge>
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="icon"
+                            hidden={milestone.status !== "planned"}
+                            className="h-8 w-8"
+                            onClick={() => deleteItem('milestone', milestone.id!)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="p-4 space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <p className="text-sm font-medium">Description</p>
+                          <Textarea
+                            value={milestone.description}
+                            readOnly={milestone.status !== "planned"}
+                            onChange={(e) => updateItem('milestone', milestone.id!, 'description', e.target.value)}
+                            placeholder="Describe what you'll achieve in this milestone"
+                            className="resize-none h-24"
+                          />
+                        </div>
 
-                          {milestone.status === "planned" && (
+                        <div className="space-y-4">
+                          <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                              <p className="text-sm font-medium">Planned</p>
+                              <p className="text-sm font-medium">
+                                Funding Amount
+                              </p>
                               <Input
-                                value={milestone.plannedAt}
-                                readOnly
-                                onChange={(e) => updateItem('milestone', milestone.id!, 'plannedAt', e.target.value)}
-                                placeholder="Month Year"
+                                value={milestone.amount}
+                                readOnly={milestone.status !== "planned"}
+                                onChange={(e) => {
+                                  const newAmount = e.target.value;
+                                  updateItem('milestone', milestone.id!, 'amount', newAmount);
+                                  // If milestone is completed, also update the raised_amount to match
+                                  if (milestone.status === "completed") {
+                                    updateItem('milestone', milestone.id!, 'raised_amount', newAmount);
+                                    setRaisedAmount();
+                                  }
+
+                                  // If milestone is in progress, recalculate progress percentage
+                                  if (milestone.status === "in-progress" && milestone.raised_amount) {
+                                    const raised = Number(milestone.raised_amount) || 0;
+                                    const amount = Number(newAmount) || 1;
+                                    const newProgress = Math.min(Math.round((raised / amount) * 100), 100);
+                                    updateItem('milestone', milestone.id!, 'progress', newProgress);
+                                  }
+                                }}
+                                placeholder="৳0"
                               />
                             </div>
-                          )}
 
-                          {milestone.status === "in-progress" && (
-                            <>
+                            {milestone.status === "planned" && (
                               <div className="space-y-2">
-                                <p className="text-sm font-medium">Deadline</p>
+                                <p className="text-sm font-medium">Planned</p>
                                 <Input
-                                  value={milestone.deadlineAt}
+                                  value={milestone.plannedAt}
                                   readOnly
-                                  onChange={(e) => updateItem('milestone', milestone.id!, 'deadlineAt', e.target.value)}
+                                  onChange={(e) => updateItem('milestone', milestone.id!, 'plannedAt', e.target.value)}
                                   placeholder="Month Year"
                                 />
                               </div>
-                              {/* <div className="space-y-2">
-                                <p className="text-sm font-medium">Raised Amount</p>
-                                <Input
-                                  value={milestone.raised_amount}
-                                  onChange={(e) => {
-                                    const raised_amount = Number(e.target.value);
-                                    const amount = milestone.amount || 1;
-                                    const newProgress = Math.min(Math.round((raised_amount / amount) * 100), 100);
-                                    updateItem('milestone', milestone.id!, 'raised_amount', e.target.value);
-                                    updateItem('milestone', milestone.id!, 'progress', newProgress);
-                                    setRaisedAmount();
+                            )}
 
-                                  }}
-                                  placeholder="৳0"
+                            {milestone.status === "in-progress" && (
+                              <>
+                                <div className="space-y-2">
+                                  <p className="text-sm font-medium">Deadline</p>
+                                  <Input
+                                    value={milestone.deadlineAt}
+                                    readOnly
+                                    onChange={(e) => updateItem('milestone', milestone.id!, 'deadlineAt', e.target.value)}
+                                    placeholder="Month Year"
+                                  />
+                                </div>
+                              </>
+                            )}
+
+                            {milestone.status === "completed" && (
+                              <div className="space-y-2">
+                                <p className="text-sm font-medium">
+                                  Completed Date
+                                </p>
+                                <Input
+                                  value={milestone.completedAt}
+                                  readOnly
+                                  onChange={(e) => updateItem('milestone', milestone.id!, 'completedAt', e.target.value)}
+                                  placeholder="Month Year"
                                 />
                               </div>
-                              <div className="space-y-2 col-span-2">
-                                <div className="flex justify-between">
-                                  <p className="text-sm font-medium">Progress</p>
-                                  <span className="text-sm">
-                                    {milestone.progress}% of ৳{milestone.amount || 0}
-                                  </span>
-                                </div>
-                              </div> */}
-                            </>
-                          )}
+                            )}
 
-                          {milestone.status === "completed" && (
-                            <div className="space-y-2">
-                              <p className="text-sm font-medium">
-                                Completed Date
-                              </p>
-                              <Input
-                                value={milestone.completedAt}
-                                readOnly
-                                onChange={(e) => updateItem('milestone', milestone.id!, 'completedAt', e.target.value)}
-                                placeholder="Month Year"
-                              />
-                            </div>
-                          )}
-                        </div>
+                            {/* {milestone.status === "declined" && (
+                              <div className="space-y-2">
+                                <p className="text-sm font-medium">
+                                  Declined Date
+                                </p>
+                                <Input
+                                  value={milestone.declinedAt}
+                                  readOnly
+                                  onChange={(e) => updateItem('milestone', milestone.id!, 'declinedAt', e.target.value)}
+                                  placeholder="Month Year"
+                                />
+                              </div>
+                            )} */}
+                          </div>
 
-                        {/* {milestone.status === "in-progress" &&
+                          {/* {milestone.status === "in-progress" &&
                           milestone.progress !== undefined && (
                             <div>
                               <Progress
@@ -860,11 +859,11 @@ export default function ManageProjectPage({
                               />
                             </div>
                           )} */}
+                        </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                ))}
             </CardContent>
           </Card>
         </TabsContent>
@@ -889,26 +888,52 @@ export default function ManageProjectPage({
 
                 <div className="border rounded-lg overflow-hidden">
                   <div className="aspect-[2/1] relative bg-muted">
-                    <Image
-                      src={safeUrl(mediaFormState.coverImage)}
-                      alt="Cover image"
-                      fill
-                      className="object-cover"
-                    />
+                    {(() => {
+                      const coverUrl = safeUrl(mediaFormState.coverImage);
+                      const projectUrl = safeUrl(currentProject.cover_image);
+                      const finalUrl = coverUrl || projectUrl;
+
+                      console.log('Cover image URLs:', { coverUrl, projectUrl, finalUrl });
+
+                      return finalUrl ? (
+                        <Image
+                          key={finalUrl} // Force re-render when URL changes
+                          src={finalUrl}
+                          alt="Cover image"
+                          fill
+                          className="object-cover"
+                          unoptimized={finalUrl.startsWith('blob:')} // Disable optimization for blob URLs
+                          onError={(e) => {
+                            console.log('Cover image load error:', e);
+                            e.currentTarget.style.display = 'none';
+                          }}
+                          onLoad={() => {
+                            console.log('Cover image loaded successfully:', finalUrl);
+                          }}
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <div className="text-center">
+                            <FileImage className="h-12 w-12 mx-auto text-muted-foreground/40 mb-2" />
+                            <p className="text-sm text-muted-foreground">No cover image</p>
+                          </div>
+                        </div>
+                      );
+                    })()}
                   </div>
                   <div className="p-4 bg-muted/10 flex justify-end">
                     <label htmlFor="cover-image-upload">
                       <input
                         id="cover-image-upload"
                         type="file"
-                        accept="image/*"
+                        accept="image/jpeg,image/jpg,image/png,image/gif,image/webp,image/svg+xml,.jpg,.jpeg,.png,.gif,.webp,.svg"
                         className="hidden"
                         onChange={(e) => handleFileChange('coverImage', e)}
                       />
                       <Button variant="outline" className="cursor-pointer" asChild>
                         <span>
                           <FileImage className="h-4 w-4 mr-2" />
-                          Change Image
+                          {mediaFormState.coverImage ? 'Change Image' : 'Upload Image'}
                         </span>
                       </Button>
                     </label>
@@ -927,26 +952,49 @@ export default function ManageProjectPage({
 
                 <div className="flex items-center gap-4">
                   <div className="h-24 w-24 rounded-lg overflow-hidden border">
-                    <Image
-                      src={safeUrl(mediaFormState.logoImage)}
-                      alt="Logo image"
-                      width={96}
-                      height={96}
-                      className="object-cover w-full h-full"
-                    />
+                    {(() => {
+                      const logoUrl = safeUrl(mediaFormState.logoImage);
+                      const projectUrl = safeUrl(currentProject.profile_picture);
+                      const finalUrl = logoUrl || projectUrl;
+
+                      console.log('Logo image URLs:', { logoUrl, projectUrl, finalUrl });
+
+                      return finalUrl ? (
+                        <Image
+                          key={finalUrl} // Force re-render when URL changes
+                          src={finalUrl}
+                          alt="Logo image"
+                          width={96}
+                          height={96}
+                          className="object-cover w-full h-full"
+                          unoptimized={finalUrl.startsWith('blob:')} // Disable optimization for blob URLs
+                          onError={(e) => {
+                            console.log('Logo image load error:', e);
+                            e.currentTarget.style.display = 'none';
+                          }}
+                          onLoad={() => {
+                            console.log('Logo image loaded successfully:', finalUrl);
+                          }}
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-muted">
+                          <FileImage className="h-8 w-8 text-muted-foreground/40" />
+                        </div>
+                      );
+                    })()}
                   </div>
                   <label htmlFor="logo-image-upload">
                     <input
                       id="logo-image-upload"
                       type="file"
-                      accept="image/*"
+                      accept="image/jpeg,image/jpg,image/png,image/gif,image/webp,image/svg+xml,.jpg,.jpeg,.png,.gif,.webp,.svg"
                       className="hidden"
                       onChange={(e) => handleFileChange('logoImage', e)}
                     />
                     <Button variant="outline" className="cursor-pointer" asChild>
                       <span>
                         <FileImage className="h-4 w-4 mr-2" />
-                        Change Logo
+                        {mediaFormState.logoImage ? 'Change Logo' : 'Upload Logo'}
                       </span>
                     </Button>
                   </label>
@@ -962,28 +1010,27 @@ export default function ManageProjectPage({
                 </div>
 
                 <div className="border rounded-lg overflow-hidden">
-                  <div className="aspect-video bg-muted">
+                  <div className="aspect-video bg-muted flex items-center justify-center">
                     {mediaFormState.pitch_video ? (
                       <iframe
                         src={safeUrl(mediaFormState.pitch_video)}
                         className="w-full h-full"
                         title="YouTube video player"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
                       ></iframe>
                     ) : (
-                      <Image
-                        src={mediaFormState.pitch_video || placeholders.video}
-                        alt="Video placeholder"
-                        width={800}
-                        height={450}
-                        className="w-full h-auto"
-                      />
+                      <div className="text-center">
+                        <FileImage className="h-12 w-12 mx-auto text-muted-foreground/40 mb-2" />
+                        <p className="text-sm text-muted-foreground">No video added yet</p>
+                      </div>
                     )}
                   </div>
                   <div className="p-4 bg-muted/10">
                     <div className="flex flex-col gap-2">
                       <Input
                         placeholder="Enter YouTube or Vimeo URL"
-                        value={safeUrl(mediaFormState.pitch_video)}
+                        value={mediaFormState.pitch_video || ''}
                         onChange={handlepitch_videoChange}
                       />
                       <p className="text-xs text-muted-foreground">For example: https://www.youtube.com/embed/VIDEO_ID</p>
@@ -1023,21 +1070,19 @@ export default function ManageProjectPage({
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
                           <div className="h-12 w-12 rounded-full overflow-hidden border">
-                            <Image
-                              src={safeUrl(placeholders.avatar(member.initial))}
-                              alt={member.name}
-                              width={48}
-                              height={48}
-                              className="w-full h-full object-cover"
-                            />
+                            <div className="w-full h-full flex items-center justify-center bg-muted text-primary font-medium">
+                              {member.name ? member.name.charAt(0).toUpperCase() : member.initial || 'T'}
+                            </div>
                           </div>
 
                           <div>
                             <Input
                               value={member.name}
-                              onChange={(e) =>
-                                updateItem('teamMember', member.id, 'name', e.target.value)
-                              }
+                              onChange={(e) => {
+                                updateItem('teamMember', member.id, 'name', e.target.value);
+                                // Update initial when name changes
+                                updateItem('teamMember', member.id, 'initial', e.target.value.charAt(0).toUpperCase());
+                              }}
                               className="font-medium border-0 bg-transparent px-0 text-base focus-visible:ring-0 focus-visible:ring-offset-0"
                               placeholder="Team member name"
                             />
@@ -1070,7 +1115,11 @@ export default function ManageProjectPage({
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => deleteItem('teamMember', member.id)}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              deleteItem('teamMember', member.id);
+                            }}
                           >
                             <Trash2 className="h-4 w-4 text-muted-foreground" />
                           </Button>
@@ -1259,23 +1308,32 @@ export default function ManageProjectPage({
                           <div className="flex items-center gap-3">
                             <FileText className="h-8 w-8 text-primary/70" />
                             <div>
-                              <h3 className="font-medium">{doc.document.split('/').pop().split('-').pop()}</h3>
+                              <h3 className="font-medium">
+                                {doc.document ?
+                                  doc.document.split('/').pop()?.split('-').slice(1).join('-') || 'Unknown Document' :
+                                  'Unknown Document'
+                                }
+                              </h3>
                               <p className="text-xs text-muted-foreground">
                                 Added on {formatDate(doc.createdAt)} • {formatFileSize(doc.size)}
                               </p>
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
-                            <a
-                              href={`/${doc.document}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              <Button variant="ghost" size="sm">
+                            {doc.document && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  const url = doc.document.startsWith('/') ? doc.document : `/${doc.document}`;
+                                  window.open(url, '_blank', 'noopener,noreferrer');
+                                }}
+                              >
                                 <FileCheck className="h-4 w-4 mr-1" />
                                 View
                               </Button>
-                            </a>
+                            )}
                             <Button
                               variant="ghost"
                               size="sm"
@@ -1346,12 +1404,12 @@ export default function ManageProjectPage({
       <div className="flex flex-col sm:flex-row justify-between gap-4 pt-4">
         <div className="flex gap-2">
           <Link href={`/udayee/projects`}>
-            <Button variant="outline">Cancel</Button>
+            <Button variant="outline" disabled={isLoading}>Cancel</Button>
           </Link>
         </div>
         <div className="flex gap-2">
           <Link href={`/udayee/projects/${projectId}/preview`}>
-            <Button variant="outline" className="flex items-center gap-2">
+            <Button variant="outline" className="flex items-center gap-2" disabled={isLoading}>
               <Eye className="h-4 w-4" />
               Preview
             </Button>
@@ -1359,9 +1417,19 @@ export default function ManageProjectPage({
           <Button
             onClick={onSubmit}
             className="bg-primary hover:bg-primary/90 text-primary-foreground flex items-center gap-2"
+            disabled={isLoading}
           >
-            <Save className="h-4 w-4" />
-            {isLoading ? "Saving..." : "Save Changes"}
+            {isLoading ? (
+              <>
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
+                Uploading...
+              </>
+            ) : (
+              <>
+                <Save className="h-4 w-4" />
+                Save Changes
+              </>
+            )}
           </Button>
         </div>
       </div>

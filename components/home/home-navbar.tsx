@@ -38,7 +38,7 @@ export function HomeNavbar() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group">
           <span className="text-2xl font-extrabold tracking-tight text-[var(--foreground)] font-poppins transition-colors group-hover:text-[var(--primary)]">
-            Uday
+            FundMyIdea
           </span>
         </Link>
 
