@@ -68,7 +68,7 @@ export async function GET(request: NextRequest) {
           take: 1,
           include: {
             senderUser: { select: { name: true } },
-            senderAdmin: { select: { name: true } },
+            senderAdmin: { select: { id: true, name: true } },
           },
         },
       },
@@ -104,6 +104,11 @@ export async function GET(request: NextRequest) {
 
         return {
           id: project.id.toString(),
+          project: {
+            id: project.id.toString(),
+            name: project.title || "Untitled Project",
+            title: project.title,
+          },
           admin: admin
             ? {
                 id: admin.id.toString(),

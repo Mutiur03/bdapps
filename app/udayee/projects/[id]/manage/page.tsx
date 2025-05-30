@@ -19,12 +19,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -32,8 +26,6 @@ import {
   Target,
   FileImage,
   Users,
-  MessageSquare,
-  ChevronDown,
   Plus,
   Trash2,
   Save,
@@ -165,6 +157,7 @@ export default function ManageProjectPage({
       cover_image: placeholders.cover,
       profile_picture: placeholders.logo,
       createdAt: new Date().toDateString(),
+      documents: [],
     };
   }, [projects, projectId]);
   useEffect(() => {
@@ -833,7 +826,7 @@ export default function ManageProjectPage({
                               </div>
                             )}
 
-                            {milestone.status === "declined" && (
+                            {/* {milestone.status === "declined" && (
                               <div className="space-y-2">
                                 <p className="text-sm font-medium">
                                   Declined Date
@@ -845,7 +838,7 @@ export default function ManageProjectPage({
                                   placeholder="Month Year"
                                 />
                               </div>
-                            )}
+                            )} */}
                           </div>
 
                           {/* {milestone.status === "in-progress" &&

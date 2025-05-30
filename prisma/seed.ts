@@ -11,6 +11,11 @@ async function main() {
     ],
     skipDuplicates: true,
   });
+  const fund = await prisma.fund.create({
+    data: {
+      name: "Main Fund",
+    },
+  });
   console.log({ categories });
 }
 main()

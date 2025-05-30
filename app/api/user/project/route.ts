@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import path from "path";
 import fs from "fs";
+import cloudinary from "@/lib/cloudinary";
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
@@ -239,13 +240,13 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 });
     }
 
-    const filePaths = path.join(
-      process.cwd(),
-      `public/uploads/project_documents/${userId}`
-    );
-    if (!fs.existsSync(filePaths)) {
-      fs.mkdirSync(filePaths, { recursive: true });
-    }
+    // const filePaths = path.join(
+    //   process.cwd(),
+    //   `public/uploads/project_documents/${userId}`
+    // );
+    // if (!fs.existsSync(filePaths)) {
+    //   fs.mkdirSync(filePaths, { recursive: true });
+    // }
 
     interface Milestone {
       title: string;
@@ -313,7 +314,10 @@ export async function PUT(request: Request) {
       });
     }
     const raised_amount = parsedMilestones.reduce((acc, milestone) => {
-      if (milestone.status !== "planned" && milestone.amount) {
+      if (
+        (milestone.status !== "planned" && milestone.status !== "declined") &&
+        milestone.amount
+      ) {
         return acc + Number(milestone.amount);
       }
       return acc;
@@ -332,24 +336,68 @@ export async function PUT(request: Request) {
 
     const profile_picture = body.get("profile_picture");
     if (profile_picture instanceof File) {
-      const profile = profile_picture as File;
-      const profileName = `${Date.now()}-${profile.name}`;
-      const profilePath = path.join(filePaths, profileName);
-      const profileBuffer = await profile.arrayBuffer();
-      const profileUint8Array = new Uint8Array(profileBuffer);
-      fs.writeFileSync(profilePath, profileUint8Array);
-      updateData.profile_picture = `uploads/project_documents/${userId}/${profileName}`;
+      // const profile = profile_picture as File;
+      // const profileName = `${Date.now()}-${profile.name}`;
+      // const profilePath = path.join(filePaths, profileName);
+      // const profileBuffer = await profile.arrayBuffer();
+      // const profileUint8Array = new Uint8Array(profileBuffer);
+      // fs.writeFileSync(profilePath, profileUint8Array);
+      // updateData.profile_picture = `uploads/project_documents/${userId}/${profileName}`;
+      await new Promise<void>((resolve, reject) => {
+        cloudinary.uploader
+          .upload_stream(
+            {
+              resource_type: "auto",
+              folder: `udayee/project_documents/${userId}`,
+            },
+            (error, result) => {
+              if (error) {
+                console.error("Error uploading profile picture:", error);
+                reject(error);
+              } else if (result) {
+                console.log("Profile picture uploaded successfully:", result);
+                updateData.profile_picture = result.secure_url;
+                resolve();
+              } else {
+                reject(new Error("Upload result is undefined"));
+              }
+            }
+          )
+          .end(profile_picture.stream());
+      });
     }
 
     const cover_image = body.get("cover_image");
     if (cover_image instanceof File) {
-      const cover = cover_image as File;
-      const coverName = `${Date.now()}-${cover.name}`;
-      const coverPath = path.join(filePaths, coverName);
-      const coverBuffer = await cover.arrayBuffer();
-      const coverUint8Array = new Uint8Array(coverBuffer);
-      fs.writeFileSync(coverPath, coverUint8Array);
-      updateData.cover_image = `uploads/project_documents/${userId}/${coverName}`;
+      // const cover = cover_image as File;
+      // const coverName = `${Date.now()}-${cover.name}`;
+      // const coverPath = path.join(filePaths, coverName);
+      // const coverBuffer = await cover.arrayBuffer();
+      // const coverUint8Array = new Uint8Array(coverBuffer);
+      // fs.writeFileSync(coverPath, coverUint8Array);
+      // updateData.cover_image = `uploads/project_documents/${userId}/${coverName}`;
+      await new Promise<void>((resolve, reject) => {
+        cloudinary.uploader
+          .upload_stream(
+            {
+              resource_type: "auto",
+              folder: `udayee/project_documents/${userId}`,
+            },
+            (error, result) => {
+              if (error) {
+                console.error("Error uploading cover image:", error);
+                reject(error);
+              } else if (result) {
+                console.log("Cover image uploaded successfully:", result);
+                updateData.cover_image = result.secure_url;
+                resolve();
+              } else {
+                reject(new Error("Upload result is undefined"));
+              }
+            }
+          )
+          .end(cover_image.stream());
+      });
     }
 
     const pitch_video = body.get("pitch_video");
@@ -368,18 +416,44 @@ export async function PUT(request: Request) {
           if (!(document instanceof File)) {
             return null;
           }
-          const file = document as File;
-          const fileName = `${Date.now()}-${file.name}`;
-          const filePath = path.join(filePaths, fileName);
-          const buffer = await file.arrayBuffer();
-          const uint8Array = new Uint8Array(buffer);
-          fs.writeFileSync(filePath, uint8Array);
-          console.log("File saved:", filePath);
+          // const file = document as File;
+          // const fileName = `${Date.now()}-${file.name}`;
+          // const filePath = path.join(filePaths, fileName);
+          // const buffer = await file.arrayBuffer();
+          // const uint8Array = new Uint8Array(buffer);
+          // fs.writeFileSync(filePath, uint8Array);
+          // console.log("File saved:", filePath);
 
-          return {
-            path: `uploads/project_documents/${userId}/${fileName}`,
-            size: file.size, // Store the file size in bytes
-          };
+          // return {
+          //   path: `uploads/project_documents/${userId}/${fileName}`,
+          //   size: file.size, // Store the file size in bytes
+          // };
+          return new Promise<{ path: string; size: number } | null>(
+            (resolve, reject) => {
+              cloudinary.uploader
+                .upload_stream(
+                  {
+                    resource_type: "auto",
+                    folder: `udayee/project_documents/${userId}`,
+                  },
+                  (error, result) => {
+                    if (error) {
+                      console.error("Error uploading document:", error);
+                      reject(error);
+                    } else if (result) {
+                      console.log("Document uploaded successfully:", result);
+                      resolve({
+                        path: result.secure_url,
+                        size: document.size,
+                      });
+                    } else {
+                      reject(new Error("Upload result is undefined"));
+                    }
+                  }
+                )
+                .end(document.stream());
+            }
+          );
         })
       ).then((items) => items.filter((item) => item !== null));
 

@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
   const session = await getServerSession(authOptions);
-  
+
   if (!session || !session.user || (session.user as any).role !== "admin") {
     return NextResponse.json(
       { success: false, message: "Unauthorized" },
@@ -19,6 +19,20 @@ export async function GET(request: Request) {
       where: {
         id: Number(id),
       },
+      include: {
+        Project: {
+          select: {
+            id: true,
+            title: true,
+            description: true,
+            createdAt: true,
+            updatedAt: true,
+            status: true,
+            category: true,
+            raised_amount: true,
+          },
+        },
+      },
     });
     if (!admin) {
       return NextResponse.json(
@@ -27,7 +41,10 @@ export async function GET(request: Request) {
       );
     }
     const { password, ...adminWithoutPassword } = admin;
-    return NextResponse.json({ success: true, data: adminWithoutPassword }, { status: 200 });
+    return NextResponse.json(
+      { success: true, data: adminWithoutPassword },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error fetching admins:", error);
     return NextResponse.json(

@@ -130,7 +130,7 @@ export function HomeHero() {
                     className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-full"
                     transition={{ duration: 0.6 }}
                   />
-                  Join Udayee Now
+                  Join Now
                   <motion.div
                     whileHover={{ x: 5 }}
                     transition={{ type: "spring", stiffness: 400 }}

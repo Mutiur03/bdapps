@@ -24,14 +24,12 @@ import {
 import { safeUrl } from "@/app/udayee/projects/[id]/manage/page";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import useInvestorStore from "@/store/useInvestorStore";
-
+import useAdminStore from "@/store/useAdminStore";
 
 export function StartupBrowser() {
   const [searchQuery, setSearchQuery] = useState("");
-  const { startups, fetchStartups } = useInvestorStore()
+  const { startups, fetchStartups } = useAdminStore()
   useEffect(() => {
-
     fetchStartups();
   }, []);
 
@@ -40,7 +38,7 @@ export function StartupBrowser() {
     (startup) =>
       startup?.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       startup?.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      startup?.category?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      startup?.category?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       startup?.tags?.toLowerCase()?.includes(searchQuery.toLowerCase()) ||
       startup?.user?.name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -179,7 +177,7 @@ export function StartupBrowser() {
             <div className="text-center py-12">
               <p className="text-muted-foreground">
                 Not Found any startups at the moment.
-              </p> 
+              </p>
             </div>
           )}
         </TabsContent>
@@ -187,7 +185,7 @@ export function StartupBrowser() {
     </div>
   );
 }
-import { Startup } from "@/store/useInvestorStore";
+import { Startup } from "@/store/useAdminStore";
 function StartupCard({ startup }: { startup: Startup }) {
   const raised_amount = startup?.raised_amount || "0";
   const budget = startup?.budget || "1";
@@ -202,7 +200,7 @@ function StartupCard({ startup }: { startup: Startup }) {
       <CardImage
         src={
           safeUrl(startup?.cover_image) ||
-          `https://source.unsplash.com/random/800x400?${(startup?.category || "startup").toLowerCase()}`
+          `https://source.unsplash.com/random/800x400?${(startup?.category?.name || "startup").toLowerCase()}`
         }
         alt={`${startup?.title || "Startup"} cover image`}
         aspectRatio="wide"
@@ -240,7 +238,7 @@ function StartupCard({ startup }: { startup: Startup }) {
             variant="outline"
             className="bg-primary/10 text-primary border-primary/20"
           >
-            {startup?.category || "Uncategorized"}
+            {startup?.category?.name || "Uncategorized"}
           </Badge>
         </div>
       </CardHeader>
@@ -257,8 +255,8 @@ function StartupCard({ startup }: { startup: Startup }) {
             <Badge
               key={tag}
               variant="outline"
-              className="text-xs bg-muted/50 text-muted-foreground hover:bg-muted border-muted flex items-center gap-1"
-            >
+              className="bg-primary/10 text-primary border-primary/20 flex items-center gap-1 justify-center"
+              >
               <Tag className="h-3 w-3" />
               {tag}
             </Badge>
@@ -275,7 +273,7 @@ function StartupCard({ startup }: { startup: Startup }) {
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Raised So Far:</span>
             <span className="font-medium text-foreground">
-              {startup?.raised_amount || "N/A"}
+              {startup?.raised_amount || 0}
             </span>
           </div>
           <Progress
@@ -309,7 +307,7 @@ function StartupCard({ startup }: { startup: Startup }) {
               </>
             )}
           </div>
-          <Link href={`/investor/startups/${startup?.id || ""}`}>
+          <Link href={`/startup/${startup?.id || ""}`}>
             <Button
               size="sm"
               className="h-8 text-xs bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-1"

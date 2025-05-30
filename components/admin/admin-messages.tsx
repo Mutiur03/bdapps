@@ -112,7 +112,7 @@ export function AdminMessages() {
               hasUnread = true;
               console.log("Incrementing unread count for user message to:", newUnreadCount);
             }
-          } 
+          }
           else if (updateData.markAsRead && (updateData.readByAdminId?.toString() === currentAdminId?.toString() || updateData.readByAdmin?.id?.toString() === currentAdminId?.toString())) {
             newUnreadCount = 0;
             hasUnread = false;
@@ -297,7 +297,7 @@ export function AdminMessages() {
                       <div className="flex justify-between items-start">
                         <div>
                           <h3 className="font-medium">
-                            {conversation.user?.name || "Unknown User"}
+                            {conversation.user?.name || "Unknown User"}{conversation.title ? ` - ${conversation.title}` : ""}
                           </h3>
                           <p className="text-xs text-muted-foreground">
                             {conversation.title || "Unknown Startup"}

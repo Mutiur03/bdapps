@@ -46,7 +46,7 @@ export async function GET() {
       profile_picture: investor.profile_picture || "",
       bio: investor.bio || "",
       company: investor.company_name || "",
-      role: investor.role || "investor",
+      role: investor.company_role || "",
       experienceYears: investor.experienceYears || "",
       investmentFocus: investor.investmentFocus || [],
       minInvestment: investor.minInvestment || "",
@@ -65,7 +65,7 @@ export async function GET() {
 interface Social {
   id: string;
   title: string;
-    url: string;
+  url: string;
 }
 export async function PUT(req: Request) {
   try {
@@ -74,7 +74,6 @@ export async function PUT(req: Request) {
     if (!session || !session.user || !session.user.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-
     const data = await req.formData();
 
     // Find the investor
@@ -107,7 +106,7 @@ export async function PUT(req: Request) {
     // Format social links for storage
     const focus = JSON.parse(investmentFocus.toString());
     console.log(focus);
-    const stage= JSON.parse(preferredStages.toString());
+    const stage = JSON.parse(preferredStages.toString());
     const customSocialsJson = { links: [] as Social[] };
     if (customSocials) {
       try {
@@ -140,32 +139,33 @@ export async function PUT(req: Request) {
     }
     console.log(investmentFocus);
 
+    // Prepare update data
+    const updateData: any = {
+      name: name.toString(),
+      phone: phone.toString(),
+      company_name: company ? company.toString() : null,
+      company_website: website ? website.toString() : null,
+      location: location ? location.toString() : null,
+      bio: bio ? bio.toString() : null,
+      company_role: role.toString(),
+      experienceYears: experienceYears ? experienceYears.toString() : null,
+      investmentFocus: investmentFocus ? focus : [],
+      minInvestment: Number(minInvestment),
+      maxInvestment: Number(maxInvestment),
+      preferredStages: preferredStages ? stage : [],
+      customSocials: JSON.stringify(customSocialsJson),
+      updatedAt: new Date(),
+    };
+
+    // Only update profile_picture if a new file was uploaded
+    if (profile_picture instanceof File) {
+      updateData.profile_picture = avatar;
+    }
+
     // Update investor profile
     const updatedInvestor = await prisma.investor.update({
       where: { id: investor.id },
-      data: {
-        name: name.toString(),
-        phone: phone.toString(),
-        profile_picture: avatar,
-        company_name: company ? company.toString() : null,
-        company_website: website ? website.toString() : null,
-        location: location ? location.toString() : null,
-        bio: bio ? bio.toString() : null,
-        role: role
-          ? role.toString() === "investor"
-            ? "investor"
-            : role.toString()
-          : "investor",
-        experienceYears: experienceYears ? experienceYears.toString() : null,
-        investmentFocus: investmentFocus ? focus : [],
-        minInvestment: Number(minInvestment),
-        maxInvestment: Number(maxInvestment),
-        preferredStages: preferredStages
-          ? stage
-          : [],
-        customSocials: JSON.stringify(customSocialsJson),
-        updatedAt: new Date(),
-      },
+      data: updateData,
     });
 
     return NextResponse.json({

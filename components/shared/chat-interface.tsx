@@ -151,58 +151,6 @@ const MilestoneRequestForm = ({
   );
 };
 
-// const MilestoneRequestList = ({
-//   requests,
-//   onApprove,
-//   isAdmin
-// }: {
-//   requests: MilestoneRequest[];
-//   onApprove: (id: number) => void;
-//   isAdmin: boolean;
-// }) => {
-//   if (requests.length === 0) return null;
-
-//   return (
-//     <div className="border-b border-border p-4 bg-accent/30">
-//       <h4 className="font-medium mb-3 text-sm text-muted-foreground">
-//         Milestone Requests
-//       </h4>
-//       <div className="space-y-2">
-//         {requests.map((request) => (
-//           <div
-//             key={request.id}
-//             className="bg-background p-3 rounded-md border border-border text-sm"
-//           >
-//             <div className="flex justify-between items-start mb-2">
-//               <p className="font-medium">${request.amount}</p>
-//               <span className="text-xs text-muted-foreground">
-//                 {formatDistanceToNow(new Date(request.createdAt), { addSuffix: true })}
-//               </span>
-//             </div>
-//             <p className="text-muted-foreground mb-2">{request.description}</p>
-//             <div className="flex justify-between items-center">
-//               <span className={`text-xs px-2 py-1 rounded-full ${request.status === 'PENDING'
-//                 ? 'bg-yellow-100 text-yellow-800'
-//                 : 'bg-green-100 text-green-800'
-//                 }`}>
-//                 {request.status}
-//               </span>
-//               {isAdmin && request.status === 'PENDING' && (
-//                 <button
-//                   onClick={() => onApprove(request.id)}
-//                   className="text-xs px-3 py-1 bg-primary text-primary-foreground rounded-md hover:opacity-90"
-//                 >
-//                   Approve
-//                 </button>
-//               )}
-//             </div>
-//           </div>
-//         ))}
-//       </div>
-//     </div>
-//   );
-// };
-
 const MilestoneDetailModal = ({
   milestone,
   isOpen,
@@ -225,7 +173,6 @@ const MilestoneDetailModal = ({
   const [deadline, setDeadline] = useState("");
   const [showApprovalForm, setShowApprovalForm] = useState(false);
 
-  // Reset form states when modal closes
   useEffect(() => {
     if (!isOpen) {
       setDeclineReason("");
@@ -239,7 +186,6 @@ const MilestoneDetailModal = ({
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
-      // case 'pending':
       case 'planned':
         return 'bg-yellow-100 text-yellow-800';
       case 'in-progress':
@@ -302,21 +248,6 @@ const MilestoneDetailModal = ({
               </p>
             </div>
           )}
-
-          {/* {milestone.progress !== undefined && (
-            <div>
-              <label className="block text-sm font-medium mb-1">Progress</label>
-              <div className="flex items-center gap-2">
-                <div className="flex-1 bg-muted rounded-full h-2">
-                  <div
-                    className="bg-primary h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${milestone.progress}%` }}
-                  />
-                </div>
-                <span className="text-xs text-muted-foreground">{milestone.progress}%</span>
-              </div>
-            </div>
-          )} */}
 
           {showDeclineInput && (
             <div>
@@ -441,7 +372,6 @@ const CurrentMilestoneDisplay = ({
 }) => {
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
-      // case 'pending':
       case 'planned':
         return 'bg-yellow-100 text-yellow-800';
       case 'in-progress':
@@ -624,7 +554,6 @@ const ChatInterface = ({
   const messageEndRef = useRef<HTMLDivElement | null>(null);
   const messageContainerRef = useRef<HTMLDivElement | null>(null);
 
-  // Connect to socket and join appropriate room
   useEffect(() => {
     if (!socketInstance) return;
 
@@ -632,7 +561,6 @@ const ChatInterface = ({
       console.log("Socket connected with ID:", socketInstance?.id);
       setSocketConnected(true);
 
-      // Join appropriate room based on user type
       if (currentUserId) {
         const joinData = userType === "user"
           ? { userId: currentUserId }
@@ -656,25 +584,20 @@ const ChatInterface = ({
     const handleMilestoneUpdate = (updateData: any) => {
       console.log("Received milestone update:", updateData);
 
-      // Only handle updates for the current project
       if (updateData.projectId !== project) return;
 
-      // Refresh milestone data based on update type
       refreshMilestoneData();
     };
 
-    // Set up connection event listeners
     socketInstance.on("connect", handleConnect);
     socketInstance.on("disconnect", handleDisconnect);
     socketInstance.on("connect_error", handleConnectError);
     socketInstance.on("milestoneUpdate", handleMilestoneUpdate);
 
-    // Check if socket is already connected
     if (socketInstance.connected) {
       console.log("Socket already connected");
       setSocketConnected(true);
 
-      // Join room if already connected
       if (currentUserId) {
         const joinData = userType === "user"
           ? { userId: currentUserId }
@@ -688,7 +611,6 @@ const ChatInterface = ({
       socketInstance.connect();
     }
 
-    // Cleanup event listeners on unmount
     return () => {
       socketInstance?.off("connect", handleConnect);
       socketInstance?.off("disconnect", handleDisconnect);
@@ -701,7 +623,6 @@ const ChatInterface = ({
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        // Get messages
         const res = await axios.get("/api/messages", {
           params: {
             projectId: project,
@@ -709,7 +630,6 @@ const ChatInterface = ({
         });
         setMessages(res.data);
 
-        // Fetch recipient details
         if (recipientId) {
           console.log(`Fetching ${recipientType} details with ID: ${recipientId}`);
           try {
@@ -742,7 +662,6 @@ const ChatInterface = ({
     }
   }, [recipientId, recipientType, currentUserId, project]);
 
-  // Debugging effect to monitor recipient state changes
   useEffect(() => {
     console.log("Recipient state updated:", recipient);
   }, [recipient]);
@@ -751,9 +670,7 @@ const ChatInterface = ({
     if (messageContainerRef.current && messages.length > 0) {
       const scrollContainer = messageContainerRef.current;
 
-      // Use requestAnimationFrame for smoother scrolling after DOM updates
       requestAnimationFrame(() => {
-        // Add a small delay to ensure all content is rendered
         setTimeout(() => {
           scrollContainer.scrollTop = scrollContainer.scrollHeight;
         }, 200);
@@ -761,17 +678,14 @@ const ChatInterface = ({
     }
   }, [messages]);
 
-  // Add a new effect specifically for handling initial load and refreshes
   useEffect(() => {
     if (!isLoading && messageContainerRef.current && messages.length > 0) {
       const scrollContainer = messageContainerRef.current;
 
-      // Ensure scroll happens after loading is complete and DOM is updated
       const scrollToBottom = () => {
         scrollContainer.scrollTop = scrollContainer.scrollHeight;
       };
 
-      // Try multiple times with increasing delays to handle different rendering scenarios
       setTimeout(scrollToBottom, 100);
       setTimeout(scrollToBottom, 300);
       setTimeout(scrollToBottom, 500);
@@ -784,14 +698,12 @@ const ChatInterface = ({
     const handleNewMessage = (newMessage: Message) => {
       console.log("Received new message:", newMessage);
 
-      // Check if this message is relevant to the current chat
       const isRelevantMessage =
         (newMessage.sender === userType && newMessage.receiver === recipientType) ||
         (newMessage.sender === recipientType && newMessage.receiver === userType);
 
       if (isRelevantMessage) {
         setMessages((prev) => {
-          // Check if message is already in the array (prevent duplicates)
           if (prev.some((msg) => msg.id === newMessage.id)) {
             return prev;
           }
@@ -827,10 +739,8 @@ const ChatInterface = ({
     };
     console.log("Sending message data:", messageData);
 
-    // Emit message via socket
     socketInstance?.emit("message", messageData);
 
-    // Emit messageListUpdate for real-time admin messages page updates
     const messageListUpdateData = {
       projectId: project,
       senderUserId: userType === "user" ? Number(currentUserId) : null,
@@ -850,7 +760,7 @@ const ChatInterface = ({
       },
       senderUser: userType === "user" ? {
         id: Number(currentUserId),
-        name: "Current User", // This should be the actual user's name
+        name: "Current User",
         profile_picture: ""
       } : null,
       user: userType === "user" ? {
@@ -863,7 +773,6 @@ const ChatInterface = ({
     console.log("Emitting messageListUpdate:", messageListUpdateData);
     socketInstance?.emit("messageListUpdate", messageListUpdateData);
 
-    // Also emit newMessage event for additional coverage
     socketInstance?.emit("newMessage", {
       ...messageData,
       content: text
@@ -891,20 +800,17 @@ const ChatInterface = ({
   useEffect(() => {
     const fetchMilestoneStatus = async () => {
       try {
-        // Fetch all milestones for the project
         const res = await axios.get("/api/milestones", {
           params: { projectId: project },
         });
         const milestones = res.data;
 
-        // Check for incomplete milestones (not completed and not declined)
         const incompleteMilestones = milestones.filter((m: any) =>
           m.status !== 'completed' && m.status !== 'declined'
         );
 
         setHasIncompleteMilestones(incompleteMilestones.length > 0);
 
-        // Find the latest pending or in-progress milestone (exclude declined)
         const activeMilestone = milestones
           .filter((m: any) => m.status === 'planned' || m.status === 'in-progress')
           .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
@@ -930,10 +836,8 @@ const ChatInterface = ({
     fetchMilestoneStatus();
   }, [project, milestoneRequests]);
 
-  // Add helper function to refresh milestone data
   const refreshMilestoneData = async () => {
     try {
-      // Refresh milestone requests
       const requestsRes = await axios.get("/api/milestones", {
         params: {
           projectId: project,
@@ -942,20 +846,17 @@ const ChatInterface = ({
       });
       setMilestoneRequests(requestsRes.data);
 
-      // Refresh milestone status
       const res = await axios.get("/api/milestones", {
         params: { projectId: project },
       });
       const milestones = res.data;
 
-      // Update current milestone state (exclude declined milestones)
       const incompleteMilestones = milestones.filter((m: any) =>
         m.status !== 'completed' && m.status !== 'declined'
       );
 
       setHasIncompleteMilestones(incompleteMilestones.length > 0);
 
-      // Find the latest pending or in-progress milestone
       const activeMilestone = milestones
         .filter((m: any) => m.status === 'planned' || m.status === 'in-progress')
         .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
@@ -1022,7 +923,6 @@ const ChatInterface = ({
         });
       }
 
-      // Refresh milestone data
       refreshMilestoneData();
     } catch (error) {
       console.error("Error approving milestone request:", error);
@@ -1038,7 +938,6 @@ const ChatInterface = ({
         adminId: currentUserId,
       });
 
-      // Emit socket event for real-time update
       if (socketInstance) {
         socketInstance.emit("milestoneCompletion", {
           projectId: project,
@@ -1047,7 +946,6 @@ const ChatInterface = ({
         });
       }
 
-      // Refresh milestone data
       refreshMilestoneData();
     } catch (error) {
       console.error("Error completing milestone:", error);
@@ -1064,7 +962,6 @@ const ChatInterface = ({
         reason: reason,
       });
 
-      // Emit socket event for real-time update
       if (socketInstance) {
         socketInstance.emit("milestoneDecline", {
           projectId: project,
@@ -1074,7 +971,6 @@ const ChatInterface = ({
         });
       }
 
-      // Refresh milestone data
       refreshMilestoneData();
     } catch (error) {
       console.error("Error declining milestone:", error);
@@ -1085,20 +981,17 @@ const ChatInterface = ({
   useEffect(() => {
     const fetchMilestoneStatus = async () => {
       try {
-        // Fetch all milestones for the project
         const res = await axios.get("/api/milestones", {
           params: { projectId: project },
         });
         const milestones = res.data;
 
-        // Check for incomplete milestones (not completed and not declined)
         const incompleteMilestones = milestones.filter((m: any) =>
           m.status !== 'completed' && m.status !== 'declined'
         );
 
         setHasIncompleteMilestones(incompleteMilestones.length > 0);
 
-        // Find the latest pending or in-progress milestone (exclude declined)
         const activeMilestone = milestones
           .filter((m: any) => m.status === 'planned' || m.status === 'in-progress')
           .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
@@ -1124,19 +1017,16 @@ const ChatInterface = ({
     fetchMilestoneStatus();
   }, [project, milestoneRequests]);
 
-  // Mark messages as read when chat interface is opened
   useEffect(() => {
     const markMessagesAsRead = async () => {
       if (!currentUserId || !project) return;
 
       try {
-        // Mark messages as read via API
         await axios.post('/api/messages/mark-read', {
           projectId: project,
           userType: userType
         });
 
-        // Also emit socket event for real-time updates with correct ID
         if (socketInstance && socketInstance.connected) {
           const markReadData = userType === 'user'
             ? { projectId: project, userId: currentUserId }
@@ -1150,20 +1040,16 @@ const ChatInterface = ({
       }
     };
 
-    // Mark as read when component mounts and when messages are loaded
     if (!isLoading && messages.length > 0) {
       markMessagesAsRead();
     }
   }, [isLoading, messages.length, currentUserId, project, userType]);
 
-  // Handle read status updates from socket
   useEffect(() => {
     if (!socketInstance) return;
 
     const handleMessagesMarkedRead = (data: any) => {
       console.log("Messages marked as read:", data);
-      // This is mainly for the sender to know their messages were read
-      // We could add read receipts or other UI updates here if needed
     };
 
     socketInstance.on("messagesMarkedRead", handleMessagesMarkedRead);

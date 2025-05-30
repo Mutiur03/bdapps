@@ -292,16 +292,16 @@ async function approveMilestone(body: any) {
     });
 
     // Update category fund if category exists
-    if (milestone.project.categoryId) {
-      await tx.category.update({
-        where: { id: milestone.project.categoryId },
-        data: {
-          fund: {
-            decrement: milestone.amount,
-          },
-        },
-      });
-    }
+    // if (milestone.project.categoryId) {
+    //   await tx.category.update({
+    //     where: { id: milestone.project.categoryId },
+    //     data: {
+    //       fund: {
+    //         decrement: milestone.amount,
+    //       },
+    //     },
+    //   });
+    // }
 
     // Update admin released amount
     const admin = await tx.admin.findUnique({

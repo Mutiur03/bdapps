@@ -15,33 +15,35 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   MessageSquare,
-  DollarSign,
-  Star,
   Calendar,
   Target,
   FileText,
   Users,
   ArrowRight,
-  Play,
   Tag,
 } from "lucide-react";
 import Link from "next/link";
 import { safeUrl } from "@/app/udayee/projects/[id]/manage/page";
-import { MakeOfferDialog } from "@/components/investor/make-offer-dialog";
+import { MakeOfferDialog } from "@/components/admin/make-offer-dialog";
 import { Badge } from "@/components/ui/badge";
-import useInvestorStore from "@/store/useInvestorStore";
-import { start } from "repl";
+import useAdminStore from "@/store/useAdminStore";
+import { useSession } from "next-auth/react";
+
 export function StartupProfile({ id }: { id: string }) {
-  const { startups, fetchStartups } = useInvestorStore();
+  const { data: session, status } = useSession();
+  const { startups, fetchStartups } = useAdminStore();
   const [isOfferDialogOpen, setIsOfferDialogOpen] = useState(false);
   useEffect(() => {
-    if (!startups) {
-      fetchStartups();
-    }
-    console.log("Startups:", startups);
+    const fetchData = async () => {
+      if (!startups) {
+        await fetchStartups();
+      }
+      console.log("Startups:", startups);
+      console.log("Session:", session); // Now you can access session data
+    };
 
-  }
-    , [startups, fetchStartups]);
+    fetchData();
+  }, [startups, fetchStartups, session]);
   const startup = startups?.find((startup) => String(startup.id) === id);
   const fundingProgress =
     (Number.parseInt((startup?.raised_amount?.toString() || "0").replace(/[^0-9]/g, "")) /
@@ -93,7 +95,7 @@ export function StartupProfile({ id }: { id: string }) {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-background/50 backdrop-blur-sm p-4 rounded-lg border shadow-sm">
         <div className="flex items-center gap-3">
           <Badge className="bg-primary/10 text-primary border-primary/20">
-            {startup?.category}
+            {startup?.category?.name}
           </Badge>
           {/* <div className="flex items-center gap-1 text-amber-500">
             <Star className="h-4 w-4 fill-current" />
@@ -103,24 +105,25 @@ export function StartupProfile({ id }: { id: string }) {
             </span>
           </div> */}
         </div>
-        <div className="flex gap-3">
-          <Link href={`/investor/chat/${startup?.id}/${startup?.user?.id}`} className="flex-1">
-            <Button
-              variant="outline"
-              className="flex items-center gap-2 text-foreground hover:bg-muted"
-            >
-              <MessageSquare className="h-4 w-4" />
-              Contact Udayee
-            </Button>
-          </Link>
-          <Button
+        {!startup?.adminId && session?.user && 'role' in session.user && session.user.role === 'admin' && (
+          <div className="flex gap-3">
+            <Link href={`/admin/chat/${startup?.id}/${startup?.user?.id}`} className="flex-1">
+              <Button
+                variant="outline"
+                className="flex items-center gap-2 text-foreground hover:bg-muted"
+              >
+                <MessageSquare className="h-4 w-4" />
+                Contact Udayee
+              </Button>
+            </Link>
+            {/* <Button
             className="bg-primary hover:bg-primary/90 text-primary-foreground flex items-center gap-2"
             onClick={() => setIsOfferDialogOpen(true)}
           >
             <DollarSign className="h-4 w-4" />
             Make an Offer
-          </Button>
-        </div>
+          </Button> */}
+          </div>)}
       </div>
 
       {/* Main Content */}
@@ -144,7 +147,7 @@ export function StartupProfile({ id }: { id: string }) {
 
           {/* Tabs for Details, Milestones, Updates */}
           <Tabs defaultValue="about" className="space-y-4">
-            <TabsList className="grid grid-cols-3 bg-muted text-muted-foreground p-1 rounded-md">
+            <TabsList className="grid grid-cols-2 bg-muted text-muted-foreground p-1 rounded-md">
               <TabsTrigger
                 value="about"
                 className="data-[state=active]:bg-background data-[state=active]:text-foreground"
@@ -157,12 +160,12 @@ export function StartupProfile({ id }: { id: string }) {
               >
                 Milestones
               </TabsTrigger>
-              <TabsTrigger
+              {/* <TabsTrigger
                 value="updates"
                 className="data-[state=active]:bg-background data-[state=active]:text-foreground"
               >
                 Updates
-              </TabsTrigger>
+              </TabsTrigger> */}
             </TabsList>
 
             {/* About Tab */}
@@ -183,7 +186,7 @@ export function StartupProfile({ id }: { id: string }) {
                       <p className="text-sm text-muted-foreground">Founded</p>
                       <p className="font-medium flex items-center gap-2">
                         <Calendar className="h-4 w-4 text-primary" />
-                        {startup?.createdAt}
+                        {startup?.createdAt.split('T')[0]}
                       </p>
                     </div>
                     <div className="space-y-1">
@@ -195,7 +198,7 @@ export function StartupProfile({ id }: { id: string }) {
                     </div>
                     <div className="space-y-1">
                       <p className="text-sm text-muted-foreground">Category</p>
-                      <p className="font-medium">{startup?.category}</p>
+                      <p className="font-medium">{startup?.category?.name}</p>
                     </div>
                     {/* <div className="space-y-1">
                       <p className="text-sm text-muted-foreground">Rating</p>
@@ -207,7 +210,7 @@ export function StartupProfile({ id }: { id: string }) {
                   </div>
 
                   <div className="flex flex-wrap gap-2 mt-6">
-                    {(startup?.tags.split(',') || []).map((tag) => (
+                    {(startup?.tags?.split(',') || []).map((tag) => (
                       <Badge
                         key={tag}
                         variant="outline"

@@ -6,7 +6,7 @@ export interface Milestone {
   id?: string;
   title?: string;
   description?: string;
-  status?: "planned" | "completed" | "in-progress";
+  status?: "planned" | "completed" | "in-progress" | "declined";
   amount?: number;
   progress?: number;
   deadlineAt?: string;
@@ -51,6 +51,7 @@ export interface ProjectMember {
   };
 }
 
+  
 export interface Project {
   id: string;
   title: string;

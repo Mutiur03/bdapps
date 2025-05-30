@@ -48,7 +48,7 @@ export default function SigninPage() {
               Welcome Back
             </span>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-foreground animate-fade-in">
-              Sign In to <span className="text-primary">UdayeeConnect</span>
+              Sign In to <span className="text-primary">FundMyIdea </span>
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto animation-delay-200 animate-fade-in">
               Continue your journey with the UdayeeConnect ecosystem

@@ -64,14 +64,14 @@ export function InvestorLayout({ children }: InvestorLayoutProps) {
         pathname === "/investor/startups" ||
         pathname.startsWith("/investor/startups/"),
     },
-    {
-      href: "/investor/messages",
-      label: "Messages",
-      icon: MessageSquare,
-      active:
-        pathname === "/investor/messages" ||
-        pathname.startsWith("/investor/chat/"),
-    },
+    // {
+    //   href: "/investor/messages",
+    //   label: "Messages",
+    //   icon: MessageSquare,
+    //   active:
+    //     pathname === "/investor/messages" ||
+    //     pathname.startsWith("/investor/chat/"),
+    // },
     {
       href: "/investor/profile",
       label: "My Profile",
@@ -148,7 +148,7 @@ export function InvestorLayout({ children }: InvestorLayoutProps) {
                     <User className="h-5 w-5" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold text-primary">Uday</h2>
+                    <h2 className="text-xl font-bold text-primary">FundMyIdea </h2>
                     <p className="text-xs text-muted-foreground">
                       Investor Portal
                     </p>
@@ -220,7 +220,7 @@ export function InvestorLayout({ children }: InvestorLayoutProps) {
                     <User className="h-5 w-5" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold text-primary">Uday</h2>
+                    <h2 className="text-xl font-bold text-primary">FundMyIdea </h2>
                     <p className="text-xs text-muted-foreground">
                       Investor Portal
                     </p>

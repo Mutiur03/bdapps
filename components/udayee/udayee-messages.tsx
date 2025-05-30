@@ -27,6 +27,11 @@ export function UdayeeMessages() {
 
   interface Conversation {
     id: string;
+    title?: string;
+    project?: {
+      id: string;
+      title?: string;
+    };
     admin: {
       id: string;
       name: string;
@@ -158,6 +163,10 @@ export function UdayeeMessages() {
           // Create new conversation with unread count of 1
           const newConversation: Conversation = {
             id: updateData.projectId,
+            project: updateData.project ? {
+              id: updateData.project.id || updateData.projectId,
+              title: updateData.project.title || "Untitled Project"
+            } : undefined,
             admin: {
               id: (updateData.senderAdmin?.id || updateData.senderAdminId || "unknown").toString(),
               name: updateData.senderAdmin?.name || "Admin",
@@ -233,6 +242,23 @@ export function UdayeeMessages() {
       setLoading(true);
       const response = await axios.get("/api/user/project/msg");
       console.log("User conversations data:", response.data);
+
+      // Enhanced debugging to understand data structure
+      if (response.data && response.data.length > 0) {
+        console.log("First conversation keys:", Object.keys(response.data[0]));
+        console.log("Sample conversation:", JSON.stringify(response.data[0], null, 2));
+
+        // Check for different possible project field names
+        const firstConv = response.data[0];
+        console.log("Checking project fields:", {
+          project: firstConv.project,
+          Project: firstConv.Project,
+          projectData: firstConv.projectData,
+          projectName: firstConv.projectName,
+          title: firstConv.title
+        });
+      }
+
       setConversations(response.data)
     } catch (error) {
       console.error("Error fetching conversations:", error);
@@ -247,7 +273,9 @@ export function UdayeeMessages() {
 
   const filteredConversations = conversations.filter(
     (conv) =>
-      conv.admin?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+      conv.admin?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      conv.project?.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      conv.title?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -313,6 +341,7 @@ export function UdayeeMessages() {
                         <div>
                           <h3 className="font-medium">
                             {conversation.admin?.name}
+                            {conversation.project?.title && ` - ${conversation.project.title}`}
                           </h3>
                         </div>
                         <div className="flex items-center gap-2">

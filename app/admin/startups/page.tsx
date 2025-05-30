@@ -1,5 +1,5 @@
 import { AdminLayout } from "@/components/admin/admin-layout";
-import { StartupBrowser } from "@/components/admin/startup-browser";
+import { StartupBrowser } from "@/components/shared/startup-browser";
 
 export default function StartupBrowsePage() {
   return (

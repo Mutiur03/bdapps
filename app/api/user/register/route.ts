@@ -3,18 +3,19 @@ import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
 import fs from "fs";
 import path from "path";
+import cloudinary from "@/lib/cloudinary";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.formData();
 
-    const uploadDir = path.join(
-      process.cwd(),
-      "public/uploads/verification_data"
-    );
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
+    // const uploadDir = path.join(
+    //   process.cwd(),
+    //   "public/uploads/verification_data"
+    // );
+    // if (!fs.existsSync(uploadDir)) {
+    //   fs.mkdirSync(uploadDir, { recursive: true });
+    // }
     console.log(Object.fromEntries(body.entries()));
     const existingUser = await prisma.user.findFirst({
       where: {
@@ -42,13 +43,33 @@ export async function POST(request: NextRequest) {
     for (const field of fileFields) {
       const file = body.get(field) as File;
       if (file && file instanceof File) {
-        const uniqueFilename = `${Date.now()}-${file.name}`;
-        const filePath = path.join(uploadDir, uniqueFilename);
+        await new Promise<void>((resolve, reject) => {
+          cloudinary.uploader.upload_stream(
+            {
+              resource_type: "auto",
+              folder: "udayee/verification_data",
+            },
+            (error, result) => {
+              if (error) {
+                console.error(`Error uploading ${field}:`, error);
+                reject(error);
+              } else if (result) {
+                console.log(`Uploaded ${field} successfully:`, result);
+                uploadedFiles[field] = result.secure_url;
+                resolve();
+              } else {
+                reject(new Error('Upload result is undefined'));
+              }
+            }
+          ).end(file.stream());
+        });
+        // const uniqueFilename = `${Date.now()}-${file.name}`;
+        // const filePath = path.join(uploadDir, uniqueFilename);
 
-        const fileBuffer = Buffer.from(await file.arrayBuffer());
-        fs.writeFileSync(filePath, fileBuffer);
+        // const fileBuffer = Buffer.from(await file.arrayBuffer());
+        // fs.writeFileSync(filePath, fileBuffer);
 
-        uploadedFiles[field] = `/uploads/verification_data/${uniqueFilename}`;
+        // uploadedFiles[field] = `/uploads/verification_data/${uniqueFilename}`;
       }
     }
 

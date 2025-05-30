@@ -35,7 +35,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const { admin, fetchAdmin } = useAdminStore(); // Uncomment when admin store is created
+  const { admin, fetchAdmin, fetchStartups, fetchInvestments } = useAdminStore(); // Uncomment when admin store is created
 
 
   useEffect(() => {
@@ -44,12 +44,14 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       try {
         await fetchAdmin();
         console.log("Admin data loaded:", admin);
-        
+
       } catch (err) {
         console.error("Failed to fetch admin data:", err);
       }
     }
     loadAdminData();
+    fetchInvestments();
+    fetchStartups();
   }, []);
 
   const routes = [
@@ -61,7 +63,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     },
     {
       href: "/admin/investments",
-      label: "investments",
+      label: "Investments",
       icon: FileText,
       active:
         pathname === "/admin/investments" ||
@@ -158,7 +160,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     <Shield className="h-5 w-5" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold text-primary">Uday</h2>
+                    <h2 className="text-xl font-bold text-primary">FundMyIdea</h2>
                     <p className="text-xs text-muted-foreground">
                       Admin Portal
                     </p>
@@ -230,7 +232,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     <Shield className="h-5 w-5" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold text-primary">Uday</h2>
+                    <h2 className="text-xl font-bold text-primary">FundMyIdea</h2>
                     <p className="text-xs text-muted-foreground">
                       Admin Portal
                     </p>

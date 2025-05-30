@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import fs from "fs";
 import path from "path";
-
-const prisma = new PrismaClient();
+import prisma from "@/lib/prisma";
 
 export async function PUT(request: NextRequest) {
   try {
@@ -57,7 +55,7 @@ export async function PUT(request: NextRequest) {
       updatedAt: new Date(),
     };
     console.log(profilePicture);
-    
+
     // Handle profile picture upload
     if (
       profilePicture &&
@@ -154,23 +152,19 @@ export async function GET(request: NextRequest) {
 
     const admin = await prisma.admin.findUnique({
       where: { id: adminId },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        phone: true,
-        location: true,
-        bio: true,
-        profile_picture: true,
-        company: true,
-        companyRole: true,
-        experienceYears: true,
-        customSocials: true,
-        role: true,
-        permissions: true,
-        createdAt: true,
-        updatedAt: true,
-        lastLogin: true,
+      include: {
+        Project: {
+          select: {
+            id: true,
+            title: true,
+            description: true,
+            createdAt: true,
+            updatedAt: true,
+            status: true,
+            category: true,
+            raised_amount: true,
+          },
+        },
       },
     });
 
@@ -178,7 +172,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Admin not found" }, { status: 404 });
     }
 
-    // Ensure customSocials is always an array
     const adminData = {
       ...admin,
       customSocials: Array.isArray(admin.customSocials)

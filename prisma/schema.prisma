@@ -46,29 +46,29 @@ model User {
 }
 
 model Investor {
-  id                  Int               @id @default(autoincrement())
-  email               String?           @unique
-  phone               String?           @unique
+  id                  Int          @id @default(autoincrement())
+  email               String?      @unique
+  phone               String?      @unique
   password            String
   name                String?
   profile_picture     String?
   company_name        String?
   company_website     String?
   company_description String?
+  company_role        String?
   location            String?
   bio                 String?
-  role                String            @default("investor")
+  role                String       @default("investor")
   experienceYears     String?
-  investmentFocus     String[]          @default([])
+  investmentFocus     String[]     @default([])
   minInvestment       Int?
   maxInvestment       Int?
-  preferredStages     String[]          @default([])
-  customSocials       Json?             @default("{\"links\":[]}")
-  isActivated         Boolean           @default(true)
-  projectInvestors    ProjectInvestor[]
+  preferredStages     String[]     @default([])
+  customSocials       Json?        @default("{\"links\":[]}")
+  isActivated         Boolean      @default(true)
   investments         Investment[]
-  createdAt           DateTime          @default(now())
-  updatedAt           DateTime          @updatedAt
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
 }
 
 model Project {
@@ -92,7 +92,6 @@ model Project {
   user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   projectMembers   ProjectMember[]
   projectInvestors ProjectInvestor[]
-  investments      Investment[]
   milestones       Milestone[]
   documents        Documents[]
   message          Message[]
@@ -121,8 +120,7 @@ model ProjectInvestor {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @default(now())
 
-  project  Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  investor Investor @relation(fields: [investorId], references: [id])
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@unique([projectId, investorId])
 }
@@ -130,13 +128,11 @@ model ProjectInvestor {
 model Investment {
   id         Int      @id @default(autoincrement())
   amount     Float
-  projectId  Int
   investorId Int
   createdAt  DateTime @default(now())
   updatedAt  DateTime @default(now())
 
-  project  Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  investor Investor @relation(fields: [investorId], references: [id])
+  investor Investor  @relation(fields: [investorId], references: [id])
 }
 
 model Milestone {
@@ -226,9 +222,16 @@ model Admin {
 model Category {
   id        Int      @id @default(autoincrement())
   name      String   @unique
-  fund      Int?     @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  projects Project[]
+  projects   Project[]
+}
+
+model Fund {
+  id        Int      @id @default(autoincrement())
+  name      String?  @unique
+  amount    Float    @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

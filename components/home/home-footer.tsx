@@ -18,7 +18,7 @@ export function HomeFooter() {
           <div className="lg:col-span-1">
             <Link href="/" className="flex items-center">
               <span className="text-xl sm:text-2xl font-bold text-primary">
-                Uday
+                FundMyIdea
               </span>
             </Link>
             <p className="mt-4 text-sm text-secondary">

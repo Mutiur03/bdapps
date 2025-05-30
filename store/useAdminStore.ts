@@ -23,6 +23,7 @@ export interface Startup {
   image?: string;
   logo?: string;
   createdAt: string;
+  status: string;
   adminId: number | null;
   admin: {
     id: string;
@@ -86,7 +87,22 @@ export interface AdminData {
   experienceYears: string;
   customSocials: SocialLink[];
   createdAt: string;
+  released_amount?: number;
   lastLogin: string;
+  Project: {
+    id: string;
+    title: string;
+    profile_picture: string;
+    cover_image: string;
+    university: string;
+    description: string;
+    budget: string;
+    pitch_video: string;
+    raised_amount: string;
+    category: { id: string; name: string };
+    tags: string;
+    status: string;
+  }[] | [];
 }
 
 // export interface InvestorProfile {
@@ -120,11 +136,20 @@ export interface PlatformStats {
 interface AdminStore {
   admin: AdminData | null;
   loading: boolean;
+  investments: {
+    id: string;
+    amount: number;
+    startupId: string;
+    startupTitle: string;
+    investorId: string;
+    investorName: string;
+    createdAt: string;
+  }[];
   error: string | null;
   startups: Startup[] | null;
   // investors: InvestorProfile[] | null;
   stats: PlatformStats | null;
-
+  fetchInvestments: () => Promise<void>;
   fetchAdmin: () => Promise<void>;
   updateAdmin: (data: Partial<AdminData>) => Promise<void>;
   updateAdminField: <K extends keyof AdminData>(
@@ -160,6 +185,25 @@ const useAdminStore = create<AdminStore>((set, get) => ({
   startups: null,
   // investors: null,
   stats: null,
+  investments: [],
+
+  fetchInvestments: async () => {
+    set({ loading: true, error: null });
+    try {
+      const response = await axios.get("/api/admin/investments");
+      console.log("Fetched investments:", response.data);
+      set({ investments: response.data, loading: false });
+    } catch (error) {
+      console.error("Error fetching investments:", error);
+      set({
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to fetch investments",
+        loading: false,
+      });
+    }
+  },
 
   fetchStartups: async () => {
     set({ loading: true, error: null });
