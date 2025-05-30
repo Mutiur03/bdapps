@@ -4,6 +4,53 @@ import prisma from "@/lib/prisma";
 import fs from "fs";
 import path from "path";
 import cloudinary from "@/lib/cloudinary";
+import sharp from "sharp";
+
+// Add image compression function
+async function compressImage(file: File): Promise<Buffer> {
+  const buffer = Buffer.from(await file.arrayBuffer());
+  const isJpeg = file.type === "image/jpeg" || file.type === "image/jpg";
+  const isPng = file.type === "image/png";
+
+  let compressed = sharp(buffer);
+
+  // Start with high quality and reduce only if needed
+  if (isJpeg) {
+    compressed = compressed.jpeg({ quality: 85 });
+  } else if (isPng) {
+    compressed = compressed.png({ quality: 85 });
+  } else {
+    // Convert other formats to JPEG
+    compressed = compressed.jpeg({ quality: 85 });
+  }
+
+  let result = await compressed.toBuffer();
+
+  // If still too large, reduce quality further
+  if (result.length > 500 * 1024) {
+    if (isJpeg || !isPng) {
+      result = await sharp(buffer).jpeg({ quality: 70 }).toBuffer();
+    } else {
+      result = await sharp(buffer).png({ quality: 70 }).toBuffer();
+    }
+  }
+
+  // Final check - if still too large, use lower quality
+  if (result.length > 500 * 1024) {
+    if (isJpeg || !isPng) {
+      result = await sharp(buffer).jpeg({ quality: 50 }).toBuffer();
+    } else {
+      result = await sharp(buffer).png({ quality: 50 }).toBuffer();
+    }
+  }
+
+  // Last resort - very low quality
+  if (result.length > 500 * 1024) {
+    result = await sharp(buffer).jpeg({ quality: 30 }).toBuffer();
+  }
+
+  return result;
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -43,33 +90,31 @@ export async function POST(request: NextRequest) {
     for (const field of fileFields) {
       const file = body.get(field) as File;
       if (file && file instanceof File) {
+        // Compress image before upload
+        const compressedBuffer = await compressImage(file);
+
         await new Promise<void>((resolve, reject) => {
-          cloudinary.uploader.upload_stream(
-            {
-              resource_type: "auto",
-              folder: "udayee/verification_data",
-            },
-            (error, result) => {
-              if (error) {
-                console.error(`Error uploading ${field}:`, error);
-                reject(error);
-              } else if (result) {
-                console.log(`Uploaded ${field} successfully:`, result);
-                uploadedFiles[field] = result.secure_url;
-                resolve();
-              } else {
-                reject(new Error('Upload result is undefined'));
+          cloudinary.uploader
+            .upload_stream(
+              {
+                resource_type: "auto",
+                folder: "udayee/verification_data",
+              },
+              (error, result) => {
+                if (error) {
+                  console.error(`Error uploading ${field}:`, error);
+                  reject(error);
+                } else if (result) {
+                  console.log(`Uploaded ${field} successfully:`, result);
+                  uploadedFiles[field] = result.secure_url;
+                  resolve();
+                } else {
+                  reject(new Error("Upload result is undefined"));
+                }
               }
-            }
-          ).end(file.stream());
+            )
+            .end(compressedBuffer);
         });
-        // const uniqueFilename = `${Date.now()}-${file.name}`;
-        // const filePath = path.join(uploadDir, uniqueFilename);
-
-        // const fileBuffer = Buffer.from(await file.arrayBuffer());
-        // fs.writeFileSync(filePath, fileBuffer);
-
-        // uploadedFiles[field] = `/uploads/verification_data/${uniqueFilename}`;
       }
     }
 

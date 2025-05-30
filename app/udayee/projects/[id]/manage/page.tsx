@@ -380,7 +380,7 @@ export default function ManageProjectPage({
 
         <div className="flex gap-2">
           <Link href={`/udayee/projects/${projectId}/preview`}>
-            <Button variant="outline" className="flex items-center gap-2">
+            <Button variant="outline" className="flex items-center gap-2" disabled={isLoading}>
               <Eye className="h-4 w-4" />
               Preview
             </Button>
@@ -390,8 +390,17 @@ export default function ManageProjectPage({
             className="bg-primary hover:bg-primary/90 text-primary-foreground flex items-center gap-2"
             disabled={isLoading}
           >
-            <Save className="h-4 w-4" />
-            {isLoading ? "Saving..." : "Save Changes"}
+            {isLoading ? (
+              <>
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent mr-2" />
+                Uploading...
+              </>
+            ) : (
+              <>
+                <Save className="h-4 w-4" />
+                Save Changes
+              </>
+            )}
           </Button>
         </div>
       </div>
@@ -1395,12 +1404,12 @@ export default function ManageProjectPage({
       <div className="flex flex-col sm:flex-row justify-between gap-4 pt-4">
         <div className="flex gap-2">
           <Link href={`/udayee/projects`}>
-            <Button variant="outline">Cancel</Button>
+            <Button variant="outline" disabled={isLoading}>Cancel</Button>
           </Link>
         </div>
         <div className="flex gap-2">
           <Link href={`/udayee/projects/${projectId}/preview`}>
-            <Button variant="outline" className="flex items-center gap-2">
+            <Button variant="outline" className="flex items-center gap-2" disabled={isLoading}>
               <Eye className="h-4 w-4" />
               Preview
             </Button>
@@ -1408,9 +1417,19 @@ export default function ManageProjectPage({
           <Button
             onClick={onSubmit}
             className="bg-primary hover:bg-primary/90 text-primary-foreground flex items-center gap-2"
+            disabled={isLoading}
           >
-            <Save className="h-4 w-4" />
-            {isLoading ? "Saving..." : "Save Changes"}
+            {isLoading ? (
+              <>
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
+                Uploading...
+              </>
+            ) : (
+              <>
+                <Save className="h-4 w-4" />
+                Save Changes
+              </>
+            )}
           </Button>
         </div>
       </div>
