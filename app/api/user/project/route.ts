@@ -8,7 +8,7 @@ import cloudinary from "@/lib/cloudinary";
 import sharp from "sharp";
 
 // Helper function to compress image to max 500KB
-export async function compressImage(buffer: ArrayBuffer): Promise<Buffer> {
+async function compressImage(buffer: ArrayBuffer): Promise<Buffer> {
   let quality = 90;
   let compressedBuffer: Buffer;
 

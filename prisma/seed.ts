@@ -11,8 +11,12 @@ async function main() {
     ],
     skipDuplicates: true,
   });
-  const fund = await prisma.fund.create({
-    data: {
+  const fund = await prisma.fund.upsert({
+    where: {
+      name: "Main Fund",
+    },
+    update: {},
+    create: {
       name: "Main Fund",
     },
   });

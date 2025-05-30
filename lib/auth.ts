@@ -1,23 +1,26 @@
 import { NextAuthOptions } from "next-auth";
+import { DefaultSession } from "next-auth";
 
-declare module "next-auth" {
-  interface Session {
-    user: {
-      id: string;
-      role: string;
-      isActivated?: boolean;
-      remember?: boolean; // Add remember property
-    };
-  }
-  interface User {
-    id: string;
-    role: string;
-    email?: string;
-    phone?: string;
-    isActivated?: boolean;
-    remember?: boolean; // Add remember property
-  }
-}
+// declare module "next-auth" {
+//   interface Session {
+//     user: {
+//       id: string;
+//     } & DefaultSession["user"] & {
+//       role: string;
+//       isActivated?: boolean;
+//       remember?: boolean;
+//     };
+//   }
+
+//   interface User {
+//     id: string;
+//     role: string;
+//     email?: string;
+//     phone?: string;
+//     isActivated?: boolean;
+//     remember?: boolean;
+//   }
+// }
 
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
@@ -158,13 +161,20 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.role = user.role;
-        token.isActivated = user.isActivated;
-        token.remember = user.remember; // Store remember preference in token
+        // Only assign custom fields if they exist on user
+        if ("role" in user) {
+          token.role = user.role;
+        }
+        if ("isActivated" in user) {
+          token.isActivated = user.isActivated;
+        }
+        if ("remember" in user) {
+          token.remember = user.remember;
+        }
       }
       return token;
     },
-    async session({ session, token }: { session; token }) {
+    async session({ session, token }: { session: any; token: any }) {
       if (token) {
         session.user.id = token.id as string;
         session.user.role = token.role as string;

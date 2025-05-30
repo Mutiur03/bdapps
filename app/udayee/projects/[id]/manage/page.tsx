@@ -1,5 +1,5 @@
 "use client";
-
+import safeUrl from "@/lib/safeURL";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Card,
@@ -38,50 +38,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Project, useProjectStore } from "@/store/useProjectStore";
 
-// Helper function to safely validate and format URLs
-export const safeUrl = (url: string | File | undefined | null): string => {
-  if (!url) return "";
 
-  if (url instanceof File) {
-    return URL.createObjectURL(url);
-  }
-
-  // Ensure url is a string before using string methods
-  if (typeof url !== 'string') {
-    return "";
-  }
-
-  const youtubeMatch = url.match(/(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([^&]+)/);
-  const shortYoutubeMatch = url.match(/(?:https?:\/\/)?youtu\.be\/([^?]+)/);
-  const shortsMatch = url.match(/(?:https?:\/\/)?(?:www\.)?youtube\.com\/shorts\/([^?&]+)/);
-  const vimeoMatch = url.match(/(?:https?:\/\/)?vimeo\.com\/(\d+)/);
-
-  if (youtubeMatch) {
-    return `https://www.youtube.com/embed/${youtubeMatch[1]}`;
-  }
-
-  if (shortYoutubeMatch) {
-    return `https://www.youtube.com/embed/${shortYoutubeMatch[1]}`;
-  }
-
-  if (shortsMatch) {
-    return `https://www.youtube.com/embed/${shortsMatch[1]}`;
-  }
-
-  if (vimeoMatch) {
-    return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
-  }
-
-  if (url.startsWith('data:') || url.startsWith('http://') || url.startsWith('https://')) {
-    return url;
-  }
-
-  if (!url.startsWith('/')) {
-    return `/${url}`;
-  }
-
-  return url;
-};
 
 const placeholders = {
   cover: "data:image/svg+xml,%3csvg width='1200' height='630' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='%23f3f4f6'/%3e%3ctext x='50%25' y='50%25' text-anchor='middle' fill='%239ca3af' font-size='24'%3eCover Image%3c/text%3e%3c/svg%3e",

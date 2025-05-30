@@ -23,7 +23,7 @@ import {
   Tag,
 } from "lucide-react";
 import Link from "next/link";
-import { safeUrl } from "@/app/udayee/projects/[id]/manage/page";
+import safeUrl from "@/lib/safeURL";
 import { MakeOfferDialog } from "@/components/admin/make-offer-dialog";
 import { Badge } from "@/components/ui/badge";
 import useAdminStore from "@/store/useAdminStore";

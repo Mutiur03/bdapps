@@ -4,7 +4,7 @@ import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 import { io, Socket } from "socket.io-client";
 import axios from "axios";
-import { safeUrl } from "@/app/udayee/projects/[id]/manage/page";
+import safeUrl from "@/lib/safeURL";
 let socketInstance: Socket | null = null;
 
 if (typeof window !== "undefined" && !socketInstance) {

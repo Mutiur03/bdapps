@@ -97,7 +97,10 @@ interface InvestorStore {
     value: InvestorData[K]
   ) => void;
   fetchStartups: () => Promise<void>;
-  addItemToArray: <K extends keyof InvestorData>(field: K, item: InvestorData[K] extends (infer U)[] ? U : never) => void;
+  addItemToArray: <K extends keyof InvestorData>(
+    field: K,
+    item: InvestorData[K] extends (infer U)[] ? U : never
+  ) => void;
   removeItemFromArray: <K extends keyof InvestorData>(
     field: K,
     item: InvestorData[K] extends (infer U)[] ? U : never
@@ -223,7 +226,7 @@ const useInvestorStore = create<InvestorStore>((set, get) => ({
       if (!state.investor) return state;
       const fieldValue = state.investor[field];
       if (!Array.isArray(fieldValue)) return state;
-      if (fieldValue.includes(value)) return state;
+      if ((fieldValue as any[]).includes(value)) return state;
 
       return {
         investor: {
@@ -243,7 +246,9 @@ const useInvestorStore = create<InvestorStore>((set, get) => ({
       return {
         investor: {
           ...state.investor,
-          [field]: fieldValue.filter((item: any) => item !== value) as InvestorData[typeof field],
+          [field]: fieldValue.filter(
+            (item: any) => item !== value
+          ) as InvestorData[typeof field],
         },
       };
     });

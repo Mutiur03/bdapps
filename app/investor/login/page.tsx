@@ -1,12 +1,12 @@
 "use client"
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, Suspense } from 'react'
 import { signIn } from "next-auth/react"
 import { useSearchParams } from 'next/navigation';
 import useUserStore from '@/store/useUserStore';
 import axios from 'axios';
 
 
-function Page() {
+function LoginForm() {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [error, setError] = useState("")
@@ -86,6 +86,14 @@ function Page() {
             </div>
         </div>
     )
+}
+
+function Page() {
+    return (
+        <Suspense>
+            <LoginForm />
+        </Suspense>
+    );
 }
 
 export default Page

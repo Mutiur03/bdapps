@@ -5,12 +5,14 @@ import { authOptions } from "@/lib/auth"; // You may need to adjust this import 
 import { redirect } from "next/navigation";
 
 interface PageParams {
-  params: {
+  params: Promise<{
     id: string, projectid: string
-  };
+  }>;
 }
 
 export default async function UdayeeChatPage({ params }: PageParams) {
+  // Await the params
+  const { id, projectid } = await params;
 
   // Get session server-side
   const session = await getServerSession(authOptions);
@@ -27,8 +29,8 @@ export default async function UdayeeChatPage({ params }: PageParams) {
   return (
     <UdayeeLayout>
       <ChatInterface
-        recipientId={params.id}
-        project={params.projectid}
+        recipientId={id}
+        project={projectid}
         recipientType="admin"
         userType="user"
         currentUserId={userId}
