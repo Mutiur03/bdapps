@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import path from "path";
 import fs from "fs";
+import { uploadFileToCloudinary } from "@/lib/udloadFile";
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
@@ -124,18 +125,11 @@ export async function PUT(req: Request) {
     }
     let avatar = "";
     if (profile_picture instanceof File) {
-      const uploadDir = path.join(
-        process.cwd(),
-        "public/uploads/profile_pictures"
+      const upload = await uploadFileToCloudinary(
+        profile_picture as File,
+        "investor/profile_pictures"
       );
-      if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir, { recursive: true });
-      }
-      const profile_picture_name = `${Date.now()}-${profile_picture.name}`;
-      const profile_picture_path = `public/uploads/profile_pictures/${profile_picture_name}`;
-      const fileBuffer = Buffer.from(await profile_picture.arrayBuffer());
-      fs.writeFileSync(profile_picture_path, fileBuffer);
-      avatar = `/uploads/profile_pictures/${profile_picture_name}`;
+      avatar = upload.url;
     }
     console.log(investmentFocus);
 

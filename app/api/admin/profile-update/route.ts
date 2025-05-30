@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import fs from "fs";
 import path from "path";
 import prisma from "@/lib/prisma";
+import { uploadFileToCloudinary } from "@/lib/udloadFile";
 
 export async function PUT(request: NextRequest) {
   try {
@@ -19,7 +20,6 @@ export async function PUT(request: NextRequest) {
     const formData = await request.formData();
     const adminId = parseInt(session.user.id);
 
-    // Extract form fields
     const name = formData.get("name") as string;
     const email = formData.get("email") as string;
     const phone = formData.get("phone") as string;
@@ -57,34 +57,14 @@ export async function PUT(request: NextRequest) {
     console.log(profilePicture);
 
     // Handle profile picture upload
-    if (
-      profilePicture &&
-      profilePicture instanceof File &&
-      profilePicture.size > 0
-    ) {
+    if (profilePicture) {
       try {
-        const arrayBuffer = await profilePicture.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
+        const uploadResult = await uploadFileToCloudinary(
+          profilePicture,
+          "admin/profile_pictures"
+        );
 
-        // Save file to public directory
-        const fileExt = profilePicture.name.split(".").pop() || "jpg";
-        const fileName = `admin-${adminId}-${Date.now()}.${fileExt}`;
-        const filePath = `./public/uploads/admin-profiles/${fileName}`;
-
-        // Ensure directory exists
-        const uploadDir = path.dirname(filePath);
-        if (!fs.existsSync(uploadDir)) {
-          fs.mkdirSync(uploadDir, { recursive: true });
-        }
-
-        // Write the file
-        fs.writeFileSync(filePath, buffer);
-
-        const uploadResult = {
-          secure_url: `/uploads/admin-profiles/${fileName}`,
-        };
-
-        updateData.profile_picture = uploadResult.secure_url;
+        updateData.profile_picture = uploadResult.url;
       } catch (uploadError) {
         console.error("Error uploading profile picture:", uploadError);
         return NextResponse.json(

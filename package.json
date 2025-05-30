@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev --turbo & nodemon server.mts",
+    "dev": "nodemon",
     "build": "tsc --project tsconfig.server.json && prisma generate && prisma migrate deploy && prisma db seed && next build",
-    "start": "node dist/server.mjs & next start",
+    "start": "node dist/server.mjs",
     "lint": "next lint",
     "db:seed": "prisma generate && prisma db seed"
   },

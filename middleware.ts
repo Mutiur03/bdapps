@@ -1,10 +1,9 @@
 import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
 
 export default withAuth(
-  async function middleware(req) {
-    const token = await getToken({ req });
+  function middleware(req) {
+    const token = req.nextauth.token;
     const { pathname } = req.nextUrl;
 
     if (
@@ -15,6 +14,7 @@ export default withAuth(
     ) {
       return NextResponse.redirect(new URL("/", req.url));
     }
+
     if (
       !token &&
       (pathname.startsWith("/udayee") || pathname.startsWith("/investor")) &&
@@ -22,19 +22,15 @@ export default withAuth(
     ) {
       return NextResponse.redirect(new URL("/signin", req.url));
     }
-    if (token && token?.role === "user" && !pathname.startsWith("/udayee")) {
+
+    if (token?.role === "user" && !pathname.startsWith("/udayee")) {
       return NextResponse.redirect(new URL("/udayee/dashboard", req.url));
     }
-    if (
-      token &&
-      token?.role === "investor" &&
-      !pathname.startsWith("/investor")
-    ) {
+
+    if (token?.role === "investor" && !pathname.startsWith("/investor")) {
       return NextResponse.redirect(new URL("/investor/dashboard", req.url));
     }
-    // if (token && token?.role === "admin" && !pathname.startsWith("/admin")) {
-    //   return NextResponse.redirect(new URL("/admin/dashboard", req.url));
-    // }
+
     return NextResponse.next();
   },
   {
@@ -49,6 +45,7 @@ export default withAuth(
         ) {
           return true;
         }
+
         if (
           !token &&
           (pathname.startsWith("/signin") ||
@@ -58,24 +55,24 @@ export default withAuth(
           return true;
         }
 
-        if (token && token.role === "user" && pathname.startsWith("/udayee")) {
+        if (token?.role === "user" && pathname.startsWith("/udayee")) {
           return true;
         }
-        if (
-          token &&
-          token.role === "investor" &&
-          pathname.startsWith("/investor")
-        ) {
+
+        if (token?.role === "investor" && pathname.startsWith("/investor")) {
           return true;
         }
-        if (token && token.role === "admin" && pathname.startsWith("/admin")) {
+
+        if (token?.role === "admin" && pathname.startsWith("/admin")) {
           return true;
         }
+
         return !!token;
       },
     },
   }
 );
+
 export const config = {
   matcher: [
     "/",
@@ -89,6 +86,3 @@ export const config = {
     "/admin/:path*",
   ],
 };
-// export const config = {
-//   matcher: [],
-// };

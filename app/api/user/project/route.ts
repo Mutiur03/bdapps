@@ -2,29 +2,11 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import path from "path";
-import fs from "fs";
-import cloudinary from "@/lib/cloudinary";
-import sharp from "sharp";
+import { uploadFileToCloudinary } from "@/lib/udloadFile";
 
-// Helper function to compress image to max 500KB
-async function compressImage(buffer: ArrayBuffer): Promise<Buffer> {
-  let quality = 90;
-  let compressedBuffer: Buffer;
 
-  do {
-    compressedBuffer = await sharp(Buffer.from(buffer))
-      .jpeg({ quality, mozjpeg: true })
-      .toBuffer();
-
-    if (compressedBuffer.length <= 500 * 1024 || quality <= 10) {
-      break;
-    }
-
-    quality -= 10;
-  } while (compressedBuffer.length > 500 * 1024);
-
-  return compressedBuffer;
+function getFileSize(file: File): number {
+  return file.size;
 }
 
 export async function POST(request: Request) {
@@ -50,98 +32,7 @@ export async function POST(request: Request) {
       start_date,
       status,
     } = Object.fromEntries(body.entries());
-    const documents = body.getAll("documents");
-    const filePaths = path.join(
-      process.cwd(),
-      `public/uploads/project_documents/${userId}`
-    );
-    if (!fs.existsSync(filePaths)) {
-      fs.mkdirSync(filePaths, { recursive: true });
-    }
-    const fileNames = await Promise.all(
-      documents?.map(async (document: FormDataEntryValue) => {
-        if (!(document instanceof File)) {
-          throw new Error("Document is not a file");
-        }
-        const file = document as File;
-        const fileName = `${Date.now()}-${file.name}`;
 
-        const filePath = path.join(filePaths, fileName);
-        const buffer = await file.arrayBuffer();
-        const uint8Array = new Uint8Array(buffer);
-        fs.writeFileSync(filePath, uint8Array);
-        return `uploads/project_documents/${userId}/` + fileName;
-      })
-    );
-    const profile = profile_picture as File;
-    const cover = cover_image as File;
-
-    // Compress profile picture
-    const profileBuffer = await profile?.arrayBuffer();
-    const compressedProfileBuffer = profileBuffer
-      ? await compressImage(profileBuffer)
-      : null;
-
-    // Compress cover image
-    const coverBuffer = await cover?.arrayBuffer();
-    const compressedCoverBuffer = coverBuffer
-      ? await compressImage(coverBuffer)
-      : null;
-
-    let profile_picture_url = "";
-    let cover_image_url = "";
-
-    // Upload compressed profile picture to Cloudinary
-    if (compressedProfileBuffer) {
-      await new Promise<void>((resolve, reject) => {
-        cloudinary.uploader
-          .upload_stream(
-            {
-              resource_type: "auto",
-              folder: `udayee/project_documents/${userId}`,
-              timeout: 60000,
-            },
-            (error, result) => {
-              if (error) {
-                console.error("Error uploading profile picture:", error);
-                reject(error);
-              } else if (result) {
-                profile_picture_url = result.secure_url;
-                resolve();
-              } else {
-                reject(new Error("Upload result is undefined"));
-              }
-            }
-          )
-          .end(compressedProfileBuffer);
-      });
-    }
-
-    // Upload compressed cover image to Cloudinary
-    if (compressedCoverBuffer) {
-      await new Promise<void>((resolve, reject) => {
-        cloudinary.uploader
-          .upload_stream(
-            {
-              resource_type: "auto",
-              folder: `udayee/project_documents/${userId}`,
-              timeout: 60000,
-            },
-            (error, result) => {
-              if (error) {
-                console.error("Error uploading cover image:", error);
-                reject(error);
-              } else if (result) {
-                cover_image_url = result.secure_url;
-                resolve();
-              } else {
-                reject(new Error("Upload result is undefined"));
-              }
-            }
-          )
-          .end(compressedCoverBuffer);
-      });
-    }
     const res = await prisma.project.create({
       data: {
         title: title?.toString(),
@@ -149,17 +40,6 @@ export async function POST(request: Request) {
         budget: parseFloat(budget?.toString() || "0"),
         categoryId: category ? Number(category) : null,
         userId: Number(userId),
-        profile_picture: profile_picture_url,
-        cover_image: cover_image_url,
-        pitch_video: pitch_video?.toString(),
-        documents: {
-          createMany: {
-            data: fileNames?.map((fileName) => ({
-              document: fileName as string,
-              size: null,
-            })),
-          },
-        },
         location: location?.toString(),
         start_date: start_date?.toString(),
         status: status.toString(),
@@ -174,7 +54,6 @@ export async function POST(request: Request) {
       profile_picture,
       cover_image,
       pitch_video,
-      documents,
       location,
       start_date,
       status,
@@ -412,41 +291,18 @@ export async function PUT(request: Request) {
     };
 
     const profile_picture = body.get("profile_picture");
-    if (
-      profile_picture &&
-      typeof profile_picture === "object" &&
-      "stream" in profile_picture
-    ) {
+    if (profile_picture) {
       try {
-        const buffer = await profile_picture.arrayBuffer();
-        const compressedBuffer = await compressImage(buffer);
-
-        await new Promise<void>((resolve, reject) => {
-          cloudinary.uploader
-            .upload_stream(
-              {
-                resource_type: "auto",
-                folder: `udayee/project_documents/${userId}`,
-                timeout: 60000, // 60 seconds timeout
-              },
-              (error, result) => {
-                if (error) {
-                  console.error("Error uploading profile picture:", error);
-                  reject(error);
-                } else if (result) {
-                  console.log("Profile picture uploaded successfully:", result);
-                  updateData.profile_picture = result.secure_url;
-                  resolve();
-                } else {
-                  reject(new Error("Upload result is undefined"));
-                }
-              }
-            )
-            .end(compressedBuffer);
-        });
+        const profileSize = getFileSize(profile_picture as File);
+        const upload = await uploadFileToCloudinary(
+          profile_picture as File,
+          `udayee/project_documents/${userId}`
+        );
+        updateData.profile_picture = upload.url;
+        // Store size if needed in a separate field or log it
+        console.log("Profile picture size:", profileSize, "bytes");
       } catch (error) {
         console.error("Error processing profile picture:", error);
-        // Continue without updating profile picture if upload fails
       }
     }
 
@@ -457,32 +313,13 @@ export async function PUT(request: Request) {
       "stream" in cover_image
     ) {
       try {
-        const buffer = await cover_image.arrayBuffer();
-        const compressedBuffer = await compressImage(buffer);
-
-        await new Promise<void>((resolve, reject) => {
-          cloudinary.uploader
-            .upload_stream(
-              {
-                resource_type: "auto",
-                folder: `udayee/project_documents/${userId}`,
-                timeout: 60000, // 60 seconds timeout
-              },
-              (error, result) => {
-                if (error) {
-                  console.error("Error uploading cover image:", error);
-                  reject(error);
-                } else if (result) {
-                  console.log("Cover image uploaded successfully:", result);
-                  updateData.cover_image = result.secure_url;
-                  resolve();
-                } else {
-                  reject(new Error("Upload result is undefined"));
-                }
-              }
-            )
-            .end(compressedBuffer);
-        });
+        const coverSize = getFileSize(cover_image as File);
+        const upload = await uploadFileToCloudinary(
+          cover_image as File,
+          `udayee/project_documents/${userId}`
+        );
+        updateData.cover_image = upload.url;
+        console.log("Cover image size:", coverSize, "bytes");
       } catch (error) {
         console.error("Error processing cover image:", error);
         // Continue without updating cover image if upload fails
@@ -502,43 +339,20 @@ export async function PUT(request: Request) {
     if (newDocuments && newDocuments.length > 0) {
       const newFileNames = await Promise.all(
         newDocuments.map(async (document: FormDataEntryValue) => {
-          if (
-            !(document && typeof document === "object" && "stream" in document)
-          ) {
+          if (!document) {
             return null;
           }
 
           try {
-            const buffer = await document.arrayBuffer();
-            const uint8Array = new Uint8Array(buffer);
-
-            return new Promise<{ path: string; size: number } | null>(
-              (resolve, reject) => {
-                cloudinary.uploader
-                  .upload_stream(
-                    {
-                      resource_type: "auto",
-                      folder: `udayee/project_documents/${userId}`,
-                      timeout: 60000, // 60 seconds timeout
-                    },
-                    (error, result) => {
-                      if (error) {
-                        console.error("Error uploading document:", error);
-                        reject(error);
-                      } else if (result) {
-                        console.log("Document uploaded successfully:", result);
-                        resolve({
-                          path: result.secure_url,
-                          size: document.size,
-                        });
-                      } else {
-                        reject(new Error("Upload result is undefined"));
-                      }
-                    }
-                  )
-                  .end(uint8Array);
-              }
+            const documentSize = getFileSize(document as File);
+            const upload = await uploadFileToCloudinary(
+              document as File,
+              `udayee/project_documents/${userId}`
             );
+            return {
+              url: upload.url,
+              size: documentSize,
+            };
           } catch (error) {
             console.error("Error processing document:", error);
             return null;
@@ -551,8 +365,8 @@ export async function PUT(request: Request) {
         await prisma.documents.createMany({
           data: newFileNames.map((fileInfo) => ({
             projectId: Number(projectId),
-            document: fileInfo.path as string,
-            size: fileInfo.size, // Store the file size in database
+            document: fileInfo.url,
+            size: fileInfo.size,
           })),
         });
       }
@@ -584,7 +398,7 @@ export async function PUT(request: Request) {
       data: updateData,
       include: {
         milestones: true,
-        documents: true, // Include documents in the response
+        documents: true, 
       },
     });
     return NextResponse.json(

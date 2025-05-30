@@ -704,10 +704,19 @@ const ChatInterface = ({
 
       if (isRelevantMessage) {
         setMessages((prev) => {
-          if (prev.some((msg) => msg.id === newMessage.id)) {
-            return prev;
+          // Remove temporary message if this is the server response
+          const filteredMessages = prev.filter(msg =>
+            !(typeof msg.id === 'string' && msg.id.startsWith('temp-')) ||
+            msg.content !== newMessage.content ||
+            msg.sender !== newMessage.sender
+          );
+
+          // Check if message already exists (avoid duplicates)
+          if (filteredMessages.some((msg) => msg.id === newMessage.id)) {
+            return filteredMessages;
           }
-          return [...prev, newMessage];
+
+          return [...filteredMessages, newMessage];
         });
       }
     };
@@ -725,6 +734,19 @@ const ChatInterface = ({
       alert("Connection to chat server not available. Please refresh the page.");
       return;
     }
+
+    // Create temporary message for immediate display
+    const tempMessage: Message = {
+      id: `temp-${Date.now()}`,
+      content: text,
+      sender: userType,
+      receiver: recipientType,
+      createdAt: new Date().toISOString(),
+      image: image ? URL.createObjectURL(image) : undefined,
+    };
+
+    // Add message immediately to UI for instant feedback
+    setMessages((prev) => [...prev, tempMessage]);
 
     const messageData = {
       content: text,
