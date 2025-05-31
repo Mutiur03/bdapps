@@ -13,6 +13,17 @@ export default withAuth(
         pathname.endsWith("/onboarding"))
     ) {
       return NextResponse.redirect(new URL("/", req.url));
+    } else if (
+      token &&
+      (pathname === "/" || pathname === "/about" || pathname === "/contact")
+    ) {
+      if (token.role === "user") {
+        return NextResponse.redirect(new URL("/udayee/dashboard", req.url));
+      } else if (token.role === "investor") {
+        return NextResponse.redirect(new URL("/investor/dashboard", req.url));
+      } else if (token.role === "admin") {
+        return NextResponse.redirect(new URL("/admin/dashboard", req.url));
+      }
     }
 
     if (
@@ -29,6 +40,9 @@ export default withAuth(
 
     if (token?.role === "investor" && !pathname.startsWith("/investor")) {
       return NextResponse.redirect(new URL("/investor/dashboard", req.url));
+    }
+    if (token?.role === "admin" && !pathname.startsWith("/admin")) {
+      return NextResponse.redirect(new URL("/admin/dashboard", req.url));
     }
 
     return NextResponse.next();

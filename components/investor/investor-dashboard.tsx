@@ -268,7 +268,7 @@ export function InvestorDashboard() {
       )}
 
       {/* Quick Actions - Added to match the udayee dashboard structure */}
-      <div className="space-y-4">
+      {/* <div className="space-y-4">
         <h2 className="text-xl font-semibold text-primary">Quick Actions</h2>
         <div className="grid gap-4 md:grid-cols-3">
           <Link href="/investor/startups">
@@ -319,7 +319,7 @@ export function InvestorDashboard() {
             </Card>
           </Link>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

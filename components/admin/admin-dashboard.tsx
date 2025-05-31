@@ -390,7 +390,7 @@ export function AdminDashboard() {
       </Tabs>
 
       {/* Quick Actions - Admin specific actions */}
-      <div className="space-y-4">
+      {/* <div className="space-y-4">
         <h2 className="text-xl font-semibold text-primary">Admin Actions</h2>
         <div className="grid gap-4 md:grid-cols-3">
           <Link href="/admin/applications">
@@ -441,7 +441,7 @@ export function AdminDashboard() {
             </Card>
           </Link>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

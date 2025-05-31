@@ -657,7 +657,7 @@ const AdminInvestments = () => {
       </motion.div>
 
       {/* Quick Actions */}
-      <motion.div variants={fadeInUp} initial="initial" animate="animate">
+      {/* <motion.div variants={fadeInUp} initial="initial" animate="animate">
         <Card>
           <CardHeader>
             <CardTitle>Quick Actions</CardTitle>
@@ -682,7 +682,7 @@ const AdminInvestments = () => {
             </div>
           </CardContent>
         </Card>
-      </motion.div>
+      </motion.div> */}
     </div>
   );
 };

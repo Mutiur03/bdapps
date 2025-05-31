@@ -25,7 +25,7 @@ export async function uploadFileToCloudinary(
     console.log(result);
     
     return {
-      url: result.secure_url,
+      url: isImage ? result.secure_url : result.url,
     };
   } catch (error) {
     throw new Error(`Failed to upload file to Cloudinary: ${error}`);

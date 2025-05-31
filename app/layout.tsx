@@ -3,6 +3,7 @@ import "@/app/globals.css";
 import type { Metadata } from "next";
 import { Toaster } from "react-hot-toast";
 import { SessionProviderWrapper } from "@/components/providers/session-provider";
+import Projects from "@/components/root/Projects";
 export const metadata: Metadata = {
   title: "UdayeeConnect - Connecting Student Founders with Investors",
   description:
@@ -19,15 +20,15 @@ export default function RootLayout({
     <html lang="en">
       <body
         cz-shortcut-listen="true"
-        // className={cn(
-        //   "min-h-screen bg-[hsl(var(--background))] text-[hsl(var(--foreground))] font-sans antialiased",
-        //   inter.className
-        // )}
-        // className="bg-gradient-to-br from-primary/30 via-cyan-500/10 to-background"
+      // className={cn(
+      //   "min-h-screen bg-[hsl(var(--background))] text-[hsl(var(--foreground))] font-sans antialiased",
+      //   inter.className
+      // )}
+      // className="bg-gradient-to-br from-primary/30 via-cyan-500/10 to-background"
       >
         <SessionProviderWrapper>
           <Toaster />
-
+          <Projects />
           {children}
         </SessionProviderWrapper>
       </body>

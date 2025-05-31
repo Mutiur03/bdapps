@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import {
   Card,
@@ -26,12 +25,11 @@ import Link from "next/link";
 import safeUrl from "@/lib/safeURL";
 import { MakeOfferDialog } from "@/components/admin/make-offer-dialog";
 import { Badge } from "@/components/ui/badge";
-import useAdminStore from "@/store/useAdminStore";
 import { useSession } from "next-auth/react";
-
+import { useCommonStore } from "@/store/useCommonStore";
 export function StartupProfile({ id }: { id: string }) {
   const { data: session, status } = useSession();
-  const { startups, fetchStartups } = useAdminStore();
+  const { startups, fetchStartups } = useCommonStore();
   const [isOfferDialogOpen, setIsOfferDialogOpen] = useState(false);
   useEffect(() => {
     const fetchData = async () => {
@@ -97,13 +95,6 @@ export function StartupProfile({ id }: { id: string }) {
           <Badge className="bg-primary/10 text-primary border-primary/20">
             {startup?.category?.name}
           </Badge>
-          {/* <div className="flex items-center gap-1 text-amber-500">
-            <Star className="h-4 w-4 fill-current" />
-            <span className="font-medium">{startup.rating}</span>
-            <span className="text-muted-foreground text-sm">
-              ({startup.reviewCount})
-            </span>
-          </div> */}
         </div>
         {!startup?.adminId && session?.user && 'role' in session.user && session.user.role === 'admin' && (
           <div className="flex gap-3">

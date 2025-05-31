@@ -32,8 +32,6 @@ export function StartupBrowser() {
   useEffect(() => {
     fetchStartups();
   }, []);
-
-  // Filter startups based on search query
   const filteredStartups = startups?.filter(
     (startup) =>
       startup?.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -43,7 +41,6 @@ export function StartupBrowser() {
       startup?.user?.name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Get trending startups
   const trendingStartups = startups?.filter((startup) => startup?.trending);
   const addedRecentlyStartups = startups?.filter(
     (startup) => new Date(startup.createdAt) >= new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)

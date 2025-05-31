@@ -1281,11 +1281,8 @@ export default function ManageProjectPage({
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  const url = doc.document.startsWith('/') ? doc.document : `/${doc.document}`;
-                                  window.open(url, '_blank', 'noopener,noreferrer');
-                                }}
+                                onClick={() => window.open(safeUrl(doc.document), '_blank')}
+
                               >
                                 <FileCheck className="h-4 w-4 mr-1" />
                                 View
