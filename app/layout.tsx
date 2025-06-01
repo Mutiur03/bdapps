@@ -4,10 +4,9 @@ import type { Metadata } from "next";
 import { Toaster } from "react-hot-toast";
 import { SessionProviderWrapper } from "@/components/providers/session-provider";
 export const metadata: Metadata = {
-  title: "UdayeeConnect - Connecting Student Founders with Investors",
+  title: "Fundit",
   description:
     "A platform for student founders to connect with investors and bring their ideas to life",
-  generator: "v0.dev",
 };
 
 export default function RootLayout({
@@ -26,7 +25,6 @@ export default function RootLayout({
       >
         <SessionProviderWrapper>
           <Toaster />
-
           {children}
         </SessionProviderWrapper>
       </body>
