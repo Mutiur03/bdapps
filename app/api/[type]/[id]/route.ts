@@ -5,11 +5,19 @@ export async function GET(
   { params }: { params: Promise<{ type: string; id: string }> }
 ) {
   const { type, id } = await params;
+  console.log(`Fetching ${type} with ID: ${id}`);
+  
+  if (!id || isNaN(Number(id))) {
+    return new Response("Invalid or missing ID", { status: 400 });
+  }
+
+  const numericId = Number(id);
   let res;
+
   if (type === "user") {
     res = await prisma.user.findUnique({
       where: {
-        id: Number(id),
+        id: numericId,
       },
       select: {
         name: true,
@@ -19,7 +27,7 @@ export async function GET(
   } else if (type === "investor") {
     res = await prisma.investor.findUnique({
       where: {
-        id: Number(id),
+        id: numericId,
       },
       select: {
         name: true,
@@ -29,7 +37,7 @@ export async function GET(
   } else if (type === "admin") {
     res = await prisma.admin.findUnique({
       where: {
-        id: Number(id),
+        id: numericId,
       },
       select: {
         name: true,

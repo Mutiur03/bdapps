@@ -3,14 +3,14 @@ import { HomeHero } from "@/components/home/home-hero";
 import { PopularStartups } from "@/components/home/popular-startups";
 import { HomeFooter } from "@/components/home/home-footer";
 
-export default function Home() {
+export default function HomePage() {
+
   return (
     <div className="min-h-screen bg-[hsl(var(--background))] text-[hsl(var(--foreground))]">
       <HomeNavbar />
       <HomeHero />
       <PopularStartups />
       <HomeFooter />
-
     </div>
   );
 }

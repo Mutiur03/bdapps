@@ -61,6 +61,7 @@ export function InvestorProfile() {
     addSocialLink,
     removeSocialLink,
     fetchInvestor,
+    isSubmitting,
   } = useInvestorStore();
 
   // State for dialog
@@ -281,8 +282,8 @@ export function InvestorProfile() {
               </div>
             </CardContent>
             <CardFooter className="flex justify-end border-t p-4">
-              <Button disabled={loading} onClick={handleSubmit}>
-                {loading ? "Saving..." : "Save Changes"}
+              <Button disabled={isSubmitting} onClick={handleSubmit}>
+                {isSubmitting ? "Saving..." : "Save Changes"}
               </Button>
             </CardFooter>
           </Card>

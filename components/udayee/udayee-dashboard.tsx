@@ -1,3 +1,4 @@
+'use client'
 import type React from "react";
 import {
   Card,
@@ -17,85 +18,42 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { useProjectStore } from "@/store/useProjectStore";
+import { useEffect } from "react";
 
 export function UdayeeDashboard() {
-  // Mock data - in a real app, this would come from an API
-  const startupStats = {
-    totalRaised: "৳18,000",
-    fundingGoal: "৳25,000",
-    activeInvestors: 3,
-    completedMilestones: 2,
-    pendingMilestones: 2,
-    rating: 4.8,
-    totalProjects: 3,
-    activeProjects: 2,
+  const { projects, fetchProjects } = useProjectStore();
+
+  useEffect(() => {
+    fetchProjects();
+  }, [fetchProjects]);
+
+  const calculateStats = () => {
+    const activeProjects = projects.filter((p) => p.status === "active").length;
+    const totalRaised = projects.reduce(
+      (sum, project) => sum + (project.raised_amount || 0),
+      0
+    );
+    const totalBudget = projects.reduce(
+      (sum, project) => sum + (project.budget || 0),
+      0
+    );
+
+    return {
+      totalRaised: `৳${totalRaised.toLocaleString()}`,
+      fundingGoal: `৳${totalBudget.toLocaleString()}`,
+      activeInvestors: 3,
+      rating: 4.8,
+      totalProjects: projects.length,
+      activeProjects,
+    };
   };
 
-  const activeInvestments = [
-    {
-      id: "1",
-      investorName: "Ayesha Khan",
-      company: "Green Ventures",
-      amount: "৳8,000",
-      milestone: "Prototype Development",
-      status: "completed",
-      completedDate: "July 15, 2023",
-      project: "EcoSolutions",
-    },
-    {
-      id: "2",
-      investorName: "Karim Rahman",
-      company: "Tech Angels",
-      amount: "৳7,000",
-      milestone: "Pilot Testing",
-      status: "in_progress",
-      progress: 85,
-      deadline: "May 15, 2025",
-      project: "EcoSolutions",
-    },
-    {
-      id: "3",
-      investorName: "Sadia Ahmed",
-      company: "Impact Investors",
-      amount: "৳3,000",
-      milestone: "Market Research & Validation",
-      status: "completed",
-      completedDate: "March 10, 2023",
-      project: "StudyBuddy",
-    },
-  ];
+  const startupStats = calculateStats();
 
-  const recentMessages = [
-    {
-      id: "1",
-      investorName: "Ayesha Khan",
-      company: "Green Ventures",
-      message:
-        "I'm impressed with your progress on the pilot testing. Looking forward to seeing the results!",
-      time: "2 hours ago",
-      project: "EcoSolutions",
-    },
-    {
-      id: "2",
-      investorName: "Karim Rahman",
-      company: "Tech Angels",
-      message:
-        "Can you share more details about your technology? I'd like to understand how the IoT sensors work.",
-      time: "Yesterday",
-      project: "EcoSolutions",
-    },
-    {
-      id: "3",
-      investorName: "Sadia Ahmed",
-      company: "Impact Investors",
-      message:
-        "I'm considering investing in your next milestone. Let's discuss the details.",
-      time: "3 days ago",
-      project: "StudyBuddy",
-    },
-  ];
+  const activeProjects = projects.filter((p) => p.status === "active");
+  const recentProjects = projects.slice(0, 3);
 
-  // Calculate funding progress
   const fundingProgress =
     (Number.parseInt(startupStats.totalRaised.replace(/[^0-9]/g, "")) /
       Number.parseInt(startupStats.fundingGoal.replace(/[^0-9]/g, ""))) *
@@ -112,7 +70,6 @@ export function UdayeeDashboard() {
         </p>
       </div>
 
-      {/* Projects Overview */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
           <CardHeader className="pb-2">
@@ -153,7 +110,6 @@ export function UdayeeDashboard() {
           </CardContent>
         </Card>
 
-        {/* Funding Progress Card */}
         <Card>
           <CardHeader className="pb-2">
             <CardTitle>Funding Progress</CardTitle>
@@ -188,7 +144,7 @@ export function UdayeeDashboard() {
               </p>
             </div>
 
-            <div className="grid grid-cols-3 gap-4 pt-2">
+            {/* <div className="grid grid-cols-3 gap-4 pt-2">
               <div className="text-center p-3 bg-muted rounded-md">
                 <p className="text-2xl font-bold text-secondary-foreground">
                   {startupStats.activeInvestors}
@@ -199,10 +155,10 @@ export function UdayeeDashboard() {
               </div>
               <div className="text-center p-3 bg-muted rounded-md">
                 <p className="text-2xl font-bold text-secondary-foreground">
-                  {startupStats.completedMilestones}
+                  {startupStats.totalProjects}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Completed Milestones
+                  Total Projects
                 </p>
               </div>
               <div className="text-center p-3 bg-muted rounded-md">
@@ -211,232 +167,346 @@ export function UdayeeDashboard() {
                 </p>
                 <p className="text-xs text-muted-foreground">Startup Rating</p>
               </div>
-            </div>
+            </div> */}
           </CardContent>
         </Card>
       </div>
 
-      {/* Main Content Tabs */}
-      <Tabs defaultValue="investments" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="investments">Active Investments</TabsTrigger>
-          <TabsTrigger value="messages">Recent Messages</TabsTrigger>
-        </TabsList>
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <h2 className="text-xl font-semibold text-primary">Project Summaries</h2>
+          <Link href="/udayee/projects">
+            <Button
+              variant="outline"
+              className="border-primary text-primary hover:bg-secondary"
+            >
+              View All Projects
+            </Button>
+          </Link>
+        </div>
 
-        {/* Active Investments Tab */}
-        <TabsContent value="investments" className="space-y-4">
+        {projects.length > 0 ? (
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {projects.map((project) => {
+              const fundingProgress = project.budget
+                ? ((project.raised_amount || 0) / project.budget) * 100
+                : 0;
+
+              return (
+                <Card key={project.id} className="overflow-hidden">
+                  <CardHeader className="pb-2">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <CardTitle className="text-lg text-secondary-foreground line-clamp-2">
+                          {project.title}
+                        </CardTitle>
+                        <CardDescription className="line-clamp-2">
+                          {project.description || "No description available"}
+                        </CardDescription>
+                      </div>
+                      <span
+                        className={cn(
+                          "text-xs px-2 py-1 rounded-full border border-border ml-2",
+                          project.status === "active"
+                            ? "bg-ring text-foreground"
+                            : project.status === "draft"
+                              ? "bg-chart-4 text-foreground"
+                              : "bg-muted text-muted-foreground"
+                        )}
+                      >
+                        {project.status.charAt(0).toUpperCase() +
+                          project.status.slice(1)}
+                      </span>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {project.category && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Category:</span>
+                        <span className="font-medium">
+                          {typeof project.category === "object"
+                            ? project.category.name
+                            : project.category}
+                        </span>
+                      </div>
+                    )}
+
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Funding:</span>
+                        <span className="font-medium">
+                          ৳{(project.raised_amount || 0).toLocaleString()} / ৳
+                          {(project.budget || 0).toLocaleString()}
+                        </span>
+                      </div>
+                      <Progress
+                        value={fundingProgress}
+                        className="h-2 bg-secondary"
+                        indicatorClassName="bg-primary"
+                      />
+                      <p className="text-xs text-right text-muted-foreground">
+                        {fundingProgress.toFixed(0)}% funded
+                      </p>
+                    </div>
+
+                    {project.projectMembers && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Team Size:</span>
+                        <span className="font-medium">
+                          {project.projectMembers.length} members
+                        </span>
+                      </div>
+                    )}
+
+                    <div className="flex justify-between items-center pt-2">
+                      <Link
+                        href={`/udayee/projects/${project.id}/preview`}
+                        className="text-sm font-medium flex items-center text-primary"
+                      >
+                        View Details
+                        <ArrowUpRight className="ml-1 h-3 w-3" />
+                      </Link>
+                      {project.status === "draft" && (
+                        <Link
+                          href={`/udayee/projects/${project.id}/manage`}
+                          className="text-sm font-medium flex items-center text-chart-3"
+                        >
+                          Edit
+                          <ArrowUpRight className="ml-1 h-3 w-3" />
+                        </Link>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        ) : (
+          <Card>
+            <CardContent className="p-8 text-center">
+              <FolderKanban className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+              <h3 className="text-lg font-medium text-foreground mb-2">
+                No Projects Yet
+              </h3>
+              <p className="text-muted-foreground mb-4">
+                Create your first project to start building your startup
+                portfolio.
+              </p>
+              <Link href="/udayee/projects">
+                <Button className="bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-2">
+                  <Plus className="h-4 w-4" />
+                  Create First Project
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+
+      <Tabs defaultValue="projects" className="space-y-4">
+        {/* <TabsList>
+          <TabsTrigger value="projects">Active Projects</TabsTrigger>
+          <TabsTrigger value="recent">Recent Activity</TabsTrigger>
+        </TabsList> */}
+
+        {/* <TabsContent value="projects" className="space-y-4">
           <h2 className="text-xl font-semibold text-primary">
-            Your Active Investments
+            Your Active Projects
           </h2>
 
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {activeInvestments.map((investment) => (
-              <Card key={investment.id} className="overflow-hidden">
-                <CardHeader className="pb-2">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <CardTitle className="text-lg text-secondary-foreground">
-                        {investment.investorName}
-                      </CardTitle>
-                      <CardDescription>{investment.company}</CardDescription>
-                    </div>
-                    {investment.status === "completed" && (
-                      <span className="text-xs px-2 py-1 rounded-full bg-ring text-foreground border border-border ">
-                        Completed
-                      </span>
-                    )}
-                    {investment.status === "in_progress" && (
-                      <span className="text-xs px-2 py-1 rounded-full bg-chart-4 text-foreground border border-border">
-                        In Progress
-                      </span>
-                    )}
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Project:</span>
-                    <span className="font-medium">{investment.project}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Investment:</span>
-                    <span className="font-medium">{investment.amount}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Milestone:</span>
-                    <span className="font-medium">{investment.milestone}</span>
-                  </div>
+          {activeProjects.length > 0 ? (
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {activeProjects.map((project) => {
+                const fundingProgress = project.budget
+                  ? ((project.raised_amount || 0) / project.budget) * 100
+                  : 0;
 
-                  {investment.status === "in_progress" &&
-                    investment.progress && (
-                      <div className="space-y-1">
+                return (
+                  <Card key={project.id} className="overflow-hidden">
+                    <CardHeader className="pb-2">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <CardTitle className="text-lg text-secondary-foreground">
+                            {project.title}
+                          </CardTitle>
+                          <CardDescription>
+                            {typeof project.category === "object"
+                              ? project.category.name
+                              : project.category}
+                          </CardDescription>
+                        </div>
+                        <span className="text-xs px-2 py-1 rounded-full bg-ring text-foreground border border-border">
+                          Active
+                        </span>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Budget:</span>
+                        <span className="font-medium">
+                          ৳{(project.budget || 0).toLocaleString()}
+                        </span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Raised:</span>
+                        <span className="font-medium">
+                          ৳{(project.raised_amount || 0).toLocaleString()}
+                        </span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Team:</span>
+                        <span className="font-medium">
+                          {project.projectMembers?.length || 1} members
+                        </span>
+                      </div>
+
+                      <div className="space-y-2">
                         <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">
-                            Progress:
-                          </span>
+                          <span className="text-muted-foreground">Progress:</span>
                           <span className="font-medium">
-                            {investment.progress}%
+                            {fundingProgress.toFixed(0)}% funded
                           </span>
                         </div>
                         <Progress
-                          value={investment.progress}
+                          value={fundingProgress}
                           className="h-2 bg-secondary"
                           indicatorClassName="bg-primary"
                         />
                       </div>
-                    )}
 
-                  <div className="flex justify-between items-center pt-2">
-                    {investment.status === "completed" ? (
-                      <span className="text-sm text-primary">
-                        Completed: {investment.completedDate}
-                      </span>
-                    ) : (
-                      <span className="text-sm text-primary">
-                        Deadline: {investment.deadline}
-                      </span>
-                    )}
-                    <Link
-                      href={`/udayee/chat/${investment.id}`}
-                      className="text-sm font-medium flex items-center text-chart-3"
-                    >
-                      Contact
-                      <ArrowUpRight className="ml-1 h-3 w-3" />
-                    </Link>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          <div className="flex justify-center">
-            <Link href="/udayee/milestones">
-              <Button
-                variant="outline"
-                className="border-primary text-primary hover:bg-secondary"
-              >
-                View All Milestones
-              </Button>
-            </Link>
-          </div>
-        </TabsContent>
-
-        {/* Recent Messages Tab */}
-        <TabsContent value="messages" className="space-y-4">
-          <h2 className="text-xl font-semibold text-primary">
-            Recent Messages
-          </h2>
-
-          <div className="space-y-4">
-            {recentMessages.map((message) => (
-              <Card key={message.id}>
-                <CardContent className="p-4">
-                  <div className="flex items-start gap-4">
-                    <div className="h-10 w-10 rounded-full flex items-center justify-center flex-shrink-0 bg-muted">
-                      <MessageSquare className="h-5 w-5 text-muted-foreground" />
-                    </div>
-                    <div className="flex-1 space-y-1">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <p className="font-medium">{message.investorName}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {message.company} • Re: {message.project}
-                          </p>
-                        </div>
-                        <span className="text-xs text-muted-foreground">
-                          {message.time}
+                      <div className="flex justify-between items-center pt-2">
+                        <span className="text-sm text-primary">
+                          Created: {new Date(project.createdAt || "").toLocaleDateString()}
                         </span>
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        {message.message}
-                      </p>
-                      <div className="pt-2 flex justify-end">
                         <Link
-                          href={`/udayee/chat/${message.id}`}
-                          className="text-sm font-medium flex items-center text-primary"
+                          href={`/udayee/projects/${project.id}`}
+                          className="text-sm font-medium flex items-center text-chart-3"
                         >
-                          Reply
+                          View Details
                           <ArrowUpRight className="ml-1 h-3 w-3" />
                         </Link>
                       </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          ) : (
+            <Card>
+              <CardContent className="p-8 text-center">
+                <Target className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                <h3 className="text-lg font-medium text-foreground mb-2">
+                  No Active Projects
+                </h3>
+                <p className="text-muted-foreground mb-4">
+                  Publish your draft projects to make them active and start receiving funding.
+                </p>
+                <Link href="/udayee/projects">
+                  <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
+                    Manage Projects
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          )}
 
           <div className="flex justify-center">
-            <Link href="/udayee/messages">
+            <Link href="/udayee/projects">
               <Button
                 variant="outline"
                 className="border-primary text-primary hover:bg-secondary"
               >
-                View All Messages
+                View All Projects
               </Button>
             </Link>
           </div>
-        </TabsContent>
+        </TabsContent> */}
+
+        {/* <TabsContent value="recent" className="space-y-4">
+          <h2 className="text-xl font-semibold text-primary">
+            Recent Projects
+          </h2>
+
+          {recentProjects.length > 0 ? (
+            <div className="space-y-4">
+              {recentProjects.map((project) => (
+                <Card key={project.id}>
+                  <CardContent className="p-4">
+                    <div className="flex items-start gap-4">
+                      <div className="h-10 w-10 rounded-full flex items-center justify-center flex-shrink-0 bg-muted">
+                        <FolderKanban className="h-5 w-5 text-muted-foreground" />
+                      </div>
+                      <div className="flex-1 space-y-1">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <p className="font-medium">{project.title}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {typeof project.category === "object"
+                                ? project.category.name
+                                : project.category} •
+                              Status: {project.status.charAt(0).toUpperCase() + project.status.slice(1)}
+                            </p>
+                          </div>
+                          <span className="text-xs text-muted-foreground">
+                            {new Date(project.updatedAt || project.createdAt || "").toLocaleDateString()}
+                          </span>
+                        </div>
+                        <p className="text-sm text-muted-foreground line-clamp-2">
+                          {project.description || "No description available"}
+                        </p>
+                        <div className="pt-2 flex justify-between items-center">
+                          <span className="text-sm text-muted-foreground">
+                            Budget: ৳{(project.budget || 0).toLocaleString()}
+                          </span>
+                          <Link
+                            href={`/udayee/projects/${project.id}`}
+                            className="text-sm font-medium flex items-center text-primary"
+                          >
+                            View Project
+                            <ArrowUpRight className="ml-1 h-3 w-3" />
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <Card>
+              <CardContent className="p-8 text-center">
+                <MessageSquare className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                <h3 className="text-lg font-medium text-foreground mb-2">
+                  No Projects Yet
+                </h3>
+                <p className="text-muted-foreground mb-4">
+                  Create your first project to start tracking your startup journey.
+                </p>
+                <Link href="/udayee/projects">
+                  <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
+                    Create Project
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          )}
+
+          <div className="flex justify-center">
+            <Link href="/udayee/projects">
+              <Button
+                variant="outline"
+                className="border-primary text-primary hover:bg-secondary"
+              >
+                View All Projects
+              </Button>
+            </Link>
+          </div>
+        </TabsContent> */}
       </Tabs>
-
-      {/* Quick Actions */}
-      {/* <div className="space-y-4">
-        <h2 className="text-xl font-semibold text-primary">Quick Actions</h2>
-
-        <div className="grid gap-4 md:grid-cols-3">
-          <Link href="/udayee/projects">
-            <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
-              <CardContent className="p-6 flex flex-col items-center text-center">
-                <div className="h-12 w-12 rounded-full flex items-center justify-center mb-4 bg-secondary">
-                  <FolderKanban className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="font-medium text-lg text-foreground">
-                  Manage Projects
-                </h3>
-                <p className="text-sm text-muted-foreground mt-2">
-                  Create and manage your startup projects
-                </p>
-              </CardContent>
-            </Card>
-          </Link>
-
-          <Link href="/udayee/milestones">
-            <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
-              <CardContent className="p-6 flex flex-col items-center text-center">
-                <div className="h-12 w-12 rounded-full flex items-center justify-center mb-4 bg-secondary">
-                  <Target className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="font-medium text-lg text-foreground">
-                  Manage Milestones
-                </h3>
-                <p className="text-sm text-muted-foreground mt-2">
-                  Track progress and submit milestone deliverables
-                </p>
-              </CardContent>
-            </Card>
-          </Link>
-
-          <Link href="/udayee/messages">
-            <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
-              <CardContent className="p-6 flex flex-col items-center text-center">
-                <div className="h-12 w-12 rounded-full flex items-center justify-center mb-4 bg-secondary">
-                  <MessageSquare className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="font-medium text-lg text-foreground">
-                  Message Investors
-                </h3>
-                <p className="text-sm text-muted-foreground mt-2">
-                  Communicate with your investors and answer their questions
-                </p>
-              </CardContent>
-            </Card>
-          </Link>
-        </div>
-      </div> */}
     </div>
   );
 }
 
-// Button component with updated styles for better visibility
 function Button({
   children,
   variant = "default",

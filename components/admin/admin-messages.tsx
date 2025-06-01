@@ -22,6 +22,41 @@ if (typeof window !== "undefined" && !socketInstance) {
   });
 }
 
+// Skeleton components
+const ConversationSkeleton = () => (
+  <Card className="animate-pulse">
+    <CardContent className="p-4">
+      <div className="flex items-start gap-4">
+        <div className="h-12 w-12 bg-gray-200 rounded-full"></div>
+        <div className="flex-1 space-y-2">
+          <div className="flex justify-between items-start">
+            <div className="space-y-2">
+              <div className="h-4 bg-gray-200 rounded w-40"></div>
+              <div className="h-3 bg-gray-200 rounded w-24"></div>
+            </div>
+            <div className="h-6 w-6 bg-gray-200 rounded-full"></div>
+          </div>
+          <div className="space-y-1">
+            <div className="h-3 bg-gray-200 rounded w-60"></div>
+            <div className="h-3 bg-gray-200 rounded w-20"></div>
+          </div>
+          <div className="flex justify-end">
+            <div className="h-7 w-20 bg-gray-200 rounded"></div>
+          </div>
+        </div>
+      </div>
+    </CardContent>
+  </Card>
+);
+
+const LoadingSkeleton = () => (
+  <div className="space-y-4">
+    {Array.from({ length: 5 }, (_, i) => (
+      <ConversationSkeleton key={i} />
+    ))}
+  </div>
+);
+
 export function AdminMessages() {
   interface Conversation {
     id: string;
@@ -48,7 +83,6 @@ export function AdminMessages() {
   const [currentAdminId, setCurrentAdminId] = useState<string | null>(null);
 
   useEffect(() => {
-    // Get current admin ID from session/auth
     const getCurrentAdmin = async () => {
       try {
         const response = await axios.get('/api/admin/me');
@@ -262,7 +296,7 @@ export function AdminMessages() {
 
       <div className="space-y-4">
         {loading ? (
-          <div className="text-center py-8">Loading conversations...</div>
+          <LoadingSkeleton />
         ) : (
           filteredConversations.map((conversation) => (
             <Link

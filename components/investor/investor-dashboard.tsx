@@ -19,11 +19,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import axios from "axios";
 
-interface Investment {
-  id: number;
-  amount: string;
-  createdAt: string;
-}
+
 
 // Skeleton Components
 const SkeletonCard = () => (
@@ -77,78 +73,46 @@ const QuickActionsSkeleton = () => (
     </div>
   </div>
 );
-
+import useInvestorStore from "@/store/useInvestorStore";
 export function InvestorDashboard() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [investments, setInvestments] = useState<Investment[]>([]);
-  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     amount: "",
   });
-
-  const fetchInvestments = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get("/api/investor/investment");
-      console.log("Fetched investments:", response.data);
-      setInvestments(response.data);
-    } catch (error) {
-      console.error("Error fetching investments:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchInvestments();
-  }, []);
-
+  const { submitInvestment, investments, isSubmitting } = useInvestorStore()
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.amount) {
-      const newInvestment = {
-        amount: formData.amount,
-      };
-      await axios.post("/api/investor/investment", newInvestment)
-        .then((response) => {
-          console.log("Investment added:", response.data);
-          setInvestments((prev) => [
-            ...prev,
-            {
-              id: response.data.id,
-              amount: response.data.amount,
-              createdAt: new Date().toISOString(),
-            },
-          ]);
-        })
-        .catch((error) => {
-          console.error("Error adding investment:", error);
-        });
-      setFormData({ amount: "" });
-      setIsPopupOpen(false);
+      try {
+        await submitInvestment(formData.amount);
+        setFormData({ amount: "" });
+        setIsPopupOpen(false);
+      } catch (error) {
+        console.error("Error submitting investment:", error);
+      }
     }
   };
 
-  if (loading) {
-    return (
-      <div className="space-y-8">
-        <div>
-          <div className="h-9 bg-gray-200 rounded w-64 animate-pulse"></div>
-          <div className="h-5 bg-gray-200 rounded w-96 animate-pulse mt-2"></div>
-        </div>
+  // if (loading) {
+  //   return (
+  //     <div className="space-y-8">
+  //       <div>
+  //         <div className="h-9 bg-gray-200 rounded w-64 animate-pulse"></div>
+  //         <div className="h-5 bg-gray-200 rounded w-96 animate-pulse mt-2"></div>
+  //       </div>
 
-        <div className="flex justify-end">
-          <div className="h-10 bg-gray-200 rounded w-32 animate-pulse"></div>
-        </div>
+  //       <div className="flex justify-end">
+  //         <div className="h-10 bg-gray-200 rounded w-32 animate-pulse"></div>
+  //       </div>
 
-        <div className="grid gap-6 md:grid-cols-1">
-          <SkeletonCard />
-        </div>
+  //       <div className="grid gap-6 md:grid-cols-1">
+  //         <SkeletonCard />
+  //       </div>
 
-        <QuickActionsSkeleton />
-      </div>
-    );
-  }
+  //       <QuickActionsSkeleton />
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="space-y-8">
@@ -181,13 +145,13 @@ export function InvestorDashboard() {
             <div className="grid grid-cols-2 gap-4">
               <div className="text-center p-3 bg-muted rounded-md">
                 <p className="text-2xl font-bold text-secondary-foreground">
-                  ৳{investments.reduce((acc, inv) => acc + Number(inv.amount), 0)}
+                  ৳{investments?.reduce((acc, inv) => acc + Number(inv.amount), 0) || 0}
                 </p>
                 <p className="text-xs text-muted-foreground">Total Invested</p>
               </div>
               <div className="text-center p-3 bg-muted rounded-md">
                 <p className="text-2xl font-bold text-secondary-foreground">
-                  {investments.length}
+                  {investments?.length || 0}
                 </p>
                 <p className="text-xs text-muted-foreground">
                   Active Investments
@@ -199,22 +163,29 @@ export function InvestorDashboard() {
             <div className="mt-6">
               <h3 className="text-lg font-semibold mb-4">All Investments</h3>
               <div className="space-y-3">
-                {investments.map((investment) => (
-                  <div
-                    key={investment.id}
-                    className="flex justify-between items-center p-3 border rounded-lg"
-                  >
-                    <div>
-                      <p className="font-medium">Investment #{investment.id}</p>
+                {investments && investments.length > 0 ? (
+                  investments.map((investment) => (
+                    <div
+                      key={investment.id}
+                      className="flex justify-between items-center p-3 border rounded-lg"
+                    >
+                      <div>
+                        <p className="font-medium">Investment #{investment.id}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-semibold">৳{investment.amount}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {investment.createdAt.split("T")[0]}
+                        </p>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <p className="font-semibold">৳{investment.amount}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {investment.createdAt.split("T")[0]}
-                      </p>
-                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <p className="text-lg mb-2">No investments yet</p>
+                    <p className="text-sm">Click "Add Investment" to get started with your first investment.</p>
                   </div>
-                ))}
+                )}
               </div>
             </div>
           </CardContent>
@@ -250,8 +221,8 @@ export function InvestorDashboard() {
               </div>
 
               <div className="flex gap-3 pt-4">
-                <Button type="submit" className="flex-1">
-                  Add Investment
+                <Button type="submit" className="flex-1" disabled={isSubmitting}>
+                  {isSubmitting ? "Adding..." : "Add Investment"}
                 </Button>
                 <Button
                   type="button"

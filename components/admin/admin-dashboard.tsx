@@ -22,9 +22,11 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { useCommonStore } from "@/store/useCommonStore";
 import useAdminStore from "@/store/useAdminStore";
 export function AdminDashboard() {
-  const { startups, investments, admin } = useAdminStore()
+  const { investments, admin } = useAdminStore()
+  const {startups} = useCommonStore();
   const platformStats = {
     totalInvested: "৳245,000",
     activeInvestments: 15,

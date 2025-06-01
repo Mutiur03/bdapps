@@ -51,7 +51,6 @@ export interface ProjectMember {
   };
 }
 
-  
 export interface Project {
   id: string;
   title: string;
@@ -103,7 +102,6 @@ export interface ProjectStore {
   mediaFormState: MediaFormState;
   mediaChanged: boolean;
   currentProjectId: string | null;
-  isLoading: boolean;
   formErrors: Record<string, string>;
   fetchProjects: () => Promise<void>;
   updateState: <T extends keyof ProjectStore>(
@@ -130,7 +128,6 @@ export interface ProjectStore {
   setMediaFormState: (updates: Partial<MediaFormState>) => void;
   setMediaChanged: (changed: boolean) => void;
   setFormErrors: (errors: Record<string, string>) => void;
-  setIsLoading: (loading: boolean) => void;
   setCurrentProjectId: (id: string | null) => void;
   resetFormState: () => void;
   initializeFormState: (project: Project) => void;
@@ -164,7 +161,6 @@ export const useProjectStore = create<ProjectStore>()(
         },
         mediaChanged: false,
         currentProjectId: null,
-        isLoading: false,
         formErrors: {},
 
         updateState: <T extends keyof ProjectStore>(
@@ -216,7 +212,6 @@ export const useProjectStore = create<ProjectStore>()(
                   formData.append("milestones", JSON.stringify([]));
                 }
               } else if (key === "category") {
-                // Handle category - extract ID for backend
                 const categoryValue =
                   typeof updatedData.category === "object"
                     ? updatedData.category.id
@@ -443,10 +438,6 @@ export const useProjectStore = create<ProjectStore>()(
 
         setFormErrors: (errors) => {
           set({ formErrors: errors });
-        },
-
-        setIsLoading: (loading) => {
-          set({ isLoading: loading });
         },
 
         setCurrentProjectId: (id) => {

@@ -8,6 +8,8 @@ export async function GET(request: Request) {
     if (!session || !session.user) {
       return new Response("Unauthorized", { status: 401 });
     }
+    console.log("Fetching investments for user:", session.user.id);
+    
     const investorId = session.user.id;
     const investments = await prisma.investment.findMany({
       where: {

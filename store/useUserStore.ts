@@ -41,8 +41,8 @@ interface User {
 }
 interface UserStore {
   user: User | null;
-  isLoading: boolean;
-  setIsLoading: (isLoading: boolean) => void;
+  loading: boolean;
+  setloading: (loading: boolean) => void;
   setUser: (user: User) => void;
   clearUser: () => void;
   getUser: () => Promise<void>;
@@ -53,19 +53,18 @@ const useUserStore = create<UserStore>()(
   devtools(
     (set, get) => ({
       user: null,
-      isLoading: true,
-      setIsLoading: (isLoading: boolean) => set({ isLoading }),
+      loading: true,
+      setloading: (loading: boolean) => set({ loading }),
       clearUser: () => set({ user: null }),
       getUser: async () => {
         try {
-          set({ isLoading: true });
           const response = await axios.get(`/api/getuser`);
           console.log("User data fetched:", response.data);
           set({ user: response.data });
         } catch (error) {
           console.error("Error fetching user data:", error);
         } finally {
-          set({ isLoading: false });
+          set({ loading: false });
         }
       },
       updateUser: async (userData: Partial<User>) => {

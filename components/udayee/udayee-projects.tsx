@@ -16,49 +16,45 @@ import { Plus, Eye, ArrowUpRight, Target } from "lucide-react";
 import Link from "next/link";
 import { UdayeeCreateProjectDialog } from "@/components/udayee/udayee-create-project-dialog";
 import { Milestone, useProjectStore } from "@/store/useProjectStore";
+import useUserStore from "@/store/useUserStore";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function UdayeeProjects() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const { projects = [], fetchProjects } = useProjectStore();
+  const { loading } = useUserStore()
+  const { projects } = useProjectStore();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        await fetchProjects();
-      } catch (error) {
-        console.error("Error fetching projects:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [fetchProjects]);
-
-  const activeProjects = !isLoading && projects
+  const activeProjects = !loading && projects
     ? projects.filter((project) => project.status === "active")
     : [];
-  const draftProjects = !isLoading && projects
+  const draftProjects = !loading && projects
     ? projects.filter((project) => project.status === "draft")
     : [];
-  const pendingProjects = !isLoading && projects
+  const pendingProjects = !loading && projects
     ? projects.filter((project) => project.status === "pending")
     : [];
-  const completedProjects = !isLoading && projects
+  const completedProjects = !loading && projects
     ? projects.filter((project) => project.status === "completed")
     : [];
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight text-primary">
-              My Projects
-            </h1>
-            <p className="text-muted-foreground">Loading projects...</p>
+            <Skeleton className="h-9 w-48 mb-2" />
+            <Skeleton className="h-5 w-64" />
+          </div>
+          <Skeleton className="h-10 w-40" />
+        </div>
+
+        <div className="space-y-6">
+          <Skeleton className="h-10 w-full" />
+
+          <div className="grid gap-6 md:grid-cols-2">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <ProjectCardSkeleton key={i} />
+            ))}
           </div>
         </div>
       </div>
@@ -150,7 +146,6 @@ export function UdayeeProjects() {
           )}
         </TabsContent>
 
-        {/* Completed Projects Tab */}
         <TabsContent value="completed" className="space-y-6">
           {completedProjects.length > 0 ? (
             <div className="grid gap-6 md:grid-cols-2">
@@ -214,6 +209,52 @@ export function UdayeeProjects() {
         onOpenChange={setIsCreateDialogOpen}
       />
     </div>
+  );
+}
+
+function ProjectCardSkeleton() {
+  return (
+    <Card className="overflow-hidden">
+      <CardHeader className="pb-2">
+        <div className="flex justify-between items-start">
+          <div className="flex-1">
+            <Skeleton className="h-6 w-3/4 mb-2" />
+            <Skeleton className="h-4 w-32" />
+          </div>
+          <Skeleton className="h-6 w-16 rounded-full" />
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-2/3" />
+
+        <div className="flex justify-between">
+          <Skeleton className="h-4 w-20" />
+          <Skeleton className="h-4 w-24" />
+        </div>
+
+        <div className="space-y-2">
+          <div className="flex justify-between">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-4 w-20" />
+          </div>
+          <div className="flex justify-between">
+            <Skeleton className="h-4 w-20" />
+            <Skeleton className="h-4 w-16" />
+          </div>
+          <Skeleton className="h-2 w-full" />
+        </div>
+
+        <Skeleton className="h-4 w-48" />
+      </CardContent>
+      <CardFooter className="flex justify-between pt-2">
+        <div />
+        <div className="flex gap-2">
+          <Skeleton className="h-8 w-20" />
+          <Skeleton className="h-8 w-20" />
+        </div>
+      </CardFooter>
+    </Card>
   );
 }
 

@@ -19,35 +19,34 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
 import { HomeFooter } from "../home/home-footer";
 import { signOut } from "next-auth/react";
 import useUserStore from "@/store/useUserStore";
+import { useProjectStore } from "@/store/useProjectStore";
 interface UdayeeLayoutProps {
   children: React.ReactNode;
 }
 import safeUrl from "@/lib/safeURL";
-
+import { useCommonStore } from "@/store/useCommonStore";
 export function UdayeeLayout({ children }: UdayeeLayoutProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const { fetchProjects } = useProjectStore();
   const [mounted, setMounted] = useState(false);
   const { user } = useUserStore();
-  const { isLoading, setIsLoading, getUser } = useUserStore();
+  const { isLoading } = useCommonStore();
+  const { loading, setloading, getUser } = useUserStore();
+
   useEffect(() => {
-    setMounted(true);
-    fetchUser();
-  }, []);
-  const fetchUser = async () => {
-    setIsLoading(true);
-    try {
-      await getUser(); // Make sure this is awaited
-    } catch (err) {
-      location.href = "/";
-      console.error("Failed to load user:", err);
-    } finally {
-      setIsLoading(false);
+    const initializeUser = async () => {
+      setMounted(true);
+      await getUser();
+      await fetchProjects();
+      setloading(false);
     }
-  };
+    initializeUser();
+  }, []);
 
   const routes = [
     {
@@ -132,7 +131,71 @@ export function UdayeeLayout({ children }: UdayeeLayoutProps) {
     </ul>
   );
 
-  if (!mounted) return null; // Prevent hydration issues
+
+  if (loading || !mounted || isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <div className="flex flex-1">
+          {/* Desktop Sidebar Skeleton */}
+          <aside className="hidden md:block md:w-72 border-r border-border bg-card h-screen sticky top-0 left-0">
+            <div className="h-full flex flex-col">
+              {/* Logo skeleton */}
+              <div className="border-b border-border flex-shrink-0 p-4">
+                <Skeleton className="h-8 w-20 mx-auto mb-2" />
+                <Skeleton className="h-4 w-24 mx-auto" />
+              </div>
+
+              {/* Navigation skeleton */}
+              <div className="flex-1 overflow-auto">
+                <nav className="px-4 py-6">
+                  <Skeleton className="h-3 w-20 mb-4" />
+                  <div className="space-y-2">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <div key={i} className="flex items-center gap-3 px-3 py-2">
+                        <Skeleton className="h-5 w-5" />
+                        <Skeleton className="h-4 w-24" />
+                      </div>
+                    ))}
+                  </div>
+                </nav>
+              </div>
+
+              {/* User profile skeleton */}
+              <div className="flex-shrink-0 p-4 border-t border-border">
+                <div className="flex items-center gap-3 mb-4">
+                  <Skeleton className="h-9 w-9 rounded-full" />
+                  <div className="flex-1">
+                    <Skeleton className="h-4 w-20 mb-1" />
+                    <Skeleton className="h-3 w-32" />
+                  </div>
+                </div>
+                <Skeleton className="h-9 w-full" />
+              </div>
+            </div>
+          </aside>
+
+          {/* Mobile menu button skeleton */}
+          <div className="md:hidden fixed top-4 left-4 z-50">
+            <Skeleton className="h-10 w-10" />
+          </div>
+
+          {/* Main Content Skeleton */}
+          <main className="flex-grow w-full pt-16 md:pt-0">
+            <div className="max-w-6xl mx-auto p-4 md:p-8">
+              <div className="space-y-6">
+                <Skeleton className="h-8 w-48" />
+                <div className="grid gap-4">
+                  <Skeleton className="h-32 w-full" />
+                  <Skeleton className="h-24 w-full" />
+                  <Skeleton className="h-40 w-full" />
+                </div>
+              </div>
+            </div>
+          </main>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -190,7 +253,7 @@ export function UdayeeLayout({ children }: UdayeeLayoutProps) {
                       alt="User"
                     />
                     <AvatarFallback className="bg-primary/10 text-primary">
-                      ST
+                      {user?.name?.charAt(0).toUpperCase() || "ST"}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
@@ -261,7 +324,7 @@ export function UdayeeLayout({ children }: UdayeeLayoutProps) {
                       alt="User"
                     />
                     <AvatarFallback className="bg-primary/10 text-primary">
-                      ST
+                      {user?.name?.charAt(0).toUpperCase() || "ST"}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">

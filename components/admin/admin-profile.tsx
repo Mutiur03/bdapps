@@ -39,24 +39,7 @@ import useAdminStore from "@/store/useAdminStore";
 import { toast } from "@/components/ui/use-toast";
 
 export function AdminProfile() {
-  // Mock admin data - replace with useAdminStore when available
-  // const admin = {
-  //   name: "Admin User",
-  //   email: "admin@uday.com",
-  //   phone: "",
-  //   location: "",
-  //   bio: "",
-  //   profile_picture: null,
-  //   company: "",
-  //   role: "",
-  //   experienceYears: "",
-  //   customSocials: [] as { id: string; title: string; url: string }[],
-  // };
 
-  // const loading = false;
-  // const error = null;
-
-  // Use admin store - uncomment when available
   const {
     admin,
     loading,
@@ -65,35 +48,13 @@ export function AdminProfile() {
     updateAdminField,
     addSocialLink,
     removeSocialLink,
+    isSubmitting,
     fetchAdmin,
   } = useAdminStore();
 
-  // State for dialog
   const [socialDialogOpen, setSocialDialogOpen] = useState(false);
   const [newSocial, setNewSocial] = useState({ title: "", url: "" });
 
-  // // Mock functions - replace with actual admin store functions
-  // const updateAdminField = (field: string, value: any) => {
-  //   console.log(`Update ${field}:`, value);
-  // };
-
-  // const addSocialLink = (title: string, url: string) => {
-  //   console.log("Add social:", { title, url });
-  // };
-
-  // const removeSocialLink = (id: string) => {
-  //   console.log("Remove social:", id);
-  // };
-
-  // const updateAdmin = async (adminData: any) => {
-  //   console.log("Update admin:", adminData);
-  // };
-
-  // const fetchAdmin = () => {
-  //   console.log("Fetch admin");
-  // };
-
-  // Handle social link submission
   const handleAddSocial = () => {
     if (newSocial.title.trim() && newSocial.url.trim()) {
       addSocialLink(newSocial.title, newSocial.url);
@@ -268,7 +229,7 @@ export function AdminProfile() {
               </div>
             </CardContent>
             <CardFooter className="flex justify-end border-t p-4">
-              <Button disabled={loading} onClick={handleSubmit}>
+              <Button disabled={isSubmitting} onClick={handleSubmit}>
                 {loading ? "Saving..." : "Save Changes"}
               </Button>
             </CardFooter>

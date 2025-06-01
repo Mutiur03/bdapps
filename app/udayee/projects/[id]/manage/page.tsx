@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Info,
   Target,
@@ -37,7 +38,6 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import { Project, useProjectStore } from "@/store/useProjectStore";
-
 
 
 const placeholders = {
@@ -74,22 +74,24 @@ export default function ManageProjectPage({
     setMediaChanged,
     formErrors,
     setFormErrors,
-    isLoading,
-    setIsLoading,
     setCurrentProjectId,
     initializeFormState,
     setRaisedAmount,
   } = useProjectStore();
-
   const [documentsToUpload, setDocumentsToUpload] = useState<File[]>([]);
   const [documentsToDelete, setDocumentsToDelete] = useState<number[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setCurrentProjectId(projectId);
 
     console.log("Fetching projects on page load");
-    fetchProjects();
+    setIsLoading(true);
+    fetchProjects().finally(() => {
+      // Add a small delay to ensure data is properly processed
+      setTimeout(() => setIsLoading(false), 500);
+    });
 
   }, [projectId, fetchProjects, setCurrentProjectId]);
 
@@ -224,9 +226,6 @@ export default function ManageProjectPage({
     if (!validateForm()) {
       return;
     }
-
-    setIsLoading(true);
-
     try {
       const updatedProject: Partial<Project> = {
         id: projectId,
@@ -278,8 +277,6 @@ export default function ManageProjectPage({
     } catch (error) {
       console.error("Failed to save project:", error);
       alert("Failed to save project. See console for details.");
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -323,6 +320,79 @@ export default function ManageProjectPage({
     return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   };
 
+  // Show skeleton loading while data is being fetched
+  if (isLoading) {
+    return (
+      <div className="space-y-6 max-w-7xl mx-auto px-4 py-8">
+        {/* Header skeleton */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="space-y-2">
+            <Skeleton className="h-8 w-48" />
+            <Skeleton className="h-4 w-80" />
+          </div>
+          <div className="flex gap-2">
+            <Skeleton className="h-10 w-24" />
+            <Skeleton className="h-10 w-32" />
+          </div>
+        </div>
+
+        {/* Project overview skeleton */}
+        <Card className="border-l-4 border-l-primary">
+          <CardContent className="flex flex-col md:flex-row justify-between items-start md:items-center py-4">
+            <div className="flex items-center gap-3">
+              <Skeleton className="h-14 w-14 rounded-lg" />
+              <div className="space-y-2">
+                <Skeleton className="h-6 w-48" />
+                <div className="flex items-center gap-2">
+                  <Skeleton className="h-5 w-16" />
+                  <Skeleton className="h-4 w-32" />
+                </div>
+              </div>
+            </div>
+            <div className="w-full md:w-auto mt-4 md:mt-0">
+              <div className="flex flex-col md:items-end space-y-2">
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-2 w-40" />
+                <Skeleton className="h-3 w-24" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Tabs skeleton */}
+        <div className="space-y-6">
+          <div className="flex flex-wrap gap-2 border border-border rounded-md p-1">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton key={i} className="h-10 w-24" />
+            ))}
+          </div>
+          
+          {/* Content skeleton */}
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-6 w-32" />
+              <Skeleton className="h-4 w-64" />
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="space-y-2">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-10 w-full" />
+                  </div>
+                ))}
+              </div>
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-32 w-full" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto px-4 py-8">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -337,7 +407,7 @@ export default function ManageProjectPage({
 
         <div className="flex gap-2">
           <Link href={`/udayee/projects/${projectId}/preview`}>
-            <Button variant="outline" className="flex items-center gap-2" disabled={isLoading}>
+            <Button variant="outline" className="flex items-center gap-2" >
               <Eye className="h-4 w-4" />
               Preview
             </Button>
@@ -345,19 +415,13 @@ export default function ManageProjectPage({
           <Button
             onClick={onSubmit}
             className="bg-primary hover:bg-primary/90 text-primary-foreground flex items-center gap-2"
-            disabled={isLoading}
           >
-            {isLoading ? (
-              <>
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent mr-2" />
-                Uploading...
-              </>
-            ) : (
-              <>
-                <Save className="h-4 w-4" />
-                Save Changes
-              </>
-            )}
+
+            <>
+              <Save className="h-4 w-4" />
+              Save Changes
+            </>
+
           </Button>
         </div>
       </div>
@@ -1358,12 +1422,12 @@ export default function ManageProjectPage({
       <div className="flex flex-col sm:flex-row justify-between gap-4 pt-4">
         <div className="flex gap-2">
           <Link href={`/udayee/projects`}>
-            <Button variant="outline" disabled={isLoading}>Cancel</Button>
+            <Button variant="outline" >Cancel</Button>
           </Link>
         </div>
         <div className="flex gap-2">
           <Link href={`/udayee/projects/${projectId}/preview`}>
-            <Button variant="outline" className="flex items-center gap-2" disabled={isLoading}>
+            <Button variant="outline" className="flex items-center gap-2" >
               <Eye className="h-4 w-4" />
               Preview
             </Button>
@@ -1371,19 +1435,13 @@ export default function ManageProjectPage({
           <Button
             onClick={onSubmit}
             className="bg-primary hover:bg-primary/90 text-primary-foreground flex items-center gap-2"
-            disabled={isLoading}
+
           >
-            {isLoading ? (
-              <>
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
-                Uploading...
-              </>
-            ) : (
-              <>
-                <Save className="h-4 w-4" />
-                Save Changes
-              </>
-            )}
+
+            <Save className="h-4 w-4" />
+            Save Changes
+
+
           </Button>
         </div>
       </div>

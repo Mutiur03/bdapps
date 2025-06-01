@@ -10,12 +10,10 @@ export default withAuth(
       token &&
       (pathname.startsWith("/signin") ||
         pathname.startsWith("/signup") ||
-        pathname.endsWith("/onboarding"))
-    ) {
-      return NextResponse.redirect(new URL("/", req.url));
-    } else if (
-      token &&
-      (pathname === "/" || pathname === "/about" || pathname === "/contact")
+        pathname.endsWith("/onboarding") ||
+        pathname === "/" ||
+        pathname === "/about" ||
+        pathname === "/contact")
     ) {
       if (token.role === "user") {
         return NextResponse.redirect(new URL("/udayee/dashboard", req.url));
@@ -34,14 +32,26 @@ export default withAuth(
       return NextResponse.redirect(new URL("/signin", req.url));
     }
 
-    if (token?.role === "user" && !pathname.startsWith("/udayee")) {
+    if (
+      token?.role === "user" &&
+      !(pathname.startsWith("/udayee") || pathname === "/startups")
+    ) {
       return NextResponse.redirect(new URL("/udayee/dashboard", req.url));
     }
 
-    if (token?.role === "investor" && !pathname.startsWith("/investor")) {
+    if (
+      token?.role === "investor" &&
+      !pathname.startsWith("/investor") &&
+      pathname !== "/startups"
+    ) {
       return NextResponse.redirect(new URL("/investor/dashboard", req.url));
     }
-    if (token?.role === "admin" && !pathname.startsWith("/admin")) {
+
+    if (
+      token?.role === "admin" &&
+      !pathname.startsWith("/admin") &&
+      pathname !== "/startups"
+    ) {
       return NextResponse.redirect(new URL("/admin/dashboard", req.url));
     }
 
@@ -69,6 +79,9 @@ export default withAuth(
           return true;
         }
 
+        if (token && pathname === "/startups") {
+          return true;
+        }
         if (token?.role === "user" && pathname.startsWith("/udayee")) {
           return true;
         }
@@ -80,7 +93,6 @@ export default withAuth(
         if (token?.role === "admin" && pathname.startsWith("/admin")) {
           return true;
         }
-
         return !!token;
       },
     },
@@ -98,5 +110,10 @@ export const config = {
     "/udayee/:path*",
     "/investor/:path*",
     "/admin/:path*",
+    "/startups",
   ],
 };
+
+// export const config = {
+//   matcher: [],
+// };

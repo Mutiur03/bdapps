@@ -6,63 +6,10 @@ export interface SocialLink {
   title: string;
   url: string;
 }
-export interface Startup {
-  id: string;
-  title: string;
-  profile_picture: string;
-  cover_image: string;
-  university: string;
-  description: string;
-  budget: string;
-  pitch_video: string;
-  raised_amount: string;
-  category: string;
-  tags: string;
-  trending?: boolean;
-  image?: string;
-  logo?: string;
+interface Investment {
+  id: number;
+  amount: string;
   createdAt: string;
-  user: {
-    id: string;
-    name: string;
-    department: string;
-    university: string;
-    university_email: string;
-    profile_picture: string;
-  };
-  projectMembers: {
-    id: string;
-    user: {
-      id: string;
-      name: string;
-      university: string;
-      university_email: string;
-      profile_picture: string;
-    };
-  }[];
-  milestones: {
-    id: string;
-    title: string;
-    description: string;
-    status: string;
-    amount: number;
-    raised_amount: number;
-    deadlineAt: string;
-    createdAt: string;
-    updatedAt: string;
-    projectId: string;
-    completedAt: string;
-    plannedAt: string;
-    progress: number;
-  }[];
-  documents: {
-    id: string;
-    projectId: string;
-    document: string;
-    size: number;
-    createdAt: string;
-    updatedAt: string;
-  }[];
 }
 export interface InvestorData {
   name: string;
@@ -86,17 +33,18 @@ export interface InvestorData {
 
 interface InvestorStore {
   investor: InvestorData | null;
-  loading: boolean;
   error: string | null;
-  startups: Startup[] | null;
-
+  isSubmitting: boolean;
+  investments: Investment[] | null;
+  loading: boolean;
   fetchInvestor: () => Promise<void>;
+  fetchInvestments: () => Promise<void>;
+  submitInvestment: (amount: string) => Promise<void>;
   updateInvestor: (data: Partial<InvestorData>) => Promise<void>;
   updateInvestorField: <K extends keyof InvestorData>(
     field: K,
     value: InvestorData[K]
   ) => void;
-  fetchStartups: () => Promise<void>;
   addItemToArray: <K extends keyof InvestorData>(
     field: K,
     item: InvestorData[K] extends (infer U)[] ? U : never
@@ -111,21 +59,11 @@ interface InvestorStore {
 
 const useInvestorStore = create<InvestorStore>((set, get) => ({
   investor: null,
-  loading: false,
   error: null,
-  startups: null,
-  fetchStartups: async () => {
-    try {
-      const response = await axios.get("/api/projects");
-      console.log("Fetched projects:", response.data);
-      set({ startups: response.data });
-    } catch (error) {
-      console.error("Error fetching projects:", error);
-    }
-  },
-
+  isSubmitting: false,
+  loading: true,
+  investments: null,
   fetchInvestor: async () => {
-    set({ loading: true, error: null });
     try {
       const response = await fetch("/api/investor/profile_update");
       if (!response.ok) {
@@ -134,7 +72,7 @@ const useInvestorStore = create<InvestorStore>((set, get) => ({
       const data = await response.json();
       console.log("Fetched investor profile:", data);
 
-      set({ investor: data, loading: false });
+      set({ investor: data });
     } catch (error) {
       console.error("Error fetching investor profile:", error);
       set({
@@ -144,27 +82,63 @@ const useInvestorStore = create<InvestorStore>((set, get) => ({
       });
     }
   },
+  fetchInvestments: async () => {
+    try {
+      const response = await axios.get("/api/investor/investment");
+      console.log("Fetched investments:", response.data);
+      set({ investments: response.data || [] });
+    } catch (error) {
+      console.error("Error fetching investments:", error);
+      set({
+        error:
+          error instanceof Error ? error.message : "An unknown error occurred",
+      });
+    }
+    set({ loading: false });
+  },
+  submitInvestment: async (amount: string) => {
+    set({ isSubmitting: true, error: null });
+    try {
+      const currentInvestor = get().investor;
+      if (!currentInvestor) {
+        throw new Error("No investor data available");
+      }
+      console.log("Submitting investment of amount:", amount);
 
+      const response = await axios.post("/api/investor/investment", {
+        amount,
+      });
+      if (!response.data) {
+        throw new Error("Failed to submit investment");
+      }
+      set({
+        investments: [...(get().investments || []), response.data],
+      });
+      set({ loading: false });
+    } catch (error) {
+      console.error("Error submitting investment:", error);
+      set({
+        error:
+          error instanceof Error ? error.message : "An unknown error occurred",
+      });
+    }
+    set({ isSubmitting: false });
+  },
   updateInvestor: async (data) => {
-    set({ loading: true, error: null });
+    set({ isSubmitting: true, error: null });
     try {
       const currentInvestor = get().investor;
       if (!currentInvestor) {
         throw new Error("No investor data available");
       }
       console.log("Updating investor profile with data:", data);
-
       const updatedInvestor = { ...currentInvestor, ...data };
-
       const formData = new FormData();
-
       Object.entries(updatedInvestor).forEach(([key, value]) => {
         if (Array.isArray(value)) {
           console.log("Appending array:", key, value);
-
           formData.append(key, JSON.stringify(value));
         }
-
         if (key === "profile_picture" && value instanceof File) {
           formData.append("profile_picture", value);
         } else if (
@@ -205,6 +179,7 @@ const useInvestorStore = create<InvestorStore>((set, get) => ({
         loading: false,
       });
     }
+    set({ isSubmitting: false });
   },
 
   updateInvestorField: (field, value) => {

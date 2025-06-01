@@ -13,20 +13,17 @@ import { HomeFooter } from "@/components/home/home-footer";
 import { signIn } from "next-auth/react";
 
 export default function AdminSignin() {
-  const [isClient, setIsClient] = useState(false);
   const router = useRouter();
   const [formData, setFormData] = useState({
-    email: "",
-    password: "",
+    email: "mutiur5bb@gmail.com",
+    password: "abcdefgh",
     rememberMe: false,
   });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -96,14 +93,14 @@ export default function AdminSignin() {
               </p>
             </div>
 
-            {error && isClient && (
+            {error && (
               <div className="mb-6 p-3 bg-destructive/10 border border-destructive/20 text-destructive rounded-md text-sm">
                 {error}
               </div>
             )}
 
             <form
-              onSubmit={isClient ? handleSubmit : (e) => e.preventDefault()}
+              onSubmit={handleSubmit}
               className="space-y-5"
             >
               <div className="space-y-2">
@@ -112,17 +109,18 @@ export default function AdminSignin() {
                   id="email"
                   name="email"
                   type="email"
+                  readOnly
                   placeholder="Enter your company email"
-                  value={isClient ? formData.email : ""}
-                  onChange={isClient ? handleChange : undefined}
+                  value={formData.email}
+                  onChange={handleChange}
                   autoComplete="username"
                   required
                   className="h-11"
-                  disabled={!isClient}
                 />
-                <p className="text-xs text-muted-foreground">
+                <div className="text-xs text-muted-foreground">
                   Use the email address provided by your company
-                </p>
+                  <p className="text-xs text-primary">Email and password have been hardcoded for the prototype.</p>
+                </div>
               </div>
 
               <div className="space-y-2">
@@ -139,25 +137,24 @@ export default function AdminSignin() {
                   <Input
                     id="password"
                     name="password"
-                    type={showPassword && isClient ? "text" : "password"}
+                    readOnly
+                    type={showPassword ? "text" : "password"}
                     placeholder="Enter your password"
-                    value={isClient ? formData.password : ""}
-                    onChange={isClient ? handleChange : undefined}
+                    value={formData.password}
+                    onChange={handleChange}
                     autoComplete="current-password"
                     required
                     className="h-11 pr-10"
-                    disabled={!isClient}
                   />
-                  {isClient && (
-                    <button
-                      type="button"
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                      onClick={() => setShowPassword(!showPassword)}
-                      tabIndex={-1}
-                    >
-                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    onClick={() => setShowPassword(!showPassword)}
+                    tabIndex={-1}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+
                 </div>
                 <p className="text-xs text-muted-foreground">
                   Use the password provided by your company administrator
@@ -167,9 +164,8 @@ export default function AdminSignin() {
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="rememberMe"
-                  checked={isClient && formData.rememberMe}
-                  onCheckedChange={isClient ? handleCheckboxChange : undefined}
-                  disabled={!isClient}
+                  checked={formData.rememberMe}
+                  onCheckedChange={handleCheckboxChange}
                 />
                 <Label
                   htmlFor="rememberMe"
@@ -182,7 +178,7 @@ export default function AdminSignin() {
               <Button
                 type="submit"
                 className="w-full h-11 text-base font-medium border-2 text-foreground hover:bg-primary"
-                disabled={isLoading || !isClient}
+                disabled={isLoading}
               >
                 {isLoading ? "Signing in..." : "Access Admin Portal"}
               </Button>
@@ -204,11 +200,11 @@ export default function AdminSignin() {
               </div>
             </form>
 
-            {!isClient && (
+            {/* {!isClient && (
               <div className="absolute inset-0 bg-card/50 backdrop-blur-sm flex items-center justify-center z-10 rounded-lg">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
               </div>
-            )}
+            )} */}
           </div>
 
           <div className="mt-8 text-center">

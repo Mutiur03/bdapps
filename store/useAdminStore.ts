@@ -1,77 +1,13 @@
 import axios from "axios";
 import { create } from "zustand";
-
+import { useCommonStore } from "./useCommonStore";
+const { fetchStartups } = useCommonStore.getState();
 export interface SocialLink {
   id: string;
   title: string;
   url: string;
 }
 
-export interface Startup {
-  id: string;
-  title: string;
-  profile_picture: string;
-  cover_image: string;
-  university: string;
-  description: string;
-  budget: string;
-  pitch_video: string;
-  raised_amount: string;
-  category: { id: string; name: string };
-  tags: string;
-  trending?: boolean;
-  image?: string;
-  logo?: string;
-  createdAt: string;
-  status: string;
-  adminId: number | null;
-  admin: {
-    id: string;
-    name: string;
-    profile_picture: string;
-  };
-  user: {
-    id: string;
-    name: string;
-    department: string;
-    university: string;
-    university_email: string;
-    profile_picture: string;
-  };
-  projectMembers: {
-    id: string;
-    user: {
-      id: string;
-      name: string;
-      university: string;
-      university_email: string;
-      profile_picture: string;
-    };
-  }[];
-  milestones: {
-    id: string;
-    title: string;
-    description: string;
-    status: string;
-    amount: number;
-    raised_amount: number;
-    deadlineAt: string;
-    createdAt: string;
-    updatedAt: string;
-    projectId: string;
-    completedAt: string;
-    plannedAt: string;
-    progress: number;
-  }[];
-  documents: {
-    id: string;
-    projectId: string;
-    document: string;
-    size: number;
-    createdAt: string;
-    updatedAt: string;
-  }[];
-}
 export interface AdminData {
   id: string;
   name: string;
@@ -89,41 +25,23 @@ export interface AdminData {
   createdAt: string;
   released_amount?: number;
   lastLogin: string;
-  Project: {
-    id: string;
-    title: string;
-    profile_picture: string;
-    cover_image: string;
-    university: string;
-    description: string;
-    budget: string;
-    pitch_video: string;
-    raised_amount: string;
-    category: { id: string; name: string };
-    tags: string;
-    status: string;
-  }[] | [];
+  Project:
+    | {
+        id: string;
+        title: string;
+        profile_picture: string;
+        cover_image: string;
+        university: string;
+        description: string;
+        budget: string;
+        pitch_video: string;
+        raised_amount: string;
+        category: { id: string; name: string };
+        tags: string;
+        status: string;
+      }[]
+    | [];
 }
-
-// export interface InvestorProfile {
-//   id: string;
-//   name: string;
-//   email: string;
-//   phone: string;
-//   location: string;
-//   profile_picture: string;
-//   bio: string;
-//   company: string;
-//   role: string;
-//   experienceYears: string;
-//   investmentFocus: string[];
-//   minInvestment: number;
-//   maxInvestment: number;
-//   preferredStages: string[];
-//   customSocials: SocialLink[];
-//   status: "active" | "inactive" | "pending";
-//   createdAt: string;
-// }
 
 export interface PlatformStats {
   totalStartups: number;
@@ -145,9 +63,8 @@ interface AdminStore {
     investorName: string;
     createdAt: string;
   }[];
+  isSubmitting: boolean;
   error: string | null;
-  startups: Startup[] | null;
-  // investors: InvestorProfile[] | null;
   stats: PlatformStats | null;
   fetchInvestments: () => Promise<void>;
   fetchAdmin: () => Promise<void>;
@@ -159,34 +76,22 @@ interface AdminStore {
   addSocialLink: (title: string, url: string) => void;
   removeSocialLink: (id: string) => void;
 
-  // Startup management
-  fetchStartups: () => Promise<void>;
   approveStartup: (id: string) => Promise<void>;
   rejectStartup: (id: string) => Promise<void>;
   deleteStartup: (id: string) => Promise<void>;
 
-  // Investor management
-  // fetchInvestors: () => Promise<void>;
-  // approveInvestor: (id: string) => Promise<void>;
-  // suspendInvestor: (id: string) => Promise<void>;
-  // deleteInvestor: (id: string) => Promise<void>;
-
-  // Platform statistics
   fetchStats: () => Promise<void>;
 
-  // Utility functions
   clearError: () => void;
 }
 
 const useAdminStore = create<AdminStore>((set, get) => ({
   admin: null,
-  loading: false,
+  loading: true,
   error: null,
-  startups: null,
-  // investors: null,
   stats: null,
   investments: [],
-
+  isSubmitting: false,
   fetchInvestments: async () => {
     set({ loading: true, error: null });
     try {
@@ -200,22 +105,6 @@ const useAdminStore = create<AdminStore>((set, get) => ({
           error instanceof Error
             ? error.message
             : "Failed to fetch investments",
-        loading: false,
-      });
-    }
-  },
-
-  fetchStartups: async () => {
-    set({ loading: true, error: null });
-    try {
-      const response = await axios.get("/api/admin/startups");
-      console.log("Fetched startups:", response.data);
-      set({ startups: response.data, loading: false });
-    } catch (error) {
-      console.error("Error fetching startups:", error);
-      set({
-        error:
-          error instanceof Error ? error.message : "Failed to fetch startups",
         loading: false,
       });
     }
@@ -244,16 +133,14 @@ const useAdminStore = create<AdminStore>((set, get) => ({
   },
 
   updateAdmin: async (data) => {
-    set({ loading: true, error: null });
+    set({ isSubmitting: true, error: null });
     try {
       const currentAdmin = get().admin;
       if (!currentAdmin) {
         throw new Error("No admin data available");
       }
-
       const updatedAdmin = { ...currentAdmin, ...data };
       const formData = new FormData();
-
       Object.entries(updatedAdmin).forEach(([key, value]) => {
         if (Array.isArray(value)) {
           formData.append(key, JSON.stringify(value));
@@ -273,7 +160,7 @@ const useAdminStore = create<AdminStore>((set, get) => ({
           "Content-Type": "multipart/form-data",
         },
       });
-      set({ admin: response.data.data, loading: false });
+      set({ admin: response.data.data });
     } catch (error) {
       console.error("Error updating admin profile:", error);
       set({
@@ -281,9 +168,9 @@ const useAdminStore = create<AdminStore>((set, get) => ({
           error instanceof Error
             ? error.message
             : "Failed to update admin profile",
-        loading: false,
       });
     }
+    set({ isSubmitting: false });
   },
 
   updateAdminField: (field, value) => {
@@ -332,28 +219,12 @@ const useAdminStore = create<AdminStore>((set, get) => ({
     });
   },
 
-  // fetchInvestors: async () => {
-  //   set({ loading: true, error: null });
-  //   try {
-  //     const response = await axios.get("/api/admin/investors");
-  //     console.log("Fetched investors:", response.data);
-  //     set({ investors: response.data, loading: false });
-  //   } catch (error) {
-  //     console.error("Error fetching investors:", error);
-  //     set({
-  //       error:
-  //         error instanceof Error ? error.message : "Failed to fetch investors",
-  //       loading: false,
-  //     });
-  //   }
-  // },
-
   approveStartup: async (id) => {
     set({ loading: true, error: null });
     try {
       await axios.patch(`/api/admin/startups/${id}/approve`);
-      // Refresh startups list
-      get().fetchStartups();
+
+      fetchStartups();
     } catch (error) {
       console.error("Error approving startup:", error);
       set({
@@ -368,7 +239,7 @@ const useAdminStore = create<AdminStore>((set, get) => ({
     set({ loading: true, error: null });
     try {
       await axios.patch(`/api/admin/startups/${id}/reject`);
-      get().fetchStartups();
+      fetchStartups();
     } catch (error) {
       console.error("Error rejecting startup:", error);
       set({
@@ -383,7 +254,7 @@ const useAdminStore = create<AdminStore>((set, get) => ({
     set({ loading: true, error: null });
     try {
       await axios.delete(`/api/admin/startups/${id}`);
-      get().fetchStartups();
+      fetchStartups();
     } catch (error) {
       console.error("Error deleting startup:", error);
       set({
@@ -393,51 +264,6 @@ const useAdminStore = create<AdminStore>((set, get) => ({
       });
     }
   },
-
-  // approveInvestor: async (id) => {
-  //   set({ loading: true, error: null });
-  //   try {
-  //     await axios.patch(`/api/admin/investors/${id}/approve`);
-  //     get().fetchInvestors();
-  //   } catch (error) {
-  //     console.error("Error approving investor:", error);
-  //     set({
-  //       error:
-  //         error instanceof Error ? error.message : "Failed to approve investor",
-  //       loading: false,
-  //     });
-  //   }
-  // },
-
-  // suspendInvestor: async (id) => {
-  //   set({ loading: true, error: null });
-  //   try {
-  //     await axios.patch(`/api/admin/investors/${id}/suspend`);
-  //     get().fetchInvestors();
-  //   } catch (error) {
-  //     console.error("Error suspending investor:", error);
-  //     set({
-  //       error:
-  //         error instanceof Error ? error.message : "Failed to suspend investor",
-  //       loading: false,
-  //     });
-  //   }
-  // },
-
-  // deleteInvestor: async (id) => {
-  //   set({ loading: true, error: null });
-  //   try {
-  //     await axios.delete(`/api/admin/investors/${id}`);
-  //     get().fetchInvestors();
-  //   } catch (error) {
-  //     console.error("Error deleting investor:", error);
-  //     set({
-  //       error:
-  //         error instanceof Error ? error.message : "Failed to delete investor",
-  //       loading: false,
-  //     });
-  //   }
-  // },
 
   fetchStats: async () => {
     set({ loading: true, error: null });

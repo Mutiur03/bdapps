@@ -3,7 +3,7 @@ import "@/app/globals.css";
 import type { Metadata } from "next";
 import { Toaster } from "react-hot-toast";
 import { SessionProviderWrapper } from "@/components/providers/session-provider";
-import Projects from "@/components/root/Projects";
+import Project from "@/components/root/Project";
 export const metadata: Metadata = {
   title: "UdayeeConnect - Connecting Student Founders with Investors",
   description:
@@ -28,7 +28,7 @@ export default function RootLayout({
       >
         <SessionProviderWrapper>
           <Toaster />
-          <Projects />
+          <Project />
           {children}
         </SessionProviderWrapper>
       </body>

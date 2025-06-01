@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
 import { MessageSquare, Search, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -10,7 +11,6 @@ import axios from "axios";
 import safeUrl from "@/lib/safeURL";
 import { io, Socket } from "socket.io-client";
 
-// Initialize socket instance
 let socketInstance: Socket | null = null;
 
 if (typeof window !== "undefined" && !socketInstance) {
@@ -278,6 +278,31 @@ export function UdayeeMessages() {
       conv.title?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const MessageSkeleton = () => (
+    <Card>
+      <CardContent className="p-4">
+        <div className="flex items-start gap-4">
+          <Skeleton className="h-12 w-12 rounded-full" />
+          <div className="flex-1 space-y-2">
+            <div className="flex justify-between items-start">
+              <div className="space-y-1">
+                <Skeleton className="h-4 w-32" />
+              </div>
+              <Skeleton className="h-6 w-6 rounded-full" />
+            </div>
+            <div className="space-y-1">
+              <Skeleton className="h-3 w-48" />
+              <Skeleton className="h-3 w-20" />
+            </div>
+            <div className="pt-1 flex justify-end">
+              <Skeleton className="h-7 w-20" />
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
   return (
     <div className="space-y-6">
       <div>
@@ -304,7 +329,11 @@ export function UdayeeMessages() {
 
       <div className="space-y-4">
         {loading ? (
-          <div className="text-center py-8">Loading conversations...</div>
+          <div className="space-y-4">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <MessageSkeleton key={i} />
+            ))}
+          </div>
         ) : (
           filteredConversations.map((conversation) => (
             <Link

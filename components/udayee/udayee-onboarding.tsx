@@ -219,7 +219,7 @@ export function UdayeeOnboarding() {
         JSON.stringify({
           email: formData.university_email,
           subject: 'UdayeeConnect Registration',
-          text:"<h2>Thank you for registering with FUndIt! Your account is being created and will be activated shortly. Please check your email for further instructions.</h2>",
+          text: "<h2>Thank you for registering with FUndIt! Your account is being created and will be activated shortly. Please check your email for further instructions.</h2>",
           // text: `<h2>This is your final notice. Your recent actions have been noted and are entirely unacceptable. If this behavior continues or is not immediately corrected, I will have no choice but to escalate the matter further—through all available channels.
           // Let this serve as a formal warning: I am prepared to take decisive action if this is not resolved at once.
           // You've been given more than enough time and opportunity to correct your course. This is your last chance to do so.</h2>`,
@@ -308,18 +308,23 @@ export function UdayeeOnboarding() {
                       <SelectValue placeholder="Select your university" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="buet">
+                      <SelectItem value="KUET">
+                        Khulna University of Engineering and Technology (KUET)
+                      </SelectItem>
+                      <SelectItem value="BUET">
                         Bangladesh University of Engineering and Technology (BUET)
                       </SelectItem>
-                      <SelectItem value="du">Dhaka University</SelectItem>
-                      <SelectItem value="nsu">North South University</SelectItem>
-                      <SelectItem value="bau">
+                      <SelectItem value="DU">Dhaka University</SelectItem>
+                      <SelectItem value="NSU">North South University</SelectItem>
+                      <SelectItem value="BAU">
                         Bangladesh Agricultural University
                       </SelectItem>
-                      <SelectItem value="cuet">
+                      <SelectItem value="CUET">
                         Chittagong University of Engineering and Technology
                       </SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
+                      <SelectItem value="RUET">
+                        Rajshahi University of Engineering and Technology
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

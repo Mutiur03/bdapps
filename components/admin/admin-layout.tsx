@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { HomeFooter } from "../home/home-footer";
@@ -30,27 +31,28 @@ import safeUrl from "@/lib/safeURL";
 interface AdminLayoutProps {
   children: React.ReactNode;
 }
-
+import { useCommonStore } from "@/store/useCommonStore";
 export function AdminLayout({ children }: AdminLayoutProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const { admin, fetchAdmin, fetchStartups, fetchInvestments } =
-    useAdminStore(); // Uncomment when admin store is created
+  const { isLoading } = useCommonStore()
+  const { admin, fetchAdmin, fetchInvestments, loading } =
+    useAdminStore();
 
   useEffect(() => {
     setMounted(true);
     async function loadAdminData() {
       try {
         await fetchAdmin();
-        console.log("Admin data loaded:", admin);
+        await fetchInvestments();
       } catch (err) {
         console.error("Failed to fetch admin data:", err);
       }
     }
-    loadAdminData();
-    fetchInvestments();
-    fetchStartups();
+    if (!admin) {
+      loadAdminData();
+    }
   }, []);
 
   const routes = [
@@ -131,7 +133,114 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     </ul>
   );
 
+  const UserProfileSection = () => {
+    if (loading || !admin || isLoading) {
+      return (
+        <div className="flex items-center gap-3 mb-4">
+          <Skeleton className="h-9 w-9 rounded-full" />
+          <div className="flex-1 min-w-0 space-y-2">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-3 w-32" />
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="flex items-center gap-3 mb-4">
+        <Avatar className="h-9 w-9">
+          <AvatarImage
+            src={safeUrl(admin?.profile_picture)}
+            alt="Admin"
+          />
+          <AvatarFallback className="bg-primary/10 text-primary">
+            AD
+          </AvatarFallback>
+        </Avatar>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium text-foreground truncate">
+            {admin?.name}
+          </p>
+          <p className="text-xs text-muted-foreground truncate">
+            {admin?.email}
+          </p>
+        </div>
+      </div>
+    );
+  };
+
   if (!mounted) return null;
+
+  // Full screen loading skeleton
+  if (loading || !admin || isLoading) {
+    return (
+      <div className="min-h-screen flex">
+        {/* Skeleton Sidebar */}
+        <aside className="hidden md:block md:w-72 border-r border-border bg-card">
+          <div className="h-full flex flex-col">
+            {/* Logo skeleton */}
+            <div className="border-b border-border flex-shrink-0 p-4">
+              <div className="flex items-center justify-center mb-4">
+                <Skeleton className="h-8 w-20" />
+              </div>
+              <Skeleton className="h-4 w-24 mx-auto" />
+            </div>
+
+            {/* Navigation skeleton */}
+            <div className="flex-1 p-4 space-y-4">
+              <Skeleton className="h-3 w-20" />
+              <div className="space-y-2">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="flex items-center gap-3 p-2">
+                    <Skeleton className="h-5 w-5" />
+                    <Skeleton className="h-4 flex-1" />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Profile skeleton */}
+            <div className="flex-shrink-0 p-4 border-t border-border">
+              <div className="flex items-center gap-3 mb-4">
+                <Skeleton className="h-9 w-9 rounded-full" />
+                <div className="flex-1 space-y-2">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-3 w-32" />
+                </div>
+              </div>
+              <Skeleton className="h-9 w-full" />
+            </div>
+          </div>
+        </aside>
+
+        {/* Mobile menu button skeleton */}
+        <div className="md:hidden fixed top-4 left-4 z-50">
+          <Skeleton className="h-10 w-10" />
+        </div>
+
+        {/* Main content skeleton */}
+        <main className="flex-grow w-full pt-16 md:pt-0">
+          <div className="max-w-6xl mx-auto p-4 md:p-8 space-y-6">
+            {/* Header skeleton */}
+            <div className="space-y-3">
+              <Skeleton className="h-8 w-64" />
+              <Skeleton className="h-4 w-96" />
+            </div>
+            
+            {/* Content area skeleton */}
+            <div className="space-y-4">
+              <Skeleton className="h-40 w-full rounded-lg" />
+              <div className="grid gap-4 md:grid-cols-2">
+                <Skeleton className="h-32 w-full rounded-lg" />
+                <Skeleton className="h-32 w-full rounded-lg" />
+              </div>
+              <Skeleton className="h-24 w-full rounded-lg" />
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -182,25 +291,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
               {/* User Profile & Logout - Sticky at bottom */}
               <div className="sticky bottom-0 left-0 right-0 p-4 border-t border-border bg-card shadow-sm">
-                <div className="flex items-center gap-3 mb-4">
-                  <Avatar className="h-9 w-9">
-                    <AvatarImage
-                      src={safeUrl(admin?.profile_picture)}
-                      alt="Admin"
-                    />
-                    <AvatarFallback className="bg-primary/10 text-primary">
-                      AD
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground truncate">
-                      {admin?.name}
-                    </p>
-                    <p className="text-xs text-muted-foreground truncate">
-                      {admin?.email}
-                    </p>
-                  </div>
-                </div>
+                <UserProfileSection />
                 <Button
                   onClick={() => {
                     signOut({
@@ -209,6 +300,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   }}
                   variant="ghost"
                   className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
+                  disabled={loading}
                 >
                   <LogOut className="h-4 w-4 mr-2" />
                   Logout
@@ -253,25 +345,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
               {/* User Profile & Logout - Fixed at bottom */}
               <div className="flex-shrink-0 p-4 border-t border-border bg-card">
-                <div className="flex items-center gap-3 mb-4">
-                  <Avatar className="h-9 w-9">
-                    <AvatarImage
-                      src={safeUrl(admin?.profile_picture)}
-                      alt="Admin"
-                    />
-                    <AvatarFallback className="bg-primary/10 text-primary">
-                      AD
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground truncate">
-                      {admin?.name}
-                    </p>
-                    <p className="text-xs text-muted-foreground truncate">
-                      {admin?.email}
-                    </p>
-                  </div>
-                </div>
+                <UserProfileSection />
                 <Button
                   onClick={() => {
                     signOut({
@@ -280,6 +354,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   }}
                   variant="ghost"
                   className="w-full justify-start text-destructive/90 hover:text-destructive hover:bg-destructive/10"
+                  disabled={loading}
                 >
                   <LogOut className="h-4 w-4 mr-2" />
                   Logout

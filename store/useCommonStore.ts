@@ -1,10 +1,5 @@
 import axios from "axios";
 import { create } from "zustand";
-export interface SocialLink {
-  id: string;
-  title: string;
-  url: string;
-}
 export interface Startup {
   id: string;
   title: string;
@@ -15,6 +10,7 @@ export interface Startup {
   description: string;
   budget: string;
   pitch_video: string;
+  status: string;
   raised_amount: string;
   tags: string;
   trending?: boolean;
@@ -70,24 +66,23 @@ export interface Startup {
 
 export interface CommonStore {
   startups: Startup[];
-  socialLinks: SocialLink[];
+  isLoading: boolean;
   fetchStartups: () => Promise<void>;
   setStartups: (startups: Startup[]) => void;
-  setSocialLinks: (links: SocialLink[]) => void;
+  setIsLoading: (isLoading: boolean) => void;
 }
 export const useCommonStore = create<CommonStore>((set) => ({
   startups: [],
-  socialLinks: [],
+  isLoading: true,
   fetchStartups: async () => {
     try {
       const response = await axios.get("/api/projects");
       console.log("Fetched startups: Starting", response.data);
-
       set({ startups: response.data });
     } catch (error) {
       console.error("Failed to fetch startups:", error);
     }
   },
+  setIsLoading: (isLoading) => set({ isLoading }),
   setStartups: (startups) => set({ startups }),
-  setSocialLinks: (links) => set({ socialLinks: links }),
 }));

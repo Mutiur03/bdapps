@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   MessageSquare,
   Calendar,
@@ -29,15 +30,15 @@ import { useSession } from "next-auth/react";
 import { useCommonStore } from "@/store/useCommonStore";
 export function StartupProfile({ id }: { id: string }) {
   const { data: session, status } = useSession();
-  const { startups, fetchStartups } = useCommonStore();
+  const { startups, fetchStartups, isLoading } = useCommonStore();
   const [isOfferDialogOpen, setIsOfferDialogOpen] = useState(false);
   useEffect(() => {
     const fetchData = async () => {
       if (!startups) {
         await fetchStartups();
       }
-      console.log("Startups:", startups);
-      console.log("Session:", session); // Now you can access session data
+      console.log("Fetched startups: ", startups);
+
     };
 
     fetchData();
@@ -47,6 +48,11 @@ export function StartupProfile({ id }: { id: string }) {
     (Number.parseInt((startup?.raised_amount?.toString() || "0").replace(/[^0-9]/g, "")) /
       Number.parseInt((startup?.budget?.toString() || "1").replace(/[^0-9]/g, ""))) *
     100;
+
+  // Show skeleton while loading or no startup data
+  if (isLoading || !startup) {
+    return <StartupProfileSkeleton />;
+  }
 
   return (
     <div className="space-y-6">
@@ -89,7 +95,6 @@ export function StartupProfile({ id }: { id: string }) {
         </div>
       </div>
 
-      {/* Actions Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-background/50 backdrop-blur-sm p-4 rounded-lg border shadow-sm">
         <div className="flex items-center gap-3">
           <Badge className="bg-primary/10 text-primary border-primary/20">
@@ -425,53 +430,51 @@ export function StartupProfile({ id }: { id: string }) {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              {[
-                {
-                  name: "GreenTech",
-                  description: "Renewable energy solutions",
-                  image:
-                    "https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80",
-                  href: "/investor/startups/green-tech",
-                },
-                {
-                  name: "RecyclePro",
-                  description: "Plastic recycling technology",
-                  image:
-                    "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80",
-                  href: "/investor/startups/recycle-pro",
-                },
-                {
-                  name: "CleanWater",
-                  description: "Water purification systems",
-                  image:
-                    "https://images.unsplash.com/photo-1581244277943-fe4a9c777189?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80",
-                  href: "/investor/startups/clean-water",
-                },
-              ].map((similarStartup, index) => (
-                <Link key={index} href={similarStartup.href} className="block">
-                  <div className="flex items-center gap-3 p-4 hover:bg-muted/20 border-b last:border-b-0">
-                    <div className="h-12 w-12 rounded-md overflow-hidden flex-shrink-0">
-                      <CardImage
-                        src={similarStartup.image}
-                        alt={similarStartup.name}
-                        aspectRatio="square"
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-medium text-foreground truncate">
-                        {similarStartup.name}
-                      </h3>
-                      <p className="text-xs text-muted-foreground truncate">
-                        {similarStartup.description}
-                      </p>
-                    </div>
-                    <ArrowRight className="h-4 w-4 text-primary" />
+              {(() => {
+                const similarStartups = startups
+                  ?.filter(s => 
+                    s.category?.name === startup?.category?.name && 
+                    s.id !== startup?.id
+                  )
+                  ?.slice(0, 3) || [];
+
+                return similarStartups.length > 0 ? (
+                  similarStartups.map((similarStartup, index) => (
+                    <Link key={similarStartup.id} href={`/startup/${similarStartup.id}`} className="block">
+                      <div className="flex items-center gap-3 p-4 hover:bg-muted/20 border-b last:border-b-0">
+                        <div className="h-12 w-12 rounded-md overflow-hidden flex-shrink-0">
+                          <CardImage
+                            src={safeUrl(similarStartup.profile_picture)}
+                            alt={similarStartup.title}
+                            aspectRatio="square"
+                            fallback={
+                              <div className="bg-primary/10 text-primary h-full w-full flex items-center justify-center font-semibold text-xs">
+                                {similarStartup.title.charAt(0)}
+                              </div>
+                            }
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-medium text-foreground truncate">
+                            {similarStartup.title}
+                          </h3>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {similarStartup.description}
+                          </p>
+                        </div>
+                        <ArrowRight className="h-4 w-4 text-primary" />
+                      </div>
+                    </Link>
+                  ))
+                ) : (
+                  <div className="p-4 text-center text-muted-foreground text-sm">
+                    No similar startups found in this category.
                   </div>
-                </Link>
-              ))}
+                );
+              })()}
             </CardContent>
             <CardFooter className="border-t border-border">
-              <Link href="/investor/startups" className="w-full">
+              <Link href="/startups" className="w-full">
                 <Button variant="outline" className="w-full text-sm">
                   Browse All Startups
                 </Button>
@@ -487,6 +490,147 @@ export function StartupProfile({ id }: { id: string }) {
         onOpenChange={setIsOfferDialogOpen}
         startup={startup}
       />
+    </div>
+  );
+}
+
+function StartupProfileSkeleton() {
+  return (
+    <div className="space-y-6">
+      {/* Hero Image Skeleton */}
+      <div className="relative rounded-xl overflow-hidden">
+        <Skeleton className="h-64 md:h-80 w-full" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+          <div className="p-6 text-white space-y-2 w-full">
+            <div className="flex items-center gap-4">
+              <Skeleton className="h-16 w-16 rounded-full bg-white/20" />
+              <div className="space-y-2">
+                <Skeleton className="h-8 w-48 bg-white/20" />
+                <Skeleton className="h-4 w-64 bg-white/20" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Action Bar Skeleton */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-background/50 backdrop-blur-sm p-4 rounded-lg border shadow-sm">
+        <Skeleton className="h-6 w-24" />
+        <div className="flex gap-3">
+          <Skeleton className="h-10 w-32" />
+        </div>
+      </div>
+
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left Column Skeleton */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Video Skeleton */}
+          <Card className="overflow-hidden">
+            <Skeleton className="w-full aspect-video" />
+          </Card>
+
+          {/* Tabs Skeleton */}
+          <div className="space-y-4">
+            <div className="flex gap-2">
+              <Skeleton className="h-10 w-20" />
+              <Skeleton className="h-10 w-24" />
+            </div>
+            
+            <Card>
+              <CardHeader className="border-b border-border">
+                <Skeleton className="h-6 w-40" />
+              </CardHeader>
+              <CardContent className="pt-6 space-y-4">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-4 w-1/2" />
+                
+                <div className="grid grid-cols-2 gap-4 mt-6">
+                  {[...Array(4)].map((_, i) => (
+                    <div key={i} className="space-y-2">
+                      <Skeleton className="h-3 w-16" />
+                      <Skeleton className="h-5 w-24" />
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="flex flex-wrap gap-2 mt-6">
+                  {[...Array(3)].map((_, i) => (
+                    <Skeleton key={i} className="h-6 w-16" />
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Right Column Skeleton */}
+        <div className="space-y-6">
+          {/* Funding Card Skeleton */}
+          <Card className="border-t-4 border-t-primary">
+            <CardHeader className="border-b border-border">
+              <Skeleton className="h-6 w-32" />
+            </CardHeader>
+            <CardContent className="space-y-4 pt-6">
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <Skeleton className="h-4 w-20" />
+                  <Skeleton className="h-4 w-16" />
+                </div>
+                <div className="flex justify-between">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-4 w-20" />
+                </div>
+                <Skeleton className="h-2 w-full" />
+                <div className="flex justify-between">
+                  <Skeleton className="h-3 w-16" />
+                  <Skeleton className="h-3 w-20" />
+                </div>
+              </div>
+              
+              <div className="pt-2 space-y-4">
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Resources Card Skeleton */}
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-6 w-24" />
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {[...Array(3)].map((_, i) => (
+                <Skeleton key={i} className="h-10 w-full" />
+              ))}
+            </CardContent>
+          </Card>
+
+          {/* Similar Startups Card Skeleton */}
+          <Card>
+            <CardHeader className="border-b border-border">
+              <Skeleton className="h-6 w-32" />
+            </CardHeader>
+            <CardContent className="p-0">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="flex items-center gap-3 p-4 border-b last:border-b-0">
+                  <Skeleton className="h-12 w-12 rounded-md" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-3 w-32" />
+                  </div>
+                  <Skeleton className="h-4 w-4" />
+                </div>
+              ))}
+            </CardContent>
+            <CardFooter className="border-t border-border">
+              <Skeleton className="h-10 w-full" />
+            </CardFooter>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 }

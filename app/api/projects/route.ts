@@ -61,9 +61,15 @@ export async function GET() {
             plannedAt: true,
           },
         },
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
     });
-    console.log("Projects retrieved successfully:", projects);
+    // console.log("Projects retrieved successfully:", projects);
 
     return NextResponse.json(projects);
   } catch (error) {

@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,57 +11,11 @@ import {
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { ArrowUpRight, TrendingUp, Clock } from "lucide-react";
+import React from "react";
+import { useCommonStore } from "@/store/useCommonStore";
 
 export function PopularStartups() {
-  // Mock data for popular startups
-  const startups = [
-    {
-      id: "1",
-      name: "EcoSolutions",
-      founder: "Rahul Ahmed",
-      university: "BUET",
-      description: "Sustainable waste management solutions for urban areas",
-      fundingGoal: "৳25,000",
-      raisedSoFar: "৳18,000",
-      category: "Environment",
-      tags: ["sustainability", "waste management", "urban"],
-      trending: true,
-    },
-    {
-      id: "2",
-      name: "HealthTech",
-      founder: "Nusrat Khan",
-      university: "Dhaka University",
-      description: "AI-powered health diagnostics for rural communities",
-      fundingGoal: "৳30,000",
-      raisedSoFar: "৳12,000",
-      category: "Healthcare",
-      tags: ["healthcare", "AI", "rural development"],
-    },
-    {
-      id: "3",
-      name: "EduConnect",
-      founder: "Tanvir Rahman",
-      university: "NSU",
-      description: "Connecting students with mentors for career guidance",
-      fundingGoal: "৳18,000",
-      raisedSoFar: "৳15,000",
-      category: "Education",
-      tags: ["education", "mentorship", "career"],
-    },
-    {
-      id: "4",
-      name: "AgriTech Solutions",
-      founder: "Fahmida Akter",
-      university: "BAU",
-      description: "Smart farming solutions for small-scale farmers",
-      fundingGoal: "৳20,000",
-      raisedSoFar: "৳8,000",
-      category: "Agriculture",
-      tags: ["agriculture", "IoT", "farming"],
-      trending: true,
-    },
-  ];
+  const { isLoading, startups } = useCommonStore();
 
   return (
     <section className="py-12 sm:py-16 bg-white">
@@ -76,13 +31,17 @@ export function PopularStartups() {
         </div>
 
         <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {startups.map((startup) => (
-            <StartupCard key={startup.id} startup={startup} />
-          ))}
+          {isLoading
+            ? Array.from({ length: 4 }).map((_, index) => (
+                <SkeletonCard key={index} />
+              ))
+            : startups.slice(0, 4).map((startup) => (
+                <StartupCard key={startup.id} startup={startup} />
+              ))}
         </div>
 
         <div className="mt-8 sm:mt-12 text-center">
-          <Link href="/signup">
+          <Link href="/signin">
             <Button className="px-6 py-3 sm:px-8 sm:py-6 bg-primary hover:bg-primary/90 text-white text-base sm:text-lg">
               Explore All Startups
             </Button>
@@ -93,39 +52,92 @@ export function PopularStartups() {
   );
 }
 
+function SkeletonCard() {
+  return (
+    <Card className="overflow-hidden h-full flex flex-col">
+      <div className="w-full h-32 bg-gray-200 animate-pulse" />
+      <CardHeader className="pb-2">
+        <div className="flex justify-between items-start">
+          <div className="flex-1">
+            <div className="h-5 bg-gray-200 rounded animate-pulse mb-2" />
+            <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4" />
+          </div>
+          <div className="h-6 w-16 bg-gray-200 rounded-full animate-pulse" />
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4 flex-1">
+        <div className="space-y-2">
+          <div className="h-4 bg-gray-200 rounded animate-pulse" />
+          <div className="h-4 bg-gray-200 rounded animate-pulse w-5/6" />
+        </div>
+        <div className="flex gap-2">
+          <div className="h-6 w-16 bg-gray-200 rounded-full animate-pulse" />
+          <div className="h-6 w-20 bg-gray-200 rounded-full animate-pulse" />
+        </div>
+        <div className="space-y-2">
+          <div className="flex justify-between">
+            <div className="h-4 w-20 bg-gray-200 rounded animate-pulse" />
+            <div className="h-4 w-16 bg-gray-200 rounded animate-pulse" />
+          </div>
+          <div className="flex justify-between">
+            <div className="h-4 w-24 bg-gray-200 rounded animate-pulse" />
+            <div className="h-4 w-16 bg-gray-200 rounded animate-pulse" />
+          </div>
+          <div className="h-2 bg-gray-200 rounded animate-pulse" />
+        </div>
+      </CardContent>
+      <CardFooter className="pt-2 flex justify-between items-center">
+        <div className="h-4 w-20 bg-gray-200 rounded animate-pulse" />
+        <div className="h-8 w-24 bg-gray-200 rounded animate-pulse" />
+      </CardFooter>
+    </Card>
+  );
+}
+
 function StartupCard({ startup }: { startup: any }) {
   const fundingProgress =
-    (Number.parseInt(startup.raisedSoFar.replace(/[^0-9]/g, "")) /
-      Number.parseInt(startup.fundingGoal.replace(/[^0-9]/g, ""))) *
-    100;
+    startup.milestones.length > 0
+      ? (Number(startup.raised_amount) / Number(startup.budget)) * 100
+      : 0;
+
+  const tags = startup.tags
+    ? startup.tags.split(",").map((tag: string) => tag.trim())
+    : [];
 
   return (
     <Card className="overflow-hidden hover:shadow-md transition-shadow h-full flex flex-col">
       {/* Image placeholder */}
       <div className="w-full h-32 flex items-center justify-center bg-accent border-b">
-        <span
-          className="text-4xl text-accent-foreground font-bold"
-          style={{
-            fontFamily: "'Outfit', 'Poppins', sans-serif",
-            letterSpacing: "1px",
-          }}
-        >
-          {/* Use first letter of startup name as placeholder "logo" */}
-          {startup.name[0]}
-        </span>
+        {startup.cover_image ? (
+          <img
+            src={startup.cover_image}
+            alt={startup.title}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <span
+            className="text-4xl text-accent-foreground font-bold"
+            style={{
+              fontFamily: "'Outfit', 'Poppins', sans-serif",
+              letterSpacing: "1px",
+            }}
+          >
+            {startup.title[0]}
+          </span>
+        )}
       </div>
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
           <div>
             <CardTitle className="text-lg text-secondary-foreground">
-              {startup.name}
+              {startup.title}
             </CardTitle>
             <CardDescription>
-              {startup.founder} • {startup.university}
+              {startup.user.name} • {startup.user.university}
             </CardDescription>
           </div>
           <span className="bg-accent text-accent-foreground text-xs px-2 py-1 rounded-full">
-            {startup.category}
+            {startup.category?.name || "Startup"}
           </span>
         </div>
       </CardHeader>
@@ -135,9 +147,9 @@ function StartupCard({ startup }: { startup: any }) {
         </p>
 
         <div className="flex flex-wrap gap-2">
-          {startup.tags.slice(0, 2).map((tag: string) => (
+          {tags.slice(0, 2).map((tag: string, index: number) => (
             <span
-              key={tag}
+              key={index}
               className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded-full"
             >
               #{tag}
@@ -148,11 +160,15 @@ function StartupCard({ startup }: { startup: any }) {
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Funding Goal:</span>
-            <span className="font-medium">{startup.fundingGoal}</span>
+            <span className="font-medium">
+              ৳{Number(startup.budget).toLocaleString()}
+            </span>
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Raised So Far:</span>
-            <span className="font-medium">{startup.raisedSoFar}</span>
+            <span className="font-medium">
+              ৳{Number(startup.raised_amount).toLocaleString()}
+            </span>
           </div>
           <Progress value={fundingProgress} className="h-2 bg-accent" />
         </div>
@@ -171,12 +187,12 @@ function StartupCard({ startup }: { startup: any }) {
             </>
           )}
         </div>
-        <Link href="/signup">
+        <Link href="/startup/[id]" as={`/startup/${startup.id}`}>
           <Button
             size="sm"
             className="text-sm bg-primary hover:bg-primary/90 text-white flex items-center"
           >
-            Invest Now
+            View Details
             <ArrowUpRight className="ml-1 h-3 w-3" />
           </Button>
         </Link>
