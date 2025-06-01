@@ -34,7 +34,7 @@ import safeUrl from "@/lib/safeURL";
 
 export function UdayeeProfileEditor() {
   const [saving, setSaving] = useState(false);
-  const { user, updateUser, pushUser, isLoading } = useUserStore();
+  const { user, updateUser, pushUser } = useUserStore();
   const [profilePicturePreview, setProfilePicturePreview] = useState<File | null>(null);
 
   const handleChange = async (
@@ -72,15 +72,6 @@ export function UdayeeProfileEditor() {
       setSaving(false);
     }
   };
-
-  if (isLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh]">
-        <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
-        <p className="text-lg text-muted-foreground">Loading profile data...</p>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">
