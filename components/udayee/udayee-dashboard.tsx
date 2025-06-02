@@ -137,7 +137,7 @@ export function UdayeeDashboard() {
               <Progress
                 value={fundingProgress}
                 className="h-2 bg-secondary"
-                indicatorClassName="bg-primary"
+                // indicatorClassName="bg-primary" // Remove this line
               />
               <p className="text-sm text-right text-muted-foreground">
                 {fundingProgress.toFixed(0)}% of goal
@@ -370,7 +370,7 @@ export function UdayeeDashboard() {
                         <Progress
                           value={fundingProgress}
                           className="h-2 bg-secondary"
-                          indicatorClassName="bg-primary"
+                          // indicatorClassName="bg-primary" // Remove this line
                         />
                       </div>
 
