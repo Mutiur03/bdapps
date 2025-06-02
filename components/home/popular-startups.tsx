@@ -110,13 +110,10 @@ function StartupCard({ startup }: { startup: any }) {
       {/* Image placeholder */}
       <div className="w-full h-32 flex items-center justify-center bg-accent border-b">
         {startup.cover_image ? (
-          <Image
+          <img
             src={startup.cover_image}
             alt={startup.title}
             className="w-full h-full object-cover"
-            width={1280}
-            height={720}
-            style={{ objectFit: "cover" }}
           />
         ) : (
           <span
