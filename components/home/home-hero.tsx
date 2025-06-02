@@ -4,7 +4,7 @@ import { useRef } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 
 // Animation Variants
 const fadeInUp = {
@@ -89,7 +89,7 @@ export function HomeHero() {
         >
           <motion.div className="space-y-2" variants={fadeInLeft}>
             <motion.h1
-              className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-foreground"
+              className="text-4xl md:text-5xl lg:text-6xl xl:text-6xl 2xl:text-7xl font-bold tracking-tight text-foreground"
               variants={fadeInUp}
             >
               Connecting{" "}
@@ -112,10 +112,10 @@ export function HomeHero() {
           </motion.div>
 
           <motion.p
-            className="text-lg text-muted-foreground"
+            className="text-lg lg:text-xl xl:text-xl 2xl:text-2xl text-muted-foreground"
             variants={fadeInLeft}
           >
-            Uday empowers student entrepreneurs to showcase their ideas and
+            FundIt empowers student entrepreneurs to showcase their ideas and
             connect with investors who believe in their vision.
           </motion.p>
 
@@ -156,22 +156,23 @@ export function HomeHero() {
           </motion.div>
         </motion.div>
 
-        {/* Image - Right Side - UNCHANGED */}
-        <div className="hidden lg:flex">
-          <div className="relative h-full flex items-end">
+        {/* Image - Right Side - Responsive */}
+        <div className="hidden lg:flex lg:flex-1 lg:justify-end">
+          <div className="relative w-full h-full flex items-end justify-center lg:justify-end">
             <img
               src="/hero.png"
               alt="Student entrepreneur with laptop"
-              className="h-auto max-h-[calc(100vh-64px)] object-contain object-bottom z-10 origin-bottom"
+              className="h-auto w-auto max-h-[80vh] lg:max-h-[85vh] xl:max-h-[90vh] object-contain object-bottom z-10 
+                         lg:scale-150 xl:scale-[1.6] 2xl:scale-[1.8]
+                         lg:translate-y-32 xl:translate-y-40 2xl:translate-y-48
+                         lg:-translate-x-8 xl:-translate-x-16 2xl:-translate-x-20"
               style={{
                 filter: "drop-shadow(0 10px 15px rgba(0, 0, 0, 0.1))",
-                scale: "1.8",
-                transform: "translateY(250px) translateX(-120px)",
               }}
             />
 
-            {/* Highlight effect behind the person */}
-            <div className="absolute bottom-0 w-72 h-40 bg-primary/10 rounded-full blur-xl"></div>
+            {/* Highlight effect behind the person - responsive */}
+            <div className="absolute bottom-8 lg:bottom-16 xl:bottom-20 w-48 lg:w-64 xl:w-72 h-24 lg:h-32 xl:h-40 bg-primary/10 rounded-full blur-xl"></div>
           </div>
         </div>
       </div>

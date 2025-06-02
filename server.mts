@@ -1,5 +1,5 @@
 import { createServer } from "http";
-import next from "next";
+// Remove: import * as next from "next";
 import { Server } from "socket.io";
 import { MessageRole } from "@prisma/client";
 
@@ -24,12 +24,15 @@ const host = process.env.HOST || "localhost";
 const port = parseInt(process.env.PORT || "3000", 10);
 
 // Simple Next.js configuration for App Router
-const app = next({
-  dev,
-  hostname: host,
-  port,
-});
-const handle = app.getRequestHandler();
+let app: any;
+let handle: any;
+
+const prepareNext = async () => {
+  const nextModule = await import("next");
+  // Use Next constructor directly
+  app = nextModule.default({ dev });
+  handle = app.getRequestHandler();
+};
 
 const startServer = async () => {
   try {
@@ -37,6 +40,7 @@ const startServer = async () => {
     await initPrisma();
 
     // Prepare Next.js app
+    await prepareNext();
     await app.prepare();
 
     const server = createServer(async (req, res) => {

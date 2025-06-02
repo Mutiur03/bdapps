@@ -22,21 +22,25 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import mail_icon from "@/assets/mail_icon.svg";
+import location_icon from "@/assets/location_icon.svg";
+import call_icon from "@/assets/call_icon.svg";
+import theme_pattern from "@/assets/theme_pattern.svg";
 
 // Data Arrays and Objects
 const HERO_DATA = {
   badge: "Get in Touch",
   title: "We'd Love to Hear from You",
   description:
-    "Have questions about Uday? Looking for support? Or just want to share your feedback? We're here to help.",
+    "Have questions about FundIt? Looking for support? Or just want to share your feedback? We're here to help.",
 };
 
 const CONTACT_INFO = [
   {
     icon: Mail,
     title: "Email Us",
-    detail: "contact@Uday.com",
-    href: "mailto:contact@Uday.com",
+    detail: "contact@FundIt.com",
+    href: "mailto:contact@FundIt.com",
   },
   {
     icon: Phone,
@@ -66,14 +70,14 @@ const FAQ_DATA = [
       "Registration is simple! Click on the 'Sign Up' button, select 'Student', and follow the guided process to create your account and set up your startup profile.",
   },
   {
-    question: "What type of startups can join Uday?",
+    question: "What type of startups can join FundIt?",
     answer:
       "We welcome student-led startups from all industries and sectors. Whether you're working on tech, sustainability, healthcare, or creative projects, our platform is designed to support you.",
   },
   {
     question: "How are investments structured?",
     answer:
-      "Uday uses a milestone-based investment approach. Funds are released as entrepreneurs complete predefined milestones, providing accountability for founders and security for investors.",
+      "FundIt uses a milestone-based investment approach. Funds are released as entrepreneurs complete predefined milestones, providing accountability for founders and security for investors.",
   },
   {
     question: "Can I invest in multiple startups?",
@@ -110,7 +114,7 @@ const FORM_FIELDS = [
 ];
 
 const CTA_DATA = {
-  title: "Ready to Join the Uday Community?",
+  title: "Ready to Join the FundIt Community?",
   description:
     "Whether you're a student with a brilliant idea or an investor looking to support the next generation of innovators, we're here to connect you.",
   buttons: [
@@ -253,39 +257,7 @@ export function ContactComponent() {
   return (
     <div>
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary/30 via-primary/5 to-background">
-        <motion.div
-          className="absolute inset-0 opacity-10"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.1 }}
-          transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <motion.div
-            className="absolute top-20 left-10 w-72 h-72 rounded-full bg-primary blur-3xl"
-            animate={{
-              x: [0, 50, 0],
-              y: [0, -30, 0],
-            }}
-            transition={{
-              duration: 12,
-              repeat: Infinity,
-              ease: [0.16, 1, 0.3, 1],
-            }}
-          />
-          <motion.div
-            className="absolute bottom-10 right-10 w-80 h-80 rounded-full bg-primary blur-3xl"
-            animate={{
-              x: [0, -30, 0],
-              y: [0, 40, 0],
-            }}
-            transition={{
-              duration: 15,
-              repeat: Infinity,
-              ease: [0.16, 1, 0.3, 1],
-            }}
-          />
-        </motion.div>
-
+      <section className="relative overflow-hidden bg-accent/20">
         <div className="container relative mx-auto px-4 py-16 md:py-24 lg:py-28">
           <motion.div
             className="max-w-4xl mx-auto text-center space-y-4 md:space-y-6"
@@ -335,7 +307,7 @@ export function ContactComponent() {
                 <Card className="overflow-hidden border-primary/20 bg-card shadow-md">
                   <div className="h-40 md:h-48 relative">
                     <Image
-                      src="/contact-map.jpg"
+                      src="/kuet.jpg"
                       alt="Office location"
                       fill
                       className="object-cover"
@@ -355,6 +327,10 @@ export function ContactComponent() {
                     >
                       Our Location
                     </motion.div>
+                    {/* Add university name in the bottom left corner */}
+                    <div className="absolute bottom-2 left-4 md:left-6 text-sm md:text-sm text-white bg-black/40 px-3 py-1 rounded">
+                      Khulna University of Engineering and Technology
+                    </div>
                   </div>
 
                   <CardHeader className="p-4 md:p-6">
@@ -556,7 +532,7 @@ export function ContactComponent() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-12 md:py-16 bg-gradient-to-b from-background to-primary/5">
+      <section className="py-12 md:py-16 bg-muted/10">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <motion.div
@@ -581,7 +557,7 @@ export function ContactComponent() {
                 />
               </h2>
               <p className="text-muted-foreground max-w-xl mx-auto text-sm md:text-base">
-                Find answers to common questions about Uday
+                Find answers to common questions about FundIt
               </p>
             </motion.div>
 
@@ -606,7 +582,7 @@ export function ContactComponent() {
       <section className="py-12 md:py-16 bg-background">
         <div className="container mx-auto px-4">
           <motion.div
-            className="max-w-4xl mx-auto bg-gradient-to-r from-primary/20 to-primary/5 rounded-2xl p-1"
+            className="max-w-4xl mx-auto bg-card border border-border rounded-2xl p-1"
             initial="initial"
             whileInView="animate"
             viewport={{ once: true }}

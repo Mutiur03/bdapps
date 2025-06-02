@@ -262,12 +262,12 @@ export function UdayeeOnboarding() {
             className="text-2xl font-bold"
             style={{ color: "var(--sidebar-primary)" }}
           >
-            {step === 1 && "Welcome to UdayeeConnect"}
+            {step === 1 && "Welcome to FundIt"}
             {step === 2 && "Verify Your Identity"}
             {step === 3 && "Create Your Account"}
           </CardTitle>
           <CardDescription>
-            {step === 1 && "Let's get started with your Udayee journey"}
+            {step === 1 && "Let's get started with your FundIt journey"}
             {step === 2 && "Upload your documents for verification"}
             {step === 3 && "Set up your account credentials"}
           </CardDescription>

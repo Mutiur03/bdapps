@@ -1,16 +1,18 @@
 {
     "extends": "./tsconfig.json",
-    " compilerOptions": {
-        "module": "CommonJS",
-        "target": "ES2017",
-        "outDir": "./dist",
-        "moduteResolution": "Node",
+    "compilerOptions": {
+        "target": "ES2020",
+        "module": "ESNext",
+        "moduleResolution": "node",
+        "outDir": "dist",
         "strict": true,
-        "noEmit": false,
-        "isolatedModules": false,
-        "allowImportingTsExtensions": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "noEmit": false
     },
-    " include": [
+    "include": [
         "server.mts"
     ]
 }

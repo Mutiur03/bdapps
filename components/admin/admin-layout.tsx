@@ -4,6 +4,7 @@ import type React from "react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 import {
   LayoutDashboard,
   Users,
@@ -34,8 +35,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const { admin, fetchAdmin, fetchStartups, fetchInvestments } = useAdminStore(); // Uncomment when admin store is created
-
+  const { admin, fetchAdmin, fetchStartups, fetchInvestments } =
+    useAdminStore(); // Uncomment when admin store is created
 
   useEffect(() => {
     setMounted(true);
@@ -43,7 +44,6 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       try {
         await fetchAdmin();
         console.log("Admin data loaded:", admin);
-
       } catch (err) {
         console.error("Failed to fetch admin data:", err);
       }
@@ -153,18 +153,21 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             title="Admin Navigation"
           >
             <div className="flex flex-col h-full">
-              <div className="p-6 border-b border-border bg-card">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                    <Shield className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h2 className="text-xl font-bold text-primary">FundMyIdea</h2>
-                    <p className="text-xs text-muted-foreground">
-                      Admin Portal
-                    </p>
+              <div className="border-b border-border bg-card">
+                <div className="flex items-center justify-center">
+                  <div className="h-12 w-full flex items-center justify-center overflow-hidden">
+                    <Image
+                      src="/logo_light.png"
+                      alt="logo"
+                      height={32}
+                      width={80}
+                      style={{ objectFit: "contain" }}
+                    />
                   </div>
                 </div>
+                <p className="text-md text-foreground text-center pb-4">
+                  AdminPortal
+                </p>
               </div>
 
               {/* Navigation section with proper sticky behavior */}
@@ -183,14 +186,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   <Avatar className="h-9 w-9">
                     <AvatarImage
                       src={safeUrl(admin?.profile_picture)}
-                      alt={admin?.name}
-                      className="object-cover"
+                      alt="Admin"
                     />
                     <AvatarFallback className="bg-primary/10 text-primary">
-                      {admin?.name
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")}
+                      AD
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
@@ -225,18 +224,21 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           <aside className="hidden md:block md:w-72 border-r border-border bg-card h-screen sticky top-0 left-0">
             <div className="h-full flex flex-col">
               {/* Logo and Header */}
-              <div className="p-6 border-b border-border flex-shrink-0">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                    <Shield className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h2 className="text-xl font-bold text-primary">FundMyIdea</h2>
-                    <p className="text-xs text-muted-foreground">
-                      Admin Portal
-                    </p>
+              <div className="border-b border-border flex-shrink-0">
+                <div className="flex items-center justify-center">
+                  <div className="h-12 w-full flex items-center justify-center overflow-hidden">
+                    <Image
+                      src="/logo_light.png"
+                      alt="logo"
+                      height={32}
+                      width={80}
+                      style={{ objectFit: "contain" }}
+                    />
                   </div>
                 </div>
+                <p className="text-md text-foreground text-center pb-4">
+                  AdminPortal
+                </p>
               </div>
 
               {/* Navigation section - independently scrollable */}
@@ -255,14 +257,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   <Avatar className="h-9 w-9">
                     <AvatarImage
                       src={safeUrl(admin?.profile_picture)}
-                      alt={admin?.name}
-                      className="object-cover"
+                      alt="Admin"
                     />
                     <AvatarFallback className="bg-primary/10 text-primary">
-                      {admin?.name
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")}
+                      AD
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">

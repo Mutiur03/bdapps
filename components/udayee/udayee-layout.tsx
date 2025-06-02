@@ -1,5 +1,5 @@
 "use client";
-
+import Image from "next/image";
 import type React from "react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -43,12 +43,11 @@ export function UdayeeLayout({ children }: UdayeeLayoutProps) {
       await getUser(); // Make sure this is awaited
     } catch (err) {
       location.href = "/";
-      console.error('Failed to load user:', err);
+      console.error("Failed to load user:", err);
     } finally {
       setIsLoading(false);
     }
   };
-
 
   const routes = [
     {
@@ -152,21 +151,24 @@ export function UdayeeLayout({ children }: UdayeeLayoutProps) {
           <SheetContent
             side="left"
             className="p-0 w-72 border-r border-border"
-            title="Udayee Navigation"
+            title="udayeeNavigation"
           >
             <div className="flex flex-col h-full">
-              <div className="p-6 border-b border-border bg-card">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                    <User className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h2 className="text-xl font-bold text-primary">FundMyIdea </h2>
-                    <p className="text-xs text-muted-foreground">
-                      Udayee Portal
-                    </p>
+              <div className="border-b border-border bg-card">
+                <div className="flex items-center justify-center">
+                  <div className="h-12 w-full flex items-center justify-center overflow-hidden">
+                    <Image
+                      src="/logo_light.png"
+                      alt="logo"
+                      height={32}
+                      width={80}
+                      style={{ objectFit: "contain" }}
+                    />
                   </div>
                 </div>
+                <p className="text-md text-foreground text-center pb-4">
+                  udayeePortal
+                </p>
               </div>
 
               {/* Navigation section with proper sticky behavior */}
@@ -183,9 +185,12 @@ export function UdayeeLayout({ children }: UdayeeLayoutProps) {
               <div className="sticky bottom-0 left-0 right-0 p-4 border-t border-border bg-card shadow-sm">
                 <div className="flex items-center gap-3 mb-4">
                   <Avatar className="h-9 w-9">
-                    <AvatarImage src={safeUrl(user?.profile_picture)} alt="User" />
+                    <AvatarImage
+                      src={safeUrl(user?.profile_picture)}
+                      alt="User"
+                    />
                     <AvatarFallback className="bg-primary/10 text-primary">
-                      UD
+                      ST
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
@@ -202,8 +207,7 @@ export function UdayeeLayout({ children }: UdayeeLayoutProps) {
                     signOut({
                       callbackUrl: "/",
                     });
-                  }
-                  }
+                  }}
                   variant="ghost"
                   className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
                 >
@@ -221,18 +225,21 @@ export function UdayeeLayout({ children }: UdayeeLayoutProps) {
           <aside className="hidden md:block md:w-72 border-r border-border bg-card h-screen sticky top-0 left-0">
             <div className="h-full flex flex-col">
               {/* Logo and Header */}
-              <div className="p-6 border-b border-border flex-shrink-0">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                    <User className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h2 className="text-xl font-bold text-primary">FundMyIdea </h2>
-                    <p className="text-xs text-muted-foreground">
-                      Udayee Portal
-                    </p>
+              <div className=" border-b border-border flex-shrink-0">
+                <div className="flex items-center justify-center">
+                  <div className="h-12 w-full flex items-center justify-center overflow-hidden">
+                    <Image
+                      src="/logo_light.png"
+                      alt="logo"
+                      height={32}
+                      width={80}
+                      style={{ objectFit: "contain" }}
+                    />
                   </div>
                 </div>
+                <p className="text-md text-foreground text-center pb-4">
+                  udayeePortal
+                </p>
               </div>
 
               {/* Navigation section - independently scrollable */}
@@ -249,9 +256,12 @@ export function UdayeeLayout({ children }: UdayeeLayoutProps) {
               <div className="flex-shrink-0 p-4 border-t border-border bg-card">
                 <div className="flex items-center gap-3 mb-4">
                   <Avatar className="h-9 w-9">
-                    <AvatarImage src={safeUrl(user?.profile_picture)} alt="User" />
+                    <AvatarImage
+                      src={safeUrl(user?.profile_picture)}
+                      alt="User"
+                    />
                     <AvatarFallback className="bg-primary/10 text-primary">
-                      UD
+                      ST
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
@@ -270,8 +280,7 @@ export function UdayeeLayout({ children }: UdayeeLayoutProps) {
                     signOut({
                       callbackUrl: "/",
                     });
-                  }
-                  }
+                  }}
                 >
                   <LogOut className="h-4 w-4 mr-2" />
                   Logout
