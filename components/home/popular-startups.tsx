@@ -13,6 +13,7 @@ import { Progress } from "@/components/ui/progress";
 import { ArrowUpRight, TrendingUp, Clock } from "lucide-react";
 import React from "react";
 import { useCommonStore } from "@/store/useCommonStore";
+import Image from "next/image";
 
 export function PopularStartups() {
   const { isLoading, startups } = useCommonStore();
@@ -109,10 +110,13 @@ function StartupCard({ startup }: { startup: any }) {
       {/* Image placeholder */}
       <div className="w-full h-32 flex items-center justify-center bg-accent border-b">
         {startup.cover_image ? (
-          <img
+          <Image
             src={startup.cover_image}
             alt={startup.title}
             className="w-full h-full object-cover"
+            width={1280}
+            height={720}
+            style={{ objectFit: "cover" }}
           />
         ) : (
           <span
