@@ -158,7 +158,12 @@ export function AdminDashboard() {
               <div className="text-right">
                 <p className="text-sm text-muted-foreground">Total Completed</p>
                 <p className="text-xl font-medium text-secondary-foreground">
-                  {startups?.filter(startup => startup.status === 'completed').length} Startups
+                  {
+                    startups?.filter(
+                      (startup) => startup.status === "completed"
+                    ).length
+                  }{" "}
+                  Startups
                 </p>
               </div>
             </div>
@@ -166,19 +171,29 @@ export function AdminDashboard() {
             <div className="grid grid-cols-3 gap-4 pt-2">
               <div className="text-center p-3 bg-muted rounded-md">
                 <p className="text-2xl font-bold text-secondary-foreground">
-                  {startups?.filter(startup => startup.status === 'active').length}
+                  {
+                    startups?.filter((startup) => startup.status === "active")
+                      .length
+                  }
                 </p>
                 <p className="text-xs text-muted-foreground">Active Startups</p>
               </div>
               <div className="text-center p-3 bg-muted rounded-md">
                 <p className="text-2xl font-bold text-secondary-foreground">
-                  {startups?.filter(startup => startup.status === 'completed').length}
+                  {
+                    startups?.filter(
+                      (startup) => startup.status === "completed"
+                    ).length
+                  }
                 </p>
                 <p className="text-xs text-muted-foreground">Completed</p>
               </div>
               <div className="text-center p-3 bg-muted rounded-md">
                 <p className="text-2xl font-bold text-chart-3">
-                  {startups?.filter(startup => startup.status === 'pending').length}
+                  {
+                    startups?.filter((startup) => startup.status === "pending")
+                      .length
+                  }
                 </p>
                 <p className="text-xs text-muted-foreground">Pending</p>
               </div>
@@ -201,62 +216,81 @@ export function AdminDashboard() {
           </h2>
 
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {startups?.filter((startup) => startup.status === 'active').map((investment) => (
-              <Card
-                key={investment.id}
-                className="overflow-hidden hover:shadow-md transition-shadow duration-200"
-              >
-                <CardHeader className="pb-2">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <CardTitle className="text-lg text-secondary-foreground">
-                        {investment.title}
-                      </CardTitle>
-                      <CardDescription>
-                        {investment.user.name} • {investment.user.university}
-                      </CardDescription>
-                    </div>
+            {startups
+              ?.filter((startup) => startup.status === "active")
+              .map((investment) => (
+                <Card
+                  key={investment.id}
+                  className="overflow-hidden hover:shadow-md transition-shadow duration-200"
+                >
+                  <CardHeader className="pb-2">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <CardTitle className="text-lg text-secondary-foreground">
+                          {investment.title}
+                        </CardTitle>
+                        <CardDescription>
+                          {investment.user.name} • {investment.user.university}
+                        </CardDescription>
+                      </div>
 
-                    <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium border border-green-200">
-                      Active
-                    </span>
-
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="p-2 rounded-md bg-muted/50">
-                      <p className="text-xs text-muted-foreground mb-1">
-                        Budget
-                      </p>
-                      <p className="font-medium">{investment.budget}</p>
-                    </div>
-                    <div className="p-2 rounded-md bg-muted/50">
-                      <p className="text-xs text-muted-foreground mb-1">
-                        Milestone
-                      </p>
-                      <p
-                        className="font-medium truncate"
-                      >
-                        {investment.milestones?.[investment.milestones.length - 1]?.title || "No milestone"}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Progress:</span>
-                      <span className="font-medium text-foreground">
-                        {Math.round((Number(investment.raised_amount) / parseInt(investment.budget.toString().replace(/[^0-9]/g, "")) * 100)) || 0}%
+                      <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium border border-green-200">
+                        Active
                       </span>
                     </div>
-                    <Progress
-                      value={Math.round((Number(investment.raised_amount) / parseInt(investment.budget.toString().replace(/[^0-9]/g, "")) * 100)) || 0}
-                      className="h-2 bg-secondary"
-                      indicatorClassName="bg-primary"
-                    />
-                  </div>
-                  {/* 
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="p-2 rounded-md bg-muted/50">
+                        <p className="text-xs text-muted-foreground mb-1">
+                          Budget
+                        </p>
+                        <p className="font-medium">{investment.budget}</p>
+                      </div>
+                      <div className="p-2 rounded-md bg-muted/50">
+                        <p className="text-xs text-muted-foreground mb-1">
+                          Milestone
+                        </p>
+                        <p className="font-medium truncate">
+                          {investment.milestones?.[
+                            investment.milestones.length - 1
+                          ]?.title || "No milestone"}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Progress:</span>
+                        <span className="font-medium text-foreground">
+                          {Math.round(
+                            (Number(investment.raised_amount) /
+                              parseInt(
+                                investment.budget
+                                  .toString()
+                                  .replace(/[^0-9]/g, "")
+                              )) *
+                              100
+                          ) || 0}
+                          %
+                        </span>
+                      </div>
+                      <Progress
+                        value={
+                          Math.round(
+                            (Number(investment.raised_amount) /
+                              parseInt(
+                                investment.budget
+                                  .toString()
+                                  .replace(/[^0-9]/g, "")
+                              )) *
+                              100
+                          ) || 0
+                        }
+                        className="h-2 bg-secondary"
+                      />
+                    </div>
+                    {/* 
                   <div className="flex justify-between items-center pt-2 border-t border-border">
                     {!investment.completed ? (
                       <span className="text-sm text-primary font-medium flex items-center">
@@ -277,9 +311,9 @@ export function AdminDashboard() {
                       <ArrowUpRight className="ml-1 h-3 w-3" />
                     </Link>
                   </div> */}
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              ))}
           </div>
 
           <div className="flex justify-center pt-2">
@@ -360,7 +394,6 @@ export function AdminDashboard() {
                         100
                       }
                       className="h-2 bg-secondary"
-                      indicatorClassName="bg-primary"
                     />
                   </div>
 

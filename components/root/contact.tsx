@@ -22,6 +22,10 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import mail_icon from "@/assets/mail_icon.svg";
+import location_icon from "@/assets/location_icon.svg";
+import call_icon from "@/assets/call_icon.svg";
+import theme_pattern from "@/assets/theme_pattern.svg";
 
 // Data Arrays and Objects
 const HERO_DATA = {
@@ -303,7 +307,7 @@ export function ContactComponent() {
                 <Card className="overflow-hidden border-primary/20 bg-card shadow-md">
                   <div className="h-40 md:h-48 relative">
                     <Image
-                      src="/contact-map.jpg"
+                      src="/kuet.jpg"
                       alt="Office location"
                       fill
                       className="object-cover"
@@ -323,6 +327,10 @@ export function ContactComponent() {
                     >
                       Our Location
                     </motion.div>
+                    {/* Add university name in the bottom left corner */}
+                    <div className="absolute bottom-2 left-4 md:left-6 text-sm md:text-sm text-white bg-black/40 px-3 py-1 rounded">
+                      Khulna University of Engineering and Technology
+                    </div>
                   </div>
 
                   <CardHeader className="p-4 md:p-6">

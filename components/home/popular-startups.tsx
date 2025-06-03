@@ -13,6 +13,7 @@ import { Progress } from "@/components/ui/progress";
 import { ArrowUpRight, TrendingUp, Clock } from "lucide-react";
 import React from "react";
 import { useCommonStore } from "@/store/useCommonStore";
+import Image from "next/image";
 
 export function PopularStartups() {
   const { isLoading, startups } = useCommonStore();
