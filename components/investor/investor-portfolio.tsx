@@ -280,7 +280,6 @@ export function InvestorPortfolio() {
                     <Progress
                       value={investment.progress}
                       className="h-2"
-                      indicatorClassName="bg-primary"
                     />
                     <div className="flex justify-between items-center text-xs">
                       <p className="text-muted-foreground">Progress</p>

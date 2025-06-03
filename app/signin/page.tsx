@@ -172,7 +172,7 @@ function RoleCard({
           <CardImage
             src={image}
             alt={title}
-            aspectRatio="auto"
+            aspectRatio="wide"
             className="h-full w-full"
             fallback={
               <div className="flex h-full items-center justify-center text-muted-foreground">

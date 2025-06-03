@@ -372,7 +372,6 @@ export function StartupProfile({ id }: { id: string }) {
                 <Progress
                   value={fundingProgress}
                   className="h-2"
-                  indicatorClassName="bg-primary"
                 />
                 <div className="flex justify-between text-xs">
                   <span className="text-muted-foreground">Progress</span>

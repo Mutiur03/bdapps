@@ -333,7 +333,6 @@ function ProjectCard({
               <Progress
                 value={fundingProgress}
                 className="h-2 bg-secondary"
-                indicatorClassName="bg-primary"
               />
             </div>
 
@@ -375,7 +374,6 @@ function ProjectCard({
               <Progress
                 value={fundingProgress}
                 className="h-2 bg-secondary"
-                indicatorClassName="bg-primary"
               />
             </div>
 

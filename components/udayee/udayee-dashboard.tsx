@@ -242,7 +242,6 @@ export function UdayeeDashboard() {
                       <Progress
                         value={fundingProgress}
                         className="h-2 bg-secondary"
-                        indicatorClassName="bg-primary"
                       />
                       <p className="text-xs text-right text-muted-foreground">
                         {fundingProgress.toFixed(0)}% funded

@@ -218,7 +218,7 @@ export function UdayeeStartupDetails({ id }: { id: string }) {
             <CardImage
               src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
               alt="Video thumbnail"
-              aspectRatio="video"
+              aspectRatio="wide"
               fallback={
                 <div className="flex flex-col items-center justify-center h-full bg-gray-100 p-8">
                   <ImageIcon className="h-12 w-12 text-gray-400 mb-4" />
@@ -423,7 +423,6 @@ export function UdayeeStartupDetails({ id }: { id: string }) {
                             <Progress
                               value={milestone.progress}
                               className={`h-1.5 bg-${themeColors.progress}`}
-                              indicatorClassName={`bg-${themeColors.progressFill}`}
                             />
                           </div>
                         )}
