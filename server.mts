@@ -35,15 +35,39 @@ const prepareNext = async () => {
 
 const startServer = async () => {
   try {
-    // Initialize Prisma
+    // Validate required environment variables
+    console.log('Validating environment...');
+    
+    // Initialize Prisma with better error handling
+    console.log('Initializing Prisma...');
     await initPrisma();
+    console.log('Prisma initialized successfully');
 
-    // Prepare Next.js app
+    // Prepare Next.js app with better error handling
+    console.log('Preparing Next.js app...');
     await prepareNext();
+    console.log('Next.js app prepared, starting...');
     await app.prepare();
+    console.log('Next.js app started successfully');
 
     const server = createServer(async (req, res) => {
       try {
+        // Add CORS headers for all requests
+        res.setHeader('Access-Control-Allow-Origin', dev 
+          ? 'http://localhost:3000' 
+          : 'https://fundit.mutiurrahman.com'
+        );
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
+
+        // Handle preflight requests
+        if (req.method === 'OPTIONS') {
+          res.writeHead(200);
+          res.end();
+          return;
+        }
+
         await handle(req, res);
       } catch (err) {
         console.error("Error occurred handling", req.url, err);
@@ -52,19 +76,67 @@ const startServer = async () => {
       }
     });
 
+    // Add server error handling
+    server.on('error', (error) => {
+      console.error('Server error:', error);
+    });
+
+    console.log('Creating Socket.IO server...');
     const io = new Server(server, {
       cors: {
         origin: dev
           ? ["http://localhost:3000", "http://127.0.0.1:3000"]
-          : false,
-        methods: ["GET", "POST"],
+          : ["https://fundit.mutiurrahman.com", "http://fundit.mutiurrahman.com"],
+        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         credentials: true,
+        allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
       },
       transports: ["websocket", "polling"],
+      allowEIO3: true,
+      pingTimeout: 60000,
+      pingInterval: 25000,
+      upgradeTimeout: 30000,
+      maxHttpBufferSize: 1e6,
+      allowRequest: (req, callback) => {
+        try {
+          // Add custom request validation if needed
+          const origin = req.headers.origin;
+          const allowedOrigins = dev 
+            ? ["http://localhost:3000", "http://127.0.0.1:3000"]
+            : ["https://fundit.mutiurrahman.com", "http://fundit.mutiurrahman.com"];
+          
+          if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+          } else {
+            console.warn(`Blocked request from origin: ${origin}`);
+            callback(null, false);
+          }
+        } catch (error) {
+          console.error('Error in allowRequest:', error);
+          callback(error instanceof Error ? error.message : String(error), false);
+        }
+      },
+    });
+
+    // Add connection error handling
+    io.engine.on("connection_error", (err) => {
+      console.error("Socket.IO connection error:", err.req);
+      console.error("Error code:", err.code);
+      console.error("Error message:", err.message);
+      console.error("Error context:", err.context);
     });
 
     io.on("connection", (socket) => {
-      console.log(`${socket.id} connected`);
+      console.log(`${socket.id} connected from ${socket.handshake.address}`);
+
+      // Add error handling for this socket
+      socket.on("error", (error) => {
+        console.error(`Socket ${socket.id} error:`, error);
+      });
+
+      socket.on("connect_error", (error) => {
+        console.error(`Socket ${socket.id} connection error:`, error);
+      });
 
       socket.on("join", ({ userId, adminId }) => {
         if (userId) {
@@ -81,6 +153,16 @@ const startServer = async () => {
       socket.on("message", async (msg) => {
         try {
           console.log("Received message:", msg);
+
+          // Validate message data
+          if (!msg || !msg.content || !msg.projectId) {
+            console.error("Invalid message data:", msg);
+            socket.emit("messageError", {
+              message: "Invalid message data",
+              error: "Missing required fields"
+            });
+            return;
+          }
 
           const messageData = {
             content: msg.content,
@@ -528,30 +610,73 @@ const startServer = async () => {
         }
       });
 
-      socket.on("disconnect", () => {
-        console.log(`${socket.id} disconnected`);
+      socket.on("disconnect", (reason) => {
+        console.log(`${socket.id} disconnected. Reason: ${reason}`);
       });
     });
 
-    server.listen(process.env.PORT || 3000, () => {
-      console.log(`> Ready on http://${host}:${process.env.PORT || 3000}`);
+    const port = process.env.PORT || 3000;
+    
+    console.log(`Starting server on port ${port}...`);
+    server.listen(port,  () => {
+      console.log(`> Ready on http://${host}:${port}`);
+      console.log(`> Socket.IO server running in ${dev ? 'development' : 'production'} mode`);
     });
+
+    // Add graceful shutdown
+    interface ShutdownHandler {
+      (signal: string): void;
+    }
+
+    const shutdown: ShutdownHandler = (signal: string) => {
+      console.log(`${signal} received, shutting down gracefully`);
+      server.close((err?: Error) => {
+        if (err) {
+          console.error('Error during server shutdown:', err);
+          process.exit(1);
+        }
+        console.log('Server closed successfully');
+        process.exit(0);
+      });
+    };
+
+    process.on('SIGTERM', () => shutdown('SIGTERM'));
+    process.on('SIGINT', () => shutdown('SIGINT'));
+
   } catch (err) {
-    console.error("Error starting server:", err);
+    console.error("Critical error starting server:", err);
+    console.error("Stack trace:", err instanceof Error ? err.stack : 'No stack trace available');
     process.exit(1);
   }
 };
 
-// Handle uncaught exceptions
+// Handle uncaught exceptions with better logging
 process.on("uncaughtException", (error) => {
-  console.error("Uncaught Exception:", error);
+  console.error("Uncaught Exception:");
+  console.error("Error:", error);
+  console.error("Stack:", error.stack);
+  console.error("Type:", typeof error);
+  console.error("Keys:", Object.keys(error));
   process.exit(1);
 });
 
 process.on("unhandledRejection", (reason, promise) => {
-  console.error("Unhandled Rejection at:", promise, "reason:", reason);
+  console.error("Unhandled Rejection at:", promise);
+  console.error("Reason:", reason);
+  console.error("Reason type:", typeof reason);
+  if (reason && typeof reason === 'object' && 'stack' in reason) {
+    console.error("Stack:", (reason as Error).stack);
+  }
   process.exit(1);
 });
 
+// Add a safety check for immediate startup issues
+process.nextTick(() => {
+  console.log('Process started, beginning server initialization...');
+});
+
 // Start the server
-startServer();
+startServer().catch((error) => {
+  console.error("Failed to start server:", error);
+  process.exit(1);
+});

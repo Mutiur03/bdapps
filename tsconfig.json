@@ -34,7 +34,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "server.mts"
-  ],
+, "reset-sequences.js"  ],
   "exclude": [
     "node_modules"
   ]
