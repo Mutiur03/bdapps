@@ -21,7 +21,6 @@ const initPrisma = async () => {
 
 const dev = process.env.NODE_ENV !== "production";
 const host = process.env.HOST || "localhost";
-const port = parseInt(process.env.PORT || "3000", 10);
 
 // Simple Next.js configuration for App Router
 let app: any;
@@ -534,8 +533,8 @@ const startServer = async () => {
       });
     });
 
-    server.listen(port, () => {
-      console.log(`> Ready on http://${host}:${port}`);
+    server.listen(process.env.PORT || 3000, () => {
+      console.log(`> Ready on http://${host}:${process.env.PORT || 3000}`);
     });
   } catch (err) {
     console.error("Error starting server:", err);
