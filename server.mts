@@ -22,6 +22,16 @@ const initPrisma = async () => {
 const dev = process.env.NODE_ENV !== "production";
 const host = process.env.HOST || "localhost";
 
+// Domain configuration - supports multiple domains separated by commas
+const ALLOWED_DOMAINS = process.env.ALLOWED_DOMAINS
+  ? process.env.ALLOWED_DOMAINS.split(",").map((domain) => domain.trim())
+  : [
+      "https://fundit.mutiurrahman.com",
+      "https://bdapps-production.up.railway.app",
+    ];
+
+console.log("Allowed domains:", ALLOWED_DOMAINS);
+
 // Simple Next.js configuration for App Router
 let app: any;
 let handle: any;
@@ -36,33 +46,39 @@ const prepareNext = async () => {
 const startServer = async () => {
   try {
     // Validate required environment variables
-    console.log('Validating environment...');
-    
+    console.log("Validating environment...");
+
     // Initialize Prisma with better error handling
-    console.log('Initializing Prisma...');
+    console.log("Initializing Prisma...");
     await initPrisma();
-    console.log('Prisma initialized successfully');
+    console.log("Prisma initialized successfully");
 
     // Prepare Next.js app with better error handling
-    console.log('Preparing Next.js app...');
+    console.log("Preparing Next.js app...");
     await prepareNext();
-    console.log('Next.js app prepared, starting...');
+    console.log("Next.js app prepared, starting...");
     await app.prepare();
-    console.log('Next.js app started successfully');
+    console.log("Next.js app started successfully");
 
     const server = createServer(async (req, res) => {
       try {
         // Add CORS headers for all requests
-        res.setHeader('Access-Control-Allow-Origin', dev 
-          ? 'http://localhost:3000' 
-          : 'https://fundit.mutiurrahman.com'
+        res.setHeader(
+          "Access-Control-Allow-Origin",
+          dev ? "http://localhost:3000" : ALLOWED_DOMAINS.join(", ")
         );
-        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-        res.setHeader('Access-Control-Allow-Credentials', 'true');
+        res.setHeader(
+          "Access-Control-Allow-Methods",
+          "GET, POST, PUT, DELETE, OPTIONS"
+        );
+        res.setHeader(
+          "Access-Control-Allow-Headers",
+          "Content-Type, Authorization"
+        );
+        res.setHeader("Access-Control-Allow-Credentials", "true");
 
         // Handle preflight requests
-        if (req.method === 'OPTIONS') {
+        if (req.method === "OPTIONS") {
           res.writeHead(200);
           res.end();
           return;
@@ -77,16 +93,16 @@ const startServer = async () => {
     });
 
     // Add server error handling
-    server.on('error', (error) => {
-      console.error('Server error:', error);
+    server.on("error", (error) => {
+      console.error("Server error:", error);
     });
 
-    console.log('Creating Socket.IO server...');
+    console.log("Creating Socket.IO server...");
     const io = new Server(server, {
       cors: {
         origin: dev
           ? ["http://localhost:3000", "http://127.0.0.1:3000"]
-          : ["https://fundit.mutiurrahman.com", "http://fundit.mutiurrahman.com"],
+          : ALLOWED_DOMAINS,
         methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         credentials: true,
         allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
@@ -99,21 +115,66 @@ const startServer = async () => {
       maxHttpBufferSize: 1e6,
       allowRequest: (req, callback) => {
         try {
-          // Add custom request validation if needed
           const origin = req.headers.origin;
-          const allowedOrigins = dev 
+          const allowedOrigins = dev
             ? ["http://localhost:3000", "http://127.0.0.1:3000"]
-            : ["https://fundit.mutiurrahman.com", "http://fundit.mutiurrahman.com"];
-          
-          if (!origin || allowedOrigins.includes(origin)) {
+            : ALLOWED_DOMAINS;
+
+          console.log(`Socket.IO request from origin: ${origin}`);
+          console.log(`Allowed origins: ${allowedOrigins.join(", ")}`);
+
+          // Always allow requests without origin (same-origin requests)
+          if (!origin) {
+            console.log("Allowing request without origin header");
+            callback(null, true);
+            return;
+          }
+
+          // Check if origin is in allowed list
+          if (allowedOrigins.includes(origin)) {
+            console.log(`Allowing request from allowed origin: ${origin}`);
+            callback(null, true);
+            return;
+          }
+
+          // In production, also allow requests from the same host without protocol prefix
+          if (!dev) {
+            const allowedHosts = ALLOWED_DOMAINS.map((domain) => {
+              try {
+                return new URL(domain).hostname;
+              } catch {
+                return domain.replace(/^https?:\/\//, "");
+              }
+            });
+
+            if (
+              allowedOrigins.includes(origin) ||
+              (req.headers.host && allowedHosts.includes(req.headers.host))
+            ) {
+              console.log(
+                `Allowing request from production host: ${
+                  origin || req.headers.host
+                }`
+              );
+              callback(null, true);
+              return;
+            }
+          }
+
+          console.warn(`Blocking request from origin: ${origin}`);
+          callback(null, false);
+        } catch (error) {
+          console.error("Error in allowRequest:", error);
+          // In production, be more permissive to avoid blocking legitimate requests
+          if (!dev) {
+            console.log("Production mode: allowing request despite error");
             callback(null, true);
           } else {
-            console.warn(`Blocked request from origin: ${origin}`);
-            callback(null, false);
+            callback(
+              error instanceof Error ? error.message : String(error),
+              false
+            );
           }
-        } catch (error) {
-          console.error('Error in allowRequest:', error);
-          callback(error instanceof Error ? error.message : String(error), false);
         }
       },
     });
@@ -159,7 +220,7 @@ const startServer = async () => {
             console.error("Invalid message data:", msg);
             socket.emit("messageError", {
               message: "Invalid message data",
-              error: "Missing required fields"
+              error: "Missing required fields",
             });
             return;
           }
@@ -616,11 +677,15 @@ const startServer = async () => {
     });
 
     const port = process.env.PORT || 3000;
-    
+
     console.log(`Starting server on port ${port}...`);
-    server.listen(port,  () => {
+    server.listen(port, () => {
       console.log(`> Ready on http://${host}:${port}`);
-      console.log(`> Socket.IO server running in ${dev ? 'development' : 'production'} mode`);
+      console.log(
+        `> Socket.IO server running in ${
+          dev ? "development" : "production"
+        } mode`
+      );
     });
 
     // Add graceful shutdown
@@ -632,20 +697,22 @@ const startServer = async () => {
       console.log(`${signal} received, shutting down gracefully`);
       server.close((err?: Error) => {
         if (err) {
-          console.error('Error during server shutdown:', err);
+          console.error("Error during server shutdown:", err);
           process.exit(1);
         }
-        console.log('Server closed successfully');
+        console.log("Server closed successfully");
         process.exit(0);
       });
     };
 
-    process.on('SIGTERM', () => shutdown('SIGTERM'));
-    process.on('SIGINT', () => shutdown('SIGINT'));
-
+    process.on("SIGTERM", () => shutdown("SIGTERM"));
+    process.on("SIGINT", () => shutdown("SIGINT"));
   } catch (err) {
     console.error("Critical error starting server:", err);
-    console.error("Stack trace:", err instanceof Error ? err.stack : 'No stack trace available');
+    console.error(
+      "Stack trace:",
+      err instanceof Error ? err.stack : "No stack trace available"
+    );
     process.exit(1);
   }
 };
@@ -664,7 +731,7 @@ process.on("unhandledRejection", (reason, promise) => {
   console.error("Unhandled Rejection at:", promise);
   console.error("Reason:", reason);
   console.error("Reason type:", typeof reason);
-  if (reason && typeof reason === 'object' && 'stack' in reason) {
+  if (reason && typeof reason === "object" && "stack" in reason) {
     console.error("Stack:", (reason as Error).stack);
   }
   process.exit(1);
@@ -672,7 +739,7 @@ process.on("unhandledRejection", (reason, promise) => {
 
 // Add a safety check for immediate startup issues
 process.nextTick(() => {
-  console.log('Process started, beginning server initialization...');
+  console.log("Process started, beginning server initialization...");
 });
 
 // Start the server
