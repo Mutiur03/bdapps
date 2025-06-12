@@ -123,10 +123,26 @@ const startServer = async () => {
       pingInterval: 25000,
       upgradeTimeout: 30000,
       maxHttpBufferSize: 1e6,
+      // Add connection timeout and retry settings
+      connectTimeout: 45000,
+      forceNew: false,
+      reconnection: true,
+      reconnectionDelay: 1000,
+      reconnectionAttempts: 5,
+      // Add server-side connection limits
+      perMessageDeflate: {
+        threshold: 1024,
+        concurrencyLimit: 10,
+      },
+      httpCompression: true,
+      // Improve connection handling
+      serveClient: false,
+      cookie: false,
       allowRequest: (req, callback) => {
         try {
           const origin = req.headers.origin;
           const host = req.headers.host;
+          const userAgent = req.headers["user-agent"] || "unknown";
           const allowedOrigins = dev
             ? ["http://localhost:3000", "http://127.0.0.1:3000"]
             : ALLOWED_DOMAINS;
@@ -134,14 +150,20 @@ const startServer = async () => {
           console.log(`Socket.IO request details:`);
           console.log(`  Origin: ${origin}`);
           console.log(`  Host: ${host}`);
-          console.log(`  User-Agent: ${req.headers["user-agent"]}`);
+          console.log(`  User-Agent: ${userAgent.substring(0, 100)}...`);
           console.log(`  Allowed origins: ${allowedOrigins.join(", ")}`);
+
+          // Reject requests from suspicious user agents or bots
+          const suspiciousAgents = ['bot', 'crawler', 'spider', 'scraper'];
+          if (suspiciousAgents.some(agent => userAgent.toLowerCase().includes(agent))) {
+            console.warn(`✗ Blocking request from suspicious user agent: ${userAgent}`);
+            callback(new Error('Bot requests not allowed'), false);
+            return;
+          }
 
           // Always allow requests without origin (same-origin requests)
           if (!origin) {
-            console.log(
-              "✓ Allowing request without origin header (same-origin)"
-            );
+            console.log("✓ Allowing request without origin header (same-origin)");
             callback(null, true);
             return;
           }
@@ -172,8 +194,8 @@ const startServer = async () => {
             }
           }
 
-          console.warn(`✗ Blocking request from origin: ${origin}`);
-          callback(null, false);
+          console.warn(`✗ Blocking request from origin: ${origin}, host: ${host}`);
+          callback(new Error('Origin not allowed'), false);
         } catch (error) {
           console.error("Error in allowRequest:", error);
           // In production, be more permissive to avoid blocking legitimate requests
@@ -190,24 +212,81 @@ const startServer = async () => {
       },
     });
 
-    // Add connection error handling
+    // Add comprehensive error handling for the Socket.IO server
     io.engine.on("connection_error", (err) => {
-      console.error("Socket.IO connection error:", err.req);
-      console.error("Error code:", err.code);
-      console.error("Error message:", err.message);
-      console.error("Error context:", err.context);
+      console.error("Socket.IO connection error:");
+      console.error("  Request URL:", err.req?.url || 'unknown');
+      console.error("  Request method:", err.req?.method || 'unknown');
+      console.error("  Request headers:", err.req?.headers || {});
+      console.error("  Error code:", err.code);
+      console.error("  Error message:", err.message);
+      console.error("  Error context:", err.context);
+      
+      // Log the client IP for security monitoring
+      const clientIP = err.req?.connection?.remoteAddress || 
+                      err.req?.socket?.remoteAddress || 
+                      err.req?.headers['x-forwarded-for'] || 
+                      'unknown';
+      console.error("  Client IP:", clientIP);
+    });
+
+    // Add server-level error handling
+    io.engine.on("error", (error) => {
+      console.error("Socket.IO engine error:", error);
+    });
+
+    // Monitor connection count
+    let connectionCount = 0;
+    io.engine.on("connection", () => {
+      connectionCount++;
+      console.log(`New engine connection. Total: ${connectionCount}`);
+    });
+
+    io.engine.on("disconnect", () => {
+      connectionCount--;
+      console.log(`Engine disconnection. Total: ${connectionCount}`);
     });
 
     io.on("connection", (socket) => {
-      console.log(`${socket.id} connected from ${socket.handshake.address}`);
+      const clientIP = socket.handshake.address;
+      const userAgent = socket.handshake.headers["user-agent"] || "unknown";
+      
+      console.log(`${socket.id} connected from ${clientIP}`);
+      console.log(`  User-Agent: ${userAgent.substring(0, 100)}...`);
+      console.log(`  Transport: ${socket.conn.transport.name}`);
 
-      // Add error handling for this socket
+      // Add comprehensive error handling for each socket
       socket.on("error", (error) => {
         console.error(`Socket ${socket.id} error:`, error);
+        console.error(`  Client IP: ${clientIP}`);
+        console.error(`  Transport: ${socket.conn.transport.name}`);
       });
 
       socket.on("connect_error", (error) => {
         console.error(`Socket ${socket.id} connection error:`, error);
+      });
+
+      socket.on("disconnect", (reason) => {
+        console.log(`${socket.id} disconnected. Reason: ${reason}`);
+        console.log(`  Client IP: ${clientIP}`);
+        console.log(`  Transport: ${socket.conn.transport.name}`);
+        
+        // Log if disconnect was due to an error
+        if (reason === "transport error" || reason === "client namespace disconnect") {
+          console.warn(`  Disconnect may indicate connection issues for client: ${clientIP}`);
+        }
+      });
+
+      // Add connection timeout handling
+      const connectionTimeout = setTimeout(() => {
+        if (socket.connected) {
+          console.warn(`Socket ${socket.id} connection timeout, disconnecting`);
+          socket.disconnect(true);
+        }
+      }, 300000); // 5 minutes
+
+      socket.on("disconnect", () => {
+        clearTimeout(connectionTimeout);
       });
 
       socket.on("join", ({ userId, adminId }) => {
