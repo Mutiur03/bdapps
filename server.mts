@@ -63,10 +63,20 @@ const startServer = async () => {
     const server = createServer(async (req, res) => {
       try {
         // Add CORS headers for all requests
-        res.setHeader(
-          "Access-Control-Allow-Origin",
-          dev ? "http://localhost:3000" : ALLOWED_DOMAINS.join(", ")
-        );
+        const origin = req.headers.origin;
+
+        if (dev) {
+          res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+        } else {
+          // In production, check if the origin is in our allowed list
+          if (origin && ALLOWED_DOMAINS.includes(origin)) {
+            res.setHeader("Access-Control-Allow-Origin", origin);
+          } else {
+            // Fallback to first domain if no origin or origin not allowed
+            res.setHeader("Access-Control-Allow-Origin", ALLOWED_DOMAINS[0]);
+          }
+        }
+
         res.setHeader(
           "Access-Control-Allow-Methods",
           "GET, POST, PUT, DELETE, OPTIONS"
@@ -116,23 +126,29 @@ const startServer = async () => {
       allowRequest: (req, callback) => {
         try {
           const origin = req.headers.origin;
+          const host = req.headers.host;
           const allowedOrigins = dev
             ? ["http://localhost:3000", "http://127.0.0.1:3000"]
             : ALLOWED_DOMAINS;
 
-          console.log(`Socket.IO request from origin: ${origin}`);
-          console.log(`Allowed origins: ${allowedOrigins.join(", ")}`);
+          console.log(`Socket.IO request details:`);
+          console.log(`  Origin: ${origin}`);
+          console.log(`  Host: ${host}`);
+          console.log(`  User-Agent: ${req.headers["user-agent"]}`);
+          console.log(`  Allowed origins: ${allowedOrigins.join(", ")}`);
 
           // Always allow requests without origin (same-origin requests)
           if (!origin) {
-            console.log("Allowing request without origin header");
+            console.log(
+              "✓ Allowing request without origin header (same-origin)"
+            );
             callback(null, true);
             return;
           }
 
           // Check if origin is in allowed list
           if (allowedOrigins.includes(origin)) {
-            console.log(`Allowing request from allowed origin: ${origin}`);
+            console.log(`✓ Allowing request from allowed origin: ${origin}`);
             callback(null, true);
             return;
           }
@@ -147,27 +163,22 @@ const startServer = async () => {
               }
             });
 
-            if (
-              allowedOrigins.includes(origin) ||
-              (req.headers.host && allowedHosts.includes(req.headers.host))
-            ) {
-              console.log(
-                `Allowing request from production host: ${
-                  origin || req.headers.host
-                }`
-              );
+            console.log(`  Allowed hosts: ${allowedHosts.join(", ")}`);
+
+            if (host && allowedHosts.includes(host)) {
+              console.log(`✓ Allowing request from production host: ${host}`);
               callback(null, true);
               return;
             }
           }
 
-          console.warn(`Blocking request from origin: ${origin}`);
+          console.warn(`✗ Blocking request from origin: ${origin}`);
           callback(null, false);
         } catch (error) {
           console.error("Error in allowRequest:", error);
           // In production, be more permissive to avoid blocking legitimate requests
           if (!dev) {
-            console.log("Production mode: allowing request despite error");
+            console.log("⚠ Production mode: allowing request despite error");
             callback(null, true);
           } else {
             callback(
