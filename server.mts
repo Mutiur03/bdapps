@@ -1,5 +1,4 @@
 import { createServer } from "http";
-// Remove: import * as next from "next";
 import { Server } from "socket.io";
 import { MessageRole } from "@prisma/client";
 
@@ -19,41 +18,24 @@ const initPrisma = async () => {
   return prisma;
 };
 
-const dev = process.env.NODE_ENV !== "production";
-const host = process.env.HOST || "localhost";
-
-// Domain configuration - supports multiple domains separated by commas
-const ALLOWED_DOMAINS = process.env.ALLOWED_DOMAINS
-  ? process.env.ALLOWED_DOMAINS.split(",").map((domain) => domain.trim())
-  : [
-      "https://fundit.mutiurrahman.com",
-      "https://bdapps-production.up.railway.app",
-    ];
-
-console.log("Allowed domains:", ALLOWED_DOMAINS);
-
-// Simple Next.js configuration for App Router
+// Next.js configuration
 let app: any;
 let handle: any;
 
 const prepareNext = async () => {
   const nextModule = await import("next");
-  // Use Next constructor directly
-  app = nextModule.default({ dev });
+  app = nextModule.default({ dev: process.env.NODE_ENV !== "production" });
   handle = app.getRequestHandler();
 };
 
 const startServer = async () => {
   try {
-    // Validate required environment variables
-    console.log("Validating environment...");
-
-    // Initialize Prisma with better error handling
+    // Initialize Prisma
     console.log("Initializing Prisma...");
     await initPrisma();
     console.log("Prisma initialized successfully");
 
-    // Prepare Next.js app with better error handling
+    // Prepare Next.js app
     console.log("Preparing Next.js app...");
     await prepareNext();
     console.log("Next.js app prepared, starting...");
@@ -62,21 +44,11 @@ const startServer = async () => {
 
     const server = createServer(async (req, res) => {
       try {
-        // Add CORS headers for all requests
+        // Handle CORS in a flexible way
         const origin = req.headers.origin;
-
-        if (dev) {
-          res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
-        } else {
-          // In production, check if the origin is in our allowed list
-          if (origin && ALLOWED_DOMAINS.includes(origin)) {
-            res.setHeader("Access-Control-Allow-Origin", origin);
-          } else {
-            // Fallback to first domain if no origin or origin not allowed
-            res.setHeader("Access-Control-Allow-Origin", ALLOWED_DOMAINS[0]);
-          }
+        if (origin) {
+          res.setHeader("Access-Control-Allow-Origin", origin);
         }
-
         res.setHeader(
           "Access-Control-Allow-Methods",
           "GET, POST, PUT, DELETE, OPTIONS"
@@ -87,7 +59,6 @@ const startServer = async () => {
         );
         res.setHeader("Access-Control-Allow-Credentials", "true");
 
-        // Handle preflight requests
         if (req.method === "OPTIONS") {
           res.writeHead(200);
           res.end();
@@ -102,17 +73,20 @@ const startServer = async () => {
       }
     });
 
-    // Add server error handling
-    server.on("error", (error) => {
-      console.error("Server error:", error);
-    });
-
+    // Socket.IO server configuration
     console.log("Creating Socket.IO server...");
     const io = new Server(server, {
       cors: {
-        origin: dev
-          ? ["http://localhost:3000", "http://127.0.0.1:3000"]
-          : ALLOWED_DOMAINS,
+        origin: (origin, callback) => {
+          // Allow all origins in development, check in production
+          if (process.env.NODE_ENV !== "production") {
+            callback(null, true);
+          } else {
+            // In production, you might want to validate origins
+            // Here we allow any origin but you could add validation logic
+            callback(null, true);
+          }
+        },
         methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         credentials: true,
         allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
@@ -123,164 +97,70 @@ const startServer = async () => {
       pingInterval: 25000,
       upgradeTimeout: 30000,
       maxHttpBufferSize: 1e6,
-      // Add connection timeout and retry settings
       connectTimeout: 45000,
-      forceNew: false,
-      reconnection: true,
-      reconnectionDelay: 1000,
-      reconnectionAttempts: 5,
-      // Add server-side connection limits
       perMessageDeflate: {
         threshold: 1024,
         concurrencyLimit: 10,
       },
       httpCompression: true,
-      // Improve connection handling
       serveClient: false,
       cookie: false,
-      allowRequest: (req, callback) => {
-        try {
-          const origin = req.headers.origin;
-          const host = req.headers.host;
-          const userAgent = req.headers["user-agent"] || "unknown";
-          const allowedOrigins = dev
-            ? ["http://localhost:3000", "http://127.0.0.1:3000"]
-            : ALLOWED_DOMAINS;
-
-          console.log(`Socket.IO request details:`);
-          console.log(`  Origin: ${origin}`);
-          console.log(`  Host: ${host}`);
-          console.log(`  User-Agent: ${userAgent.substring(0, 100)}...`);
-          console.log(`  Allowed origins: ${allowedOrigins.join(", ")}`);
-
-          // Reject requests from suspicious user agents or bots
-          const suspiciousAgents = ['bot', 'crawler', 'spider', 'scraper'];
-          if (suspiciousAgents.some(agent => userAgent.toLowerCase().includes(agent))) {
-            console.warn(`✗ Blocking request from suspicious user agent: ${userAgent}`);
-            callback(new Error('Bot requests not allowed'), false);
-            return;
-          }
-
-          // Always allow requests without origin (same-origin requests)
-          if (!origin) {
-            console.log("✓ Allowing request without origin header (same-origin)");
-            callback(null, true);
-            return;
-          }
-
-          // Check if origin is in allowed list
-          if (allowedOrigins.includes(origin)) {
-            console.log(`✓ Allowing request from allowed origin: ${origin}`);
-            callback(null, true);
-            return;
-          }
-
-          // In production, also allow requests from the same host without protocol prefix
-          if (!dev) {
-            const allowedHosts = ALLOWED_DOMAINS.map((domain) => {
-              try {
-                return new URL(domain).hostname;
-              } catch {
-                return domain.replace(/^https?:\/\//, "");
-              }
-            });
-
-            console.log(`  Allowed hosts: ${allowedHosts.join(", ")}`);
-
-            if (host && allowedHosts.includes(host)) {
-              console.log(`✓ Allowing request from production host: ${host}`);
-              callback(null, true);
-              return;
-            }
-          }
-
-          console.warn(`✗ Blocking request from origin: ${origin}, host: ${host}`);
-          callback(new Error('Origin not allowed'), false);
-        } catch (error) {
-          console.error("Error in allowRequest:", error);
-          // In production, be more permissive to avoid blocking legitimate requests
-          if (!dev) {
-            console.log("⚠ Production mode: allowing request despite error");
-            callback(null, true);
-          } else {
-            callback(
-              error instanceof Error ? error.message : String(error),
-              false
-            );
-          }
-        }
-      },
     });
 
-    // Add comprehensive error handling for the Socket.IO server
+    // Enhanced error handling
     io.engine.on("connection_error", (err) => {
-      console.error("Socket.IO connection error:");
-      console.error("  Request URL:", err.req?.url || 'unknown');
-      console.error("  Request method:", err.req?.method || 'unknown');
-      console.error("  Request headers:", err.req?.headers || {});
-      console.error("  Error code:", err.code);
-      console.error("  Error message:", err.message);
-      console.error("  Error context:", err.context);
-      
-      // Log the client IP for security monitoring
-      const clientIP = err.req?.connection?.remoteAddress || 
-                      err.req?.socket?.remoteAddress || 
-                      err.req?.headers['x-forwarded-for'] || 
-                      'unknown';
-      console.error("  Client IP:", clientIP);
+      console.error("Socket.IO connection error:", {
+        code: err.code,
+        message: err.message,
+        context: err.context,
+        req: {
+          url: err.req?.url,
+          method: err.req?.method,
+          headers: err.req?.headers,
+        },
+      });
     });
 
-    // Add server-level error handling
-    io.engine.on("error", (error) => {
-      console.error("Socket.IO engine error:", error);
-    });
-
-    // Monitor connection count
+    // Connection monitoring
     let connectionCount = 0;
     io.engine.on("connection", () => {
       connectionCount++;
-      console.log(`New engine connection. Total: ${connectionCount}`);
+      console.log(`New connection. Total: ${connectionCount}`);
     });
 
     io.engine.on("disconnect", () => {
       connectionCount--;
-      console.log(`Engine disconnection. Total: ${connectionCount}`);
+      console.log(`Disconnection. Total: ${connectionCount}`);
     });
 
+    // Socket.IO event handlers
     io.on("connection", (socket) => {
-      const clientIP = socket.handshake.address;
-      const userAgent = socket.handshake.headers["user-agent"] || "unknown";
-      
-      console.log(`${socket.id} connected from ${clientIP}`);
-      console.log(`  User-Agent: ${userAgent.substring(0, 100)}...`);
-      console.log(`  Transport: ${socket.conn.transport.name}`);
+      const clientInfo = {
+        id: socket.id,
+        ip: socket.handshake.address,
+        userAgent: socket.handshake.headers["user-agent"] || "unknown",
+        transport: socket.conn.transport.name,
+      };
 
-      // Add comprehensive error handling for each socket
+      console.log(`Client connected:`, clientInfo);
+
+      // Error handling
       socket.on("error", (error) => {
-        console.error(`Socket ${socket.id} error:`, error);
-        console.error(`  Client IP: ${clientIP}`);
-        console.error(`  Transport: ${socket.conn.transport.name}`);
+        console.error(`Socket error:`, { ...clientInfo, error });
       });
 
       socket.on("connect_error", (error) => {
-        console.error(`Socket ${socket.id} connection error:`, error);
+        console.error(`Socket connection error:`, { ...clientInfo, error });
       });
 
       socket.on("disconnect", (reason) => {
-        console.log(`${socket.id} disconnected. Reason: ${reason}`);
-        console.log(`  Client IP: ${clientIP}`);
-        console.log(`  Transport: ${socket.conn.transport.name}`);
-        
-        // Log if disconnect was due to an error
-        if (reason === "transport error" || reason === "client namespace disconnect") {
-          console.warn(`  Disconnect may indicate connection issues for client: ${clientIP}`);
-        }
+        console.log(`Client disconnected:`, { ...clientInfo, reason });
       });
 
-      // Add connection timeout handling
+      // Connection timeout
       const connectionTimeout = setTimeout(() => {
         if (socket.connected) {
-          console.warn(`Socket ${socket.id} connection timeout, disconnecting`);
+          console.warn(`Connection timeout for socket ${socket.id}`);
           socket.disconnect(true);
         }
       }, 300000); // 5 minutes
@@ -289,24 +169,24 @@ const startServer = async () => {
         clearTimeout(connectionTimeout);
       });
 
+      // Room joining
       socket.on("join", ({ userId, adminId }) => {
         if (userId) {
           socket.join(`user-${userId}`);
-          console.log(`User joined room: user-${userId}`);
+          console.log(`User ${userId} joined room`);
         }
-
         if (adminId) {
           socket.join(`admin-${adminId}`);
-          console.log(`Admin joined room: admin-${adminId}`);
+          console.log(`Admin ${adminId} joined room`);
         }
       });
 
+      // Message handling
       socket.on("message", async (msg) => {
         try {
           console.log("Received message:", msg);
 
-          // Validate message data
-          if (!msg || !msg.content || !msg.projectId) {
+          if (!msg?.content || !msg?.projectId) {
             console.error("Invalid message data:", msg);
             socket.emit("messageError", {
               message: "Invalid message data",
@@ -315,30 +195,29 @@ const startServer = async () => {
             return;
           }
 
-          const messageData = {
-            content: msg.content,
-            senderType: msg.senderType as MessageRole,
-            receiverType: msg.receiverType as MessageRole,
-            isRead: false,
-            ...(msg.projectId && {
-              project: { connect: { id: Number(msg.projectId) } },
-            }),
-            ...(msg.senderUserId && {
-              senderUser: { connect: { id: Number(msg.senderUserId) } },
-            }),
-            ...(msg.senderAdminId && {
-              senderAdmin: { connect: { id: Number(msg.senderAdminId) } },
-            }),
-            ...(msg.receiverUserId && {
-              receiverUser: { connect: { id: Number(msg.receiverUserId) } },
-            }),
-            ...(msg.receiverAdminId && {
-              receiverAdmin: { connect: { id: Number(msg.receiverAdminId) } },
-            }),
-          };
-
+          // Create message in database
           const message = await prisma.message.create({
-            data: messageData,
+            data: {
+              content: msg.content,
+              senderType: msg.senderType as MessageRole,
+              receiverType: msg.receiverType as MessageRole,
+              isRead: false,
+              ...(msg.projectId && {
+                project: { connect: { id: Number(msg.projectId) } },
+              }),
+              ...(msg.senderUserId && {
+                senderUser: { connect: { id: Number(msg.senderUserId) } },
+              }),
+              ...(msg.senderAdminId && {
+                senderAdmin: { connect: { id: Number(msg.senderAdminId) } },
+              }),
+              ...(msg.receiverUserId && {
+                receiverUser: { connect: { id: Number(msg.receiverUserId) } },
+              }),
+              ...(msg.receiverAdminId && {
+                receiverAdmin: { connect: { id: Number(msg.receiverAdminId) } },
+              }),
+            },
             include: {
               senderUser: {
                 select: { id: true, name: true, profile_picture: true },
@@ -352,9 +231,8 @@ const startServer = async () => {
             },
           });
 
-          // Update project.adminId and status for any admin involved in the conversation
+          // Update project status if admin is involved
           if (msg.senderAdminId || msg.receiverAdminId) {
-            // First get the current project status
             const currentProject = await prisma.project.findUnique({
               where: { id: Number(msg.projectId) },
               select: { status: true },
@@ -364,7 +242,6 @@ const startServer = async () => {
               adminId: Number(msg.senderAdminId || msg.receiverAdminId),
             };
 
-            // Only update status to ACTIVE if current status is PENDING
             if (currentProject?.status === "pending") {
               updateData.status = "active";
             }
@@ -375,7 +252,7 @@ const startServer = async () => {
             });
           }
 
-          // Format the message for client consumption
+          // Format message for clients
           const formattedMessage = {
             id: message.id.toString(),
             content: message.content,
@@ -385,310 +262,73 @@ const startServer = async () => {
             projectId: msg.projectId,
           };
 
-          // Format message for message list updates
-          const messageListUpdate = {
-            projectId: msg.projectId,
-            lastMessage: {
-              text: message.content,
-              timestamp: message.createdAt.toISOString(),
-              isRead: false,
-              sentByMe: false,
-            },
-            hasUnread: true,
-            sender: message.senderType.toLowerCase(),
-            receiver: message.receiverType.toLowerCase(),
-            senderUser: message.senderUser,
-            senderAdmin: message.senderAdmin,
-            receiverUser: message.receiverUser,
-            receiverAdmin: message.receiverAdmin,
-            project: message.project,
+          // Emit to relevant parties
+          const emitToParticipants = () => {
+            if (msg.senderUserId) {
+              io.to(`user-${msg.senderUserId}`).emit(
+                "newMessage",
+                formattedMessage
+              );
+            }
+            if (msg.senderAdminId) {
+              io.to(`admin-${msg.senderAdminId}`).emit(
+                "newMessage",
+                formattedMessage
+              );
+            }
+            if (msg.receiverUserId) {
+              io.to(`user-${msg.receiverUserId}`).emit(
+                "newMessage",
+                formattedMessage
+              );
+            }
+            if (msg.receiverAdminId) {
+              io.to(`admin-${msg.receiverAdminId}`).emit(
+                "newMessage",
+                formattedMessage
+              );
+            }
           };
 
-          // Check if this is a new conversation
-          const existingMessagesCount = await prisma.message.count({
-            where: {
-              projectId: Number(msg.projectId),
-            },
-          });
+          emitToParticipants();
 
-          // Send to chat interface participants
-          if (msg.senderUserId) {
-            io.to(`user-${msg.senderUserId}`).emit(
-              "newMessage",
-              formattedMessage
-            );
-          }
-          if (msg.senderAdminId) {
-            io.to(`admin-${msg.senderAdminId}`).emit(
-              "newMessage",
-              formattedMessage
-            );
-          }
-          if (msg.receiverUserId) {
-            io.to(`user-${msg.receiverUserId}`).emit(
-              "newMessage",
-              formattedMessage
-            );
-          }
-          if (msg.receiverAdminId) {
-            io.to(`admin-${msg.receiverAdminId}`).emit(
-              "newMessage",
-              formattedMessage
-            );
-          }
-
-          // Send message list updates to all connected users/admins
-          if (msg.receiverUserId) {
-            const updateForUser = {
-              ...messageListUpdate,
-              lastMessage: {
-                ...messageListUpdate.lastMessage,
-                sentByMe: false,
-              },
-              receiverUserId: msg.receiverUserId,
-            };
-
-            io.to(`user-${msg.receiverUserId}`).emit(
-              "messageListUpdate",
-              updateForUser
-            );
-
-            // If this is a new conversation, emit newConversation event
-            if (existingMessagesCount === 1) {
-              io.to(`user-${msg.receiverUserId}`).emit(
-                "newConversation",
-                updateForUser
-              );
-            }
-          }
-
-          if (msg.receiverAdminId) {
-            const updateForAdmin = {
-              ...messageListUpdate,
-              lastMessage: {
-                ...messageListUpdate.lastMessage,
-                sentByMe: false,
-              },
-              receiverAdminId: msg.receiverAdminId,
-            };
-
-            io.to(`admin-${msg.receiverAdminId}`).emit(
-              "messageListUpdate",
-              updateForAdmin
-            );
-
-            // If this is a new conversation, emit newConversation event
-            if (existingMessagesCount === 1) {
-              io.to(`admin-${msg.receiverAdminId}`).emit(
-                "newConversation",
-                updateForAdmin
-              );
-            }
-          }
-
-          // When a user sends a message, notify ALL connected admins
-          if (msg.senderUserId) {
-            // Emit to sender for their own message list
-            io.to(`user-${msg.senderUserId}`).emit("messageListUpdate", {
-              ...messageListUpdate,
-              lastMessage: { ...messageListUpdate.lastMessage, sentByMe: true },
-              hasUnread: false,
-              senderUserId: msg.senderUserId,
-            });
-
-            // Emit to ALL connected admins when user sends message
-            const updateForAllAdmins = {
-              ...messageListUpdate,
-              lastMessage: {
-                ...messageListUpdate.lastMessage,
-                sentByMe: false,
-              },
-              senderUserId: msg.senderUserId,
-              receiverAdminId: null, // This ensures all admins can see it
-            };
-
-            // Broadcast to all admin rooms
-            const adminRooms = Array.from(
-              io.sockets.adapter.rooms.keys()
-            ).filter((room) => room.startsWith("admin-"));
-
-            console.log("Broadcasting to admin rooms:", adminRooms);
-            adminRooms.forEach((room) => {
-              io.to(room).emit("messageListUpdate", updateForAllAdmins);
-            });
-
-            // If this is a new conversation, also broadcast to all admins
-            if (existingMessagesCount === 1) {
-              adminRooms.forEach((room) => {
-                io.to(room).emit("newConversation", updateForAllAdmins);
-              });
-            }
-          }
-
-          // When an admin sends a message, notify the specific user
-          if (msg.senderAdminId) {
-            // Emit to admin sender for their own message list
-            io.to(`admin-${msg.senderAdminId}`).emit("messageListUpdate", {
-              ...messageListUpdate,
-              lastMessage: { ...messageListUpdate.lastMessage, sentByMe: true },
-              hasUnread: false,
-              senderAdminId: msg.senderAdminId,
-            });
-
-            // Emit to the specific user if they're connected
-            if (msg.receiverUserId) {
-              const updateForUser = {
-                ...messageListUpdate,
-                lastMessage: {
-                  ...messageListUpdate.lastMessage,
-                  sentByMe: false,
-                },
-                receiverUserId: msg.receiverUserId,
-                senderAdminId: msg.senderAdminId,
-                sender: "admin",
-                receiver: "user",
-              };
-
-              console.log(
-                "Sending message update to user:",
-                msg.receiverUserId,
-                updateForUser
-              );
-              io.to(`user-${msg.receiverUserId}`).emit(
-                "messageListUpdate",
-                updateForUser
-              );
-
-              // If this is a new conversation, also emit newConversation
-              if (existingMessagesCount === 1) {
-                io.to(`user-${msg.receiverUserId}`).emit(
-                  "newConversation",
-                  updateForUser
-                );
-              }
-            }
-
-            // Also broadcast to all users in general for new conversations
-            if (existingMessagesCount === 1) {
-              const generalUserUpdate = {
-                ...messageListUpdate,
-                lastMessage: {
-                  ...messageListUpdate.lastMessage,
-                  sentByMe: false,
-                },
-                senderAdminId: msg.senderAdminId,
-                sender: "admin",
-                receiver: "user",
-              };
-
-              // Find all user rooms and broadcast
-              const userRooms = Array.from(
-                io.sockets.adapter.rooms.keys()
-              ).filter((room) => room.startsWith("user-"));
-
-              userRooms.forEach((room) => {
-                const userId = room.replace("user-", "");
-                if (userId === msg.receiverUserId?.toString()) {
-                  io.to(room).emit("newConversation", generalUserUpdate);
-                }
-              });
-            }
-          }
-
-          if (msg.senderAdminId) {
-            await prisma.project.update({
-              where: { id: Number(msg.projectId) },
-              data: {
-                adminId: Number(msg.senderAdminId),
-              },
-            });
-          }
-
-          console.log("Message sent successfully:", formattedMessage);
+          console.log("Message processed successfully");
         } catch (error) {
-          console.error("Failed to save message:", error);
+          console.error("Failed to process message:", error);
           socket.emit("messageError", {
-            message: "Failed to save message",
+            message: "Failed to process message",
             error: String(error),
           });
         }
       });
 
-      // Add milestone socket events
-      socket.on("milestoneRequest", async (data) => {
+      // Milestone events
+      const handleMilestoneEvent = (type: string) => async (data: any) => {
         try {
-          console.log("Received milestone request:", data);
-
-          // Broadcast to all users in the project
+          console.log(`Received milestone ${type}:`, data);
           if (data.projectId) {
-            socket.broadcast.emit("milestoneUpdate", {
-              type: "request",
+            io.emit("milestoneUpdate", {
+              type,
               projectId: data.projectId,
               ...data,
             });
           }
         } catch (error) {
-          console.error("Failed to handle milestone request:", error);
+          console.error(`Failed to handle milestone ${type}:`, error);
         }
-      });
+      };
 
-      socket.on("milestoneApproval", async (data) => {
-        try {
-          console.log("Received milestone approval:", data);
+      socket.on("milestoneRequest", handleMilestoneEvent("request"));
+      socket.on("milestoneApproval", handleMilestoneEvent("approval"));
+      socket.on("milestoneCompletion", handleMilestoneEvent("completion"));
+      socket.on("milestoneDecline", handleMilestoneEvent("decline"));
 
-          // Broadcast to all users in the project
-          if (data.projectId) {
-            socket.broadcast.emit("milestoneUpdate", {
-              type: "approval",
-              projectId: data.projectId,
-              ...data,
-            });
-          }
-        } catch (error) {
-          console.error("Failed to handle milestone approval:", error);
-        }
-      });
-
-      socket.on("milestoneCompletion", async (data) => {
-        try {
-          console.log("Received milestone completion:", data);
-
-          // Broadcast to all users in the project
-          if (data.projectId) {
-            socket.broadcast.emit("milestoneUpdate", {
-              type: "completion",
-              projectId: data.projectId,
-              ...data,
-            });
-          }
-        } catch (error) {
-          console.error("Failed to handle milestone completion:", error);
-        }
-      });
-
-      socket.on("milestoneDecline", async (data) => {
-        try {
-          console.log("Received milestone decline:", data);
-
-          // Broadcast to all users in the project
-          if (data.projectId) {
-            socket.broadcast.emit("milestoneUpdate", {
-              type: "decline",
-              projectId: data.projectId,
-              ...data,
-            });
-          }
-        } catch (error) {
-          console.error("Failed to handle milestone decline:", error);
-        }
-      });
-
+      // Mark messages as read
       socket.on("markMessagesRead", async (data) => {
         try {
           console.log("Marking messages as read:", data);
           const { projectId, userId, adminId } = data;
 
-          // Update read status in database
           if (userId) {
             await prisma.message.updateMany({
               where: {
@@ -696,29 +336,21 @@ const startServer = async () => {
                 receiverUserId: parseInt(userId),
                 isRead: false,
               },
-              data: {
-                isRead: true,
-              },
+              data: { isRead: true },
             });
 
-            // Emit read status update to sender (admin)
             const senderAdmin = await prisma.message.findFirst({
               where: {
                 projectId: parseInt(projectId),
                 senderAdminId: { not: null },
               },
-              select: {
-                senderAdminId: true,
-              },
+              select: { senderAdminId: true },
             });
 
             if (senderAdmin?.senderAdminId) {
               io.to(`admin-${senderAdmin.senderAdminId}`).emit(
                 "messagesMarkedRead",
-                {
-                  projectId: projectId,
-                  readByUserId: userId,
-                }
+                { projectId, readByUserId: userId }
               );
             }
           } else if (adminId) {
@@ -728,29 +360,21 @@ const startServer = async () => {
                 receiverAdminId: parseInt(adminId),
                 isRead: false,
               },
-              data: {
-                isRead: true,
-              },
+              data: { isRead: true },
             });
 
-            // Emit read status update to sender (user)
             const senderUser = await prisma.message.findFirst({
               where: {
                 projectId: parseInt(projectId),
                 senderUserId: { not: null },
               },
-              select: {
-                senderUserId: true,
-              },
+              select: { senderUserId: true },
             });
 
             if (senderUser?.senderUserId) {
               io.to(`user-${senderUser.senderUserId}`).emit(
                 "messagesMarkedRead",
-                {
-                  projectId: projectId,
-                  readByAdminId: adminId,
-                }
+                { projectId, readByAdminId: adminId }
               );
             }
           }
@@ -760,34 +384,20 @@ const startServer = async () => {
           console.error("Failed to mark messages as read:", error);
         }
       });
-
-      socket.on("disconnect", (reason) => {
-        console.log(`${socket.id} disconnected. Reason: ${reason}`);
-      });
     });
 
+    // Start server
     const port = process.env.PORT || 3000;
-
-    console.log(`Starting server on port ${port}...`);
     server.listen(port, () => {
-      console.log(`> Ready on http://${host}:${port}`);
-      console.log(
-        `> Socket.IO server running in ${
-          dev ? "development" : "production"
-        } mode`
-      );
+      console.log(`Server running on port ${port}`);
     });
 
-    // Add graceful shutdown
-    interface ShutdownHandler {
-      (signal: string): void;
-    }
-
-    const shutdown: ShutdownHandler = (signal: string) => {
+    // Graceful shutdown
+    const shutdown = (signal: string) => {
       console.log(`${signal} received, shutting down gracefully`);
       server.close((err?: Error) => {
         if (err) {
-          console.error("Error during server shutdown:", err);
+          console.error("Error during shutdown:", err);
           process.exit(1);
         }
         console.log("Server closed successfully");
@@ -799,37 +409,19 @@ const startServer = async () => {
     process.on("SIGINT", () => shutdown("SIGINT"));
   } catch (err) {
     console.error("Critical error starting server:", err);
-    console.error(
-      "Stack trace:",
-      err instanceof Error ? err.stack : "No stack trace available"
-    );
     process.exit(1);
   }
 };
 
-// Handle uncaught exceptions with better logging
+// Error handling
 process.on("uncaughtException", (error) => {
-  console.error("Uncaught Exception:");
-  console.error("Error:", error);
-  console.error("Stack:", error.stack);
-  console.error("Type:", typeof error);
-  console.error("Keys:", Object.keys(error));
+  console.error("Uncaught Exception:", error);
   process.exit(1);
 });
 
 process.on("unhandledRejection", (reason, promise) => {
-  console.error("Unhandled Rejection at:", promise);
-  console.error("Reason:", reason);
-  console.error("Reason type:", typeof reason);
-  if (reason && typeof reason === "object" && "stack" in reason) {
-    console.error("Stack:", (reason as Error).stack);
-  }
+  console.error("Unhandled Rejection at:", promise, "reason:", reason);
   process.exit(1);
-});
-
-// Add a safety check for immediate startup issues
-process.nextTick(() => {
-  console.log("Process started, beginning server initialization...");
 });
 
 // Start the server
