@@ -113,44 +113,36 @@ export function AdminMessages() {
           conv => conv.id === updateData.projectId
         );
 
+        // Determine if this message is sent by user or admin
+        const isSenderUser = updateData.senderUserId || updateData.senderUser?.id || updateData.user?.id;
+        const isSenderAdmin = updateData.senderAdminId || updateData.senderAdmin?.id || updateData.admin?.id;
+        const isReceiverThisAdmin = updateData.receiverAdminId?.toString() === currentAdminId?.toString() ||
+          updateData.receiverAdmin?.id?.toString() === currentAdminId?.toString();
+        const isSenderThisAdmin = updateData.senderAdminId?.toString() === currentAdminId?.toString() ||
+          updateData.senderAdmin?.id?.toString() === currentAdminId?.toString();
+
         if (existingConversationIndex >= 0) {
           const updatedConversations = [...prevConversations];
           const conv = updatedConversations[existingConversationIndex];
 
-          // Determine if this is a new message
-          const isNewMessage = updateData.lastMessage &&
-            (!conv.lastMessage ||
-              new Date(updateData.lastMessage.timestamp).getTime() > new Date(conv.lastMessage.timestamp).getTime());
+          // Prevent double increment: only increment unread if lastMessage is different
+          let isNewMessage =
+            !conv.lastMessage ||
+            (updateData.lastMessage &&
+              conv.lastMessage.timestamp !== updateData.lastMessage.timestamp);
 
-          let newUnreadCount = conv.unreadCount;
+          let newUnreadCount = conv.unreadCount || 0;
           let hasUnread = conv.hasUnread;
 
-          if (isNewMessage) {
-            // Check if message is from user to this admin - be more flexible with data structure
-            const isSenderUser = updateData.senderUserId || updateData.senderUser?.id || updateData.user?.id;
-            const isReceiverThisAdmin = updateData.receiverAdminId?.toString() === currentAdminId?.toString() ||
-              updateData.receiverAdmin?.id?.toString() === currentAdminId?.toString();
-            const isSenderThisAdmin = updateData.senderAdminId?.toString() === currentAdminId?.toString() ||
-              updateData.senderAdmin?.id?.toString() === currentAdminId?.toString();
-
-            console.log("Message update check:", {
-              isSenderUser: !!isSenderUser,
-              isReceiverThisAdmin,
-              isSenderThisAdmin,
-              currentAdminId,
-              updateData
-            });
-
-            if (isSenderUser && isReceiverThisAdmin && !isSenderThisAdmin) {
-              newUnreadCount = (conv.unreadCount || 0) + 1;
-              hasUnread = true;
-              console.log("Incrementing unread count for user message to:", newUnreadCount);
-            }
+          // If the message is from user to this admin, increment unread only if new
+          if (isSenderUser && isReceiverThisAdmin && !isSenderThisAdmin && isNewMessage) {
+            newUnreadCount = (conv.unreadCount || 0) + 1;
+            hasUnread = true;
           }
-          else if (updateData.markAsRead && (updateData.readByAdminId?.toString() === currentAdminId?.toString() || updateData.readByAdmin?.id?.toString() === currentAdminId?.toString())) {
-            newUnreadCount = 0;
+          // If the message is from admin (me), do not increment unread, but update lastMessage
+          else if (isSenderAdmin && isSenderThisAdmin) {
             hasUnread = false;
-            console.log("Marking messages as read, resetting unread count");
+            newUnreadCount = 0;
           }
 
           updatedConversations[existingConversationIndex] = {
@@ -166,13 +158,8 @@ export function AdminMessages() {
             return bTime - aTime;
           });
         } else if (updateData.lastMessage) {
-          // Check if this is a new conversation from user to this admin
-          const isSenderUser = updateData.senderUserId || updateData.senderUser?.id || updateData.user?.id;
-          const isReceiverThisAdmin = updateData.receiverAdminId?.toString() === currentAdminId?.toString() ||
-            updateData.receiverAdmin?.id?.toString() === currentAdminId?.toString();
-
+          // New conversation
           if (isSenderUser && isReceiverThisAdmin) {
-            // Add new conversation only if user is messaging this admin
             const newConversation: Conversation = {
               id: updateData.projectId,
               title: updateData.project?.title || "Project",
@@ -186,7 +173,27 @@ export function AdminMessages() {
               hasUnread: true,
               unreadCount: 1
             };
-
+            return [newConversation, ...prevConversations].sort((a, b) => {
+              const aTime = a.lastMessage ? new Date(a.lastMessage.timestamp).getTime() : 0;
+              const bTime = b.lastMessage ? new Date(b.lastMessage.timestamp).getTime() : 0;
+              return bTime - aTime;
+            });
+          }
+          // New conversation from admin (me)
+          if (isSenderAdmin && isSenderThisAdmin) {
+            const newConversation: Conversation = {
+              id: updateData.projectId,
+              title: updateData.project?.title || "Project",
+              user: {
+                id: (updateData.receiverUser?.id || updateData.user?.id || "unknown").toString(),
+                name: updateData.receiverUser?.name || updateData.user?.name || "User",
+                startup: updateData.project?.title || "Project",
+                profile_picture: updateData.receiverUser?.profile_picture || updateData.user?.profile_picture || ""
+              },
+              lastMessage: updateData.lastMessage,
+              hasUnread: false,
+              unreadCount: 0
+            };
             return [newConversation, ...prevConversations].sort((a, b) => {
               const aTime = a.lastMessage ? new Date(a.lastMessage.timestamp).getTime() : 0;
               const bTime = b.lastMessage ? new Date(b.lastMessage.timestamp).getTime() : 0;

@@ -292,6 +292,63 @@ const startServer = async () => {
 
           emitToParticipants();
 
+          // Emit messageListUpdate for both user and admin
+          const lastMessage = {
+            text: message.content,
+            timestamp: message.createdAt.toISOString(),
+            isRead: false,
+            sentByMe: !!msg.senderAdminId, // true if admin sent, false if user sent
+          };
+
+          // Fetch user/admin/project info for messageListUpdate
+          const project = message.project;
+          const senderUser = message.senderUser;
+          const senderAdmin = message.senderAdmin;
+          const receiverUser = message.receiverUser;
+          const receiverAdmin = message.receiverAdmin;
+
+          // For user
+          if (msg.senderUserId || msg.receiverUserId) {
+            io.emit("messageListUpdate", {
+              projectId: msg.projectId,
+              lastMessage,
+              senderUserId: msg.senderUserId,
+              senderAdminId: msg.senderAdminId,
+              receiverUserId: msg.receiverUserId,
+              receiverAdminId: msg.receiverAdminId,
+              senderUser,
+              senderAdmin,
+              receiverUser,
+              receiverAdmin,
+              user: senderUser || receiverUser,
+              admin: senderAdmin || receiverAdmin,
+              project,
+              // Mark as unread for the receiver
+              hasUnread: true,
+              unreadCount: 1,
+            });
+          }
+          // For admin
+          if (msg.senderAdminId || msg.receiverAdminId) {
+            io.emit("messageListUpdate", {
+              projectId: msg.projectId,
+              lastMessage,
+              senderUserId: msg.senderUserId,
+              senderAdminId: msg.senderAdminId,
+              receiverUserId: msg.receiverUserId,
+              receiverAdminId: msg.receiverAdminId,
+              senderUser,
+              senderAdmin,
+              receiverUser,
+              receiverAdmin,
+              user: senderUser || receiverUser,
+              admin: senderAdmin || receiverAdmin,
+              project,
+              hasUnread: true,
+              unreadCount: 1,
+            });
+          }
+
           console.log("Message processed successfully");
         } catch (error) {
           console.error("Failed to process message:", error);

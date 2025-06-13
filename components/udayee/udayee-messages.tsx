@@ -77,8 +77,7 @@ export function UdayeeMessages() {
     };
 
     const handleMessageListUpdate = (updateData: any) => {
-      console.log("Message list update received in user:", updateData);
-
+      // Similar logic as admin-messages for updating last message and unread count
       setConversations((prevConversations) => {
         const existingConversationIndex = prevConversations.findIndex(
           conv => conv.id === updateData.projectId
@@ -97,36 +96,33 @@ export function UdayeeMessages() {
           let hasUnread = conv.hasUnread;
 
           if (isNewMessage) {
-            // Check if message is from admin to this user - be more flexible with data structure
-            const isSenderAdmin = updateData.senderAdminId || updateData.senderAdmin?.id || updateData.sender === 'admin';
+            // Check if message is from admin to this user
+            const isSenderAdmin = updateData.senderAdminId || updateData.senderAdmin?.id || updateData.admin?.id;
             const isReceiverThisUser = updateData.receiverUserId?.toString() === currentUserId?.toString() ||
               updateData.receiverUser?.id?.toString() === currentUserId?.toString();
-            const isSenderThisUser = updateData.senderUserId?.toString() === currentUserId?.toString() ||
-              updateData.senderUser?.id?.toString() === currentUserId?.toString();
 
-            console.log("Message update check:", {
-              isSenderAdmin: !!isSenderAdmin,
-              isReceiverThisUser,
-              isSenderThisUser,
-              currentUserId,
-              updateData
-            });
-
-            if (isSenderAdmin && isReceiverThisUser && !isSenderThisUser) {
-              newUnreadCount = newUnreadCount + 1;
+            if (isSenderAdmin && isReceiverThisUser) {
+              newUnreadCount = (conv.unreadCount || 0) + 1;
               hasUnread = true;
-              console.log("Incrementing unread count for admin message to:", newUnreadCount);
             }
-          }
-          else if (updateData.markAsRead && (updateData.readByUserId?.toString() === currentUserId?.toString() || updateData.readByUser?.id?.toString() === currentUserId?.toString())) {
+          } else if (updateData.markAsRead && (updateData.readByUserId?.toString() === currentUserId?.toString() || updateData.readByUser?.id?.toString() === currentUserId?.toString())) {
             newUnreadCount = 0;
             hasUnread = false;
-            console.log("Marking messages as read, resetting unread count");
+          }
+
+          // Fix sentByMe logic - check if the sender is the current user
+          let lastMessage = updateData.lastMessage || conv.lastMessage;
+          if (lastMessage && updateData.lastMessage) {
+            const senderId = updateData.senderUserId || updateData.senderUser?.id;
+            lastMessage = {
+              ...lastMessage,
+              sentByMe: senderId?.toString() === currentUserId?.toString()
+            };
           }
 
           updatedConversations[existingConversationIndex] = {
             ...conv,
-            lastMessage: updateData.lastMessage || conv.lastMessage,
+            lastMessage: lastMessage,
             hasUnread: hasUnread,
             unreadCount: newUnreadCount
           };
@@ -136,80 +132,46 @@ export function UdayeeMessages() {
             const bTime = b.lastMessage ? new Date(b.lastMessage.timestamp).getTime() : 0;
             return bTime - aTime;
           });
+        } else if (updateData.lastMessage) {
+          // New conversation from admin to this user
+          const isSenderAdmin = updateData.senderAdminId || updateData.senderAdmin?.id || updateData.admin?.id;
+          const isReceiverThisUser = updateData.receiverUserId?.toString() === currentUserId?.toString() ||
+            updateData.receiverUser?.id?.toString() === currentUserId?.toString();
+
+          if (isSenderAdmin && isReceiverThisUser) {
+            // Fix sentByMe for new conversations
+            const senderId = updateData.senderUserId || updateData.senderUser?.id;
+            const lastMessage = {
+              ...updateData.lastMessage,
+              sentByMe: senderId?.toString() === currentUserId?.toString()
+            };
+
+            const newConversation: Conversation = {
+              id: updateData.projectId,
+              project: updateData.project ? {
+                id: updateData.project.id || updateData.projectId,
+                title: updateData.project.title || "Untitled Project"
+              } : undefined,
+              admin: {
+                id: (updateData.senderAdmin?.id || updateData.senderAdminId || "unknown").toString(),
+                name: updateData.senderAdmin?.name || "Admin",
+                profile_picture: updateData.senderAdmin?.profile_picture || ""
+              },
+              lastMessage: lastMessage,
+              hasUnread: true,
+              unreadCount: 1
+            };
+
+            return [newConversation, ...prevConversations].sort((a, b) => {
+              const aTime = a.lastMessage ? new Date(a.lastMessage.timestamp).getTime() : 0;
+              const bTime = b.lastMessage ? new Date(b.lastMessage.timestamp).getTime() : 0;
+              return bTime - aTime;
+            });
+          }
         }
-        // Don't create new conversations here - let handleNewConversation do it
+
         return prevConversations;
       });
-    };
-
-    const handleNewConversation = (updateData: any) => {
-      console.log("New conversation received:", updateData);
-
-      // Check if this is a new conversation from admin to this user
-      const isSenderAdmin = updateData.senderAdminId || updateData.senderAdmin?.id || updateData.sender === 'admin';
-      const isReceiverThisUser = updateData.receiverUserId?.toString() === currentUserId?.toString() ||
-        updateData.receiverUser?.id?.toString() === currentUserId?.toString();
-
-      if (isSenderAdmin && isReceiverThisUser && updateData.lastMessage) {
-        setConversations((prevConversations) => {
-          // Check if conversation already exists
-          const existingConversation = prevConversations.find(conv => conv.id === updateData.projectId);
-          if (existingConversation) {
-            // Don't duplicate - let handleMessageListUpdate handle existing conversations
-            console.log("Conversation already exists, skipping duplicate creation");
-            return prevConversations;
-          }
-
-          // Create new conversation with unread count of 1
-          const newConversation: Conversation = {
-            id: updateData.projectId,
-            project: updateData.project ? {
-              id: updateData.project.id || updateData.projectId,
-              title: updateData.project.title || "Untitled Project"
-            } : undefined,
-            admin: {
-              id: (updateData.senderAdmin?.id || updateData.senderAdminId || "unknown").toString(),
-              name: updateData.senderAdmin?.name || "Admin",
-              profile_picture: updateData.senderAdmin?.profile_picture || ""
-            },
-            lastMessage: updateData.lastMessage,
-            hasUnread: true,
-            unreadCount: 1
-          };
-
-          console.log("Creating new conversation with unread count:", newConversation.unreadCount);
-
-          return [newConversation, ...prevConversations].sort((a, b) => {
-            const aTime = a.lastMessage ? new Date(a.lastMessage.timestamp).getTime() : 0;
-            const bTime = b.lastMessage ? new Date(b.lastMessage.timestamp).getTime() : 0;
-            return bTime - aTime;
-          });
-        });
-      }
-    };
-
-    const handleMessagesMarkedRead = (data: any) => {
-      console.log("Messages marked as read notification:", data);
-
-      // Only clear unread count if this user marked the messages as read
-      if (data.userId?.toString() === currentUserId?.toString()) {
-        setConversations((prevConversations) => {
-          return prevConversations.map((conv) => {
-            if (conv.id === data.projectId) {
-              return {
-                ...conv,
-                hasUnread: false,
-                unreadCount: 0,
-                lastMessage: conv.lastMessage ? {
-                  ...conv.lastMessage,
-                  isRead: true
-                } : null
-              };
-            }
-            return conv;
-          });
-        });
-      }
     };
 
     // Enhanced typing indicator handling
@@ -220,8 +182,6 @@ export function UdayeeMessages() {
 
     socketInstance.on("connect", handleConnect);
     socketInstance.on("messageListUpdate", handleMessageListUpdate);
-    socketInstance.on("newConversation", handleNewConversation);
-    socketInstance.on("messagesMarkedRead", handleMessagesMarkedRead);
     socketInstance.on("typingUpdate", handleTypingUpdate);
 
     if (socketInstance.connected) {
@@ -231,8 +191,6 @@ export function UdayeeMessages() {
     return () => {
       socketInstance?.off("connect", handleConnect);
       socketInstance?.off("messageListUpdate", handleMessageListUpdate);
-      socketInstance?.off("newConversation", handleNewConversation);
-      socketInstance?.off("messagesMarkedRead", handleMessagesMarkedRead);
       socketInstance?.off("typingUpdate", handleTypingUpdate);
     };
   }, [currentUserId]);
@@ -312,7 +270,7 @@ export function UdayeeMessages() {
         >
           Messages
         </h1>
-        <p className="text-muted-foreground">Communicate with your investors</p>
+        <p className="text-muted-foreground">Communicate for your investment</p>
       </div>
 
       <div className="flex items-center space-x-2">
@@ -426,7 +384,7 @@ export function UdayeeMessages() {
             </div>
             <h3 className="font-medium text-lg">No Messages Yet</h3>
             <p className="text-sm text-muted-foreground mt-2 max-w-md">
-              When investors contact you about your startup, your conversations
+              When admin contact you about your startup, your conversations
               will appear here.
             </p>
           </CardContent>

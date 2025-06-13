@@ -739,8 +739,29 @@ const ChatInterface = ({
 
     socket.on("newMessage", handleNewMessage);
 
+    // Listen for messageListUpdate to update unread count and last message in real time
+    const handleMessageListUpdate = (updateData: any) => {
+      // Only update if this project and user is involved
+      if (updateData.projectId !== project) return;
+
+      // If the message is from admin to this user, update unread count and last message
+      const isSenderAdmin = updateData.senderAdminId || updateData.senderAdmin?.id || updateData.admin?.id;
+      const isReceiverThisUser = updateData.receiverUserId?.toString() === currentUserId?.toString() ||
+        updateData.receiverUser?.id?.toString() === currentUserId?.toString();
+
+      if (isSenderAdmin && isReceiverThisUser) {
+        // Optionally, you can update a conversations list here if you have one
+        // For now, just log or handle as needed
+        // Example: setUnreadCount(updateData.unreadCount)
+        // Or trigger a refresh of the messages if needed
+      }
+    };
+
+    socket.on("messageListUpdate", handleMessageListUpdate);
+
     return () => {
       socket.off("newMessage", handleNewMessage);
+      socket.off("messageListUpdate", handleMessageListUpdate);
     };
   }, [userType, recipientType, lastMessageTime]);
 
@@ -793,40 +814,43 @@ const ChatInterface = ({
         }
       });
 
-      // Also emit other events
-      const messageListUpdateData = {
+      // Emit messageListUpdate for real-time update in messages list
+      socket.emit("messageListUpdate", {
         projectId: project,
-        senderUserId: userType === "user" ? Number(currentUserId) : null,
-        senderAdminId: userType === "admin" ? Number(currentUserId) : null,
-        receiverUserId: recipientType === "user" ? Number(recipientId) : null,
-        receiverAdminId: recipientType === "admin" ? Number(recipientId) : null,
-        senderType: userType,
-        receiverType: recipientType,
         lastMessage: {
           text: text,
           timestamp: new Date().toISOString(),
           isRead: false,
-          sentByMe: false
+          sentByMe: true,
         },
-        project: {
-          title: "Project"
-        },
+        senderUserId: userType === "user" ? Number(currentUserId) : null,
+        senderAdminId: userType === "admin" ? Number(currentUserId) : null,
+        receiverUserId: recipientType === "user" ? Number(recipientId) : null,
+        receiverAdminId: recipientType === "admin" ? Number(recipientId) : null,
         senderUser: userType === "user" ? {
           id: Number(currentUserId),
-          name: "Current User",
-          profile_picture: ""
+          name: recipient?.name || "User",
+          profile_picture: recipient?.profile_picture || "",
+        } : null,
+        senderAdmin: userType === "admin" ? {
+          id: Number(currentUserId),
+          name: recipient?.name || "Admin",
+          profile_picture: recipient?.profile_picture || "",
         } : null,
         user: userType === "user" ? {
           id: Number(currentUserId),
-          name: "Current User",
-          profile_picture: ""
-        } : null
-      };
-
-      socket.emit("messageListUpdate", messageListUpdateData);
-      socket.emit("newMessage", {
-        ...messageData,
-        content: text
+          name: recipient?.name || "User",
+          profile_picture: recipient?.profile_picture || "",
+        } : null,
+        admin: userType === "admin" ? {
+          id: Number(currentUserId),
+          name: recipient?.name || "Admin",
+          profile_picture: recipient?.profile_picture || "",
+        } : null,
+        project: {
+          id: project,
+          title: "Project"
+        }
       });
 
       // Set timeout to remove temp message if server doesn't respond within 10 seconds
