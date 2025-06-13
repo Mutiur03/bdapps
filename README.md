@@ -1,36 +1,150 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
+# 🚀 Funded – Empowering Student Entrepreneurs Through Crowdfunding
 
-First, run the development server:
+**Funded** is a full-stack crowdfunding platform built to connect aspiring **student entrepreneurs** with **impact-driven investors**. It creates a secure, milestone-based funding environment where students can turn startup ideas into reality, and investors can support innovation while earning passive returns.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## 🌟 Key Highlights
+
+- 🔒 Secure Role-Based Access – 3 distinct user roles: Student, Investor, Admin
+- ✍️ Project Submission & Review Pipeline
+- 💼 Escrow System with Milestone-Based Fund Disbursement
+- 💬 Real-Time Admin-Student Chat with Socket.IO
+- 🧠 Intelligent Admin Assignment Logic
+- 💸 ROI Payouts for Passive Investors
+
+---
+
+
+## 🧩 User Roles & Functionality
+
+### 🎓 Student Entrepreneur
+- Register with 2-step verification
+- Submit multiple startup projects
+- Create milestones and submit proofs
+- Communicate with assigned admin in real time
+- Receive phased fund disbursement after admin approval
+
+### 💰 Investor
+- Browse and invest in active student projects
+- Invest flexible amounts
+- Automatically receive principal + interest at maturity
+- No involvement in project management
+
+### 🛡️ Administrator
+- Review and approve submitted student projects
+- Initiate contact to assign self to a project
+- Approve or reject milestone proofs
+- Release funds in stages from escrow
+- Mark project as complete after all milestones are done
+
+---
+
+## 🛠 Tech Stack
+
+| Layer      | Technology                               |
+|------------|-------------------------------------------|
+| Frontend   | NextJS, Tailwind CSS                      |
+| Backend    | NextJS                                    |
+| Database   | PostgreSQL, Prisma ORM                   |
+| Real-Time  | Socket.IO                                |
+| Auth       | Next Auth                                |
+
+---
+
+## 📂 Project Structure
+```
+bdapps/  
+├── app/
+├── prisma/ 
+├── server.mts
+└── README.md
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🚦 How to Run Locally
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Learn More
+### 🔧 Setup Instructions
 
-To learn more about Next.js, take a look at the following resources:
+1. **Clone the repository**
+```bash
+git clone https://github.com/Mutiur03/bdapps.git
+cd bdapps
+````
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. **Install dependencies**
+    
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm install
+```
 
-## Deploy on Vercel
+3. **Configure environment variables**
+    
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Create a `.env` file 
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+#### `.env`
+
+```env
+DATABASE_URL=...
+NEXTAUTH_SECRET=...
+PORT=3000
+NEXT_PUBLIC_CLOUDINARY_API_KEY=...
+CLOUDINARY_API_SECRET=...
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=...
+```
+
+4. **Run development servers**
+    
+
+```bash
+npx prisma generate && npx prisma migrate deploy && npx prisma db seed
+```
+
+---
+
+## 🧪 Testing Flow
+
+1. Register as a **Student**, submit a project
+    
+2. Log in as **Admin**, approve project and start chat
+    
+3. Log in as **Investor**, fund a project
+    
+4. Submit and approve milestones through real-time chat
+    
+
+---
+
+## 🚀 Live Demo 
+
+🔗 **Live Site:** [Live](https://bdapps.onrender.com/)  
+
+---
+
+## ✅ Future Roadmap
+
+- 📊 Admin dashboard analytics
+    
+- 📱 Mobile-first PWA support
+    
+- 📩 Email/SMS notifications for milestone approvals
+    
+- 📂 File management for student documents and pitch decks
+    
+- 🧾 Transaction history and receipts
+    
+
+
+---
+
+## 🤝 Contact
+
+Looking to collaborate or hire for full-stack projects?  
+📬 Reach out via [LinkedIn](https://linkedin.com/in/yourprofile) or [Fiverr](https://www.fiverr.com/mutiur_rahman03)
+
+---
