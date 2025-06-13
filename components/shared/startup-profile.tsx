@@ -60,7 +60,7 @@ export function StartupProfile({ id }: { id: string }) {
       <div className="relative rounded-xl overflow-hidden">
         <div className="h-64 md:h-80">
           <CardImage
-            src={safeUrl(startup?.cover_image)}
+            src={safeUrl(startup?.cover_image) || "/placeholder.svg"}
             alt={`${startup?.title} cover image`}
             className="w-full h-full"
           />
@@ -70,15 +70,10 @@ export function StartupProfile({ id }: { id: string }) {
             <div className="flex items-center gap-4">
               <div className="h-16 w-16 rounded-full overflow-hidden bg-white border-2 border-white">
                 <CardImage
-                  src={safeUrl(startup?.profile_picture)}
+                  src={safeUrl(startup?.profile_picture) || "/placeholder.svg"}
                   alt={`${startup?.title} logo`}
                   aspectRatio="square"
                   className="h-full w-full"
-                  fallback={
-                    <div className="bg-primary/10 text-primary h-full w-full flex items-center justify-center font-semibold text-2xl">
-                      {startup?.title.charAt(0)}
-                    </div>
-                  }
                 />
               </div>
               <div>
@@ -431,8 +426,8 @@ export function StartupProfile({ id }: { id: string }) {
             <CardContent className="p-0">
               {(() => {
                 const similarStartups = startups
-                  ?.filter(s => 
-                    s.category?.name === startup?.category?.name && 
+                  ?.filter(s =>
+                    s.category?.name === startup?.category?.name &&
                     s.id !== startup?.id
                   )
                   ?.slice(0, 3) || [];
@@ -443,14 +438,9 @@ export function StartupProfile({ id }: { id: string }) {
                       <div className="flex items-center gap-3 p-4 hover:bg-muted/20 border-b last:border-b-0">
                         <div className="h-12 w-12 rounded-md overflow-hidden flex-shrink-0">
                           <CardImage
-                            src={safeUrl(similarStartup.profile_picture)}
+                            src={safeUrl(similarStartup.profile_picture) || "/placeholder.svg"}
                             alt={similarStartup.title}
                             aspectRatio="square"
-                            fallback={
-                              <div className="bg-primary/10 text-primary h-full w-full flex items-center justify-center font-semibold text-xs">
-                                {similarStartup.title.charAt(0)}
-                              </div>
-                            }
                           />
                         </div>
                         <div className="flex-1 min-w-0">
@@ -535,7 +525,7 @@ function StartupProfileSkeleton() {
               <Skeleton className="h-10 w-20" />
               <Skeleton className="h-10 w-24" />
             </div>
-            
+
             <Card>
               <CardHeader className="border-b border-border">
                 <Skeleton className="h-6 w-40" />
@@ -544,7 +534,7 @@ function StartupProfileSkeleton() {
                 <Skeleton className="h-4 w-full" />
                 <Skeleton className="h-4 w-3/4" />
                 <Skeleton className="h-4 w-1/2" />
-                
+
                 <div className="grid grid-cols-2 gap-4 mt-6">
                   {[...Array(4)].map((_, i) => (
                     <div key={i} className="space-y-2">
@@ -553,7 +543,7 @@ function StartupProfileSkeleton() {
                     </div>
                   ))}
                 </div>
-                
+
                 <div className="flex flex-wrap gap-2 mt-6">
                   {[...Array(3)].map((_, i) => (
                     <Skeleton key={i} className="h-6 w-16" />
@@ -587,7 +577,7 @@ function StartupProfileSkeleton() {
                   <Skeleton className="h-3 w-20" />
                 </div>
               </div>
-              
+
               <div className="pt-2 space-y-4">
                 <Skeleton className="h-10 w-full" />
                 <Skeleton className="h-10 w-full" />
@@ -633,3 +623,4 @@ function StartupProfileSkeleton() {
     </div>
   );
 }
+export default StartupProfile;

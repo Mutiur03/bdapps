@@ -206,6 +206,8 @@ export function StartupBrowser() {
 }
 import { Startup } from "@/store/useCommonStore"
 function StartupCard({ startup }: { startup: Startup }) {
+  const [coverImageError, setCoverImageError] = useState(false);
+  const [profileImageError, setProfileImageError] = useState(false);
   const raised_amount = startup?.raised_amount || "0";
   const budget = startup?.budget || "1";
 
@@ -216,32 +218,47 @@ function StartupCard({ startup }: { startup: Startup }) {
 
   return (
     <Card className="overflow-hidden hover:shadow-md transition-shadow">
-      <CardImage
-        src={
-          safeUrl(startup?.cover_image) ||
-          `https://source.unsplash.com/random/800x400?${(startup?.category?.name || "startup").toLowerCase()}`
-        }
-        alt={`${startup?.title || "Startup"} cover image`}
-        aspectRatio="wide"
-      />
+      {!coverImageError ? (
+        <CardImage
+          src={
+            safeUrl(startup?.cover_image) ||
+            `https://source.unsplash.com/random/800x400?${(startup?.category?.name || "startup").toLowerCase()}`
+          }
+          alt={`${startup?.title || "Startup"} cover image`}
+          aspectRatio="wide"
+          onError={() => setCoverImageError(true)}
+        />
+      ) : (
+        <div className="h-48 bg-muted flex items-center justify-center">
+          <img
+            src="/placeholder.svg"
+            alt="Image placeholder"
+            className="w-full h-full object-cover opacity-50"
+          />
+        </div>
+      )}
 
       <CardHeader className="pb-2 relative">
         {/* Logo overlay on the image */}
         <div className="absolute -top-8 left-4 w-12 h-12 rounded-full overflow-hidden border-2 border-background bg-background shadow-sm">
-          <CardImage
-            src={
-              safeUrl(startup?.profile_picture) ||
-              `https://ui-avatars.com/api/?name=${startup?.title || "Startup"}&background=random`
-            }
-            alt={`${startup?.title || "Startup"} logo`}
-            aspectRatio="square"
-            className="w-full h-full"
-            fallback={
-              <div className="bg-primary/10 text-primary h-full w-full flex items-center justify-center font-semibold text-xl">
-                {(startup?.title || "S").charAt(0)}
-              </div>
-            }
-          />
+          {!profileImageError ? (
+            <CardImage
+              src={
+                safeUrl(startup?.profile_picture) ||
+                `https://ui-avatars.com/api/?name=${startup?.title || "Startup"}&background=random`
+              }
+              alt={`${startup?.title || "Startup"} logo`}
+              aspectRatio="square"
+              className="w-full h-full"
+              onError={() => setProfileImageError(true)}
+            />
+          ) : (
+            <img
+              src="/placeholder.svg"
+              alt="Profile placeholder"
+              className="w-full h-full object-cover"
+            />
+          )}
         </div>
 
         <div className="flex justify-between items-start pt-2">
