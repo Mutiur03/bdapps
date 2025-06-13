@@ -1,7 +1,7 @@
 
-# 🚀 Funded – Empowering Student Entrepreneurs Through Crowdfunding
+# 🚀 Fundit – Empowering Student Entrepreneurs Through Crowdfunding
 
-**Funded** is a full-stack crowdfunding platform built to connect aspiring **student entrepreneurs** with **impact-driven investors**. It creates a secure, milestone-based funding environment where students can turn startup ideas into reality, and investors can support innovation while earning passive returns.
+**Fundit** is a full-stack crowdfunding platform built to connect aspiring **student entrepreneurs** with **impact-driven investors**. It creates a secure, milestone-based funding environment where students can turn startup ideas into reality, and investors can support innovation while earning passive returns.
 
 ---
 
