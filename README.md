@@ -122,8 +122,8 @@ npx prisma generate && npx prisma migrate deploy && npx prisma db seed
 
 ## 🚀 Live Demo 
 
-🔗 **Live Site:** [Live](https://bdapps.onrender.com/)  
-
+🔗 **Live Site:** [Live](https://fundit.mutiurrahman.com/)  
+🎥 **Detailed Video:** [YouTube](https://www.youtube.com/watch?v=AvoooD7cLzQ)
 ---
 
 ## ✅ Future Roadmap
